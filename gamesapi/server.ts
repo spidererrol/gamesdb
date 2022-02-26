@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import session from 'express-session';
@@ -47,7 +47,6 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
 
 //TODO: Extend process.env to specify my options *or create helper function*
 //TODO: Sanity check options (at least that they are defined).
-dotenv.config();
 
 const app = express();
 
