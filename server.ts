@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import gamesroute from './routes/games';
 import { Users } from './models/games';
+
+//TODO: Can I move these extensions to a different file?
 declare module "express-session" {
     interface Session {
         userId: string;
@@ -15,6 +17,20 @@ declare module "express" {
     }
 }
 
+//TODO: Move util functions into a seperate file:
+function log_debug(msg: string) {
+    console.log(msg);
+}
+
+function runNext(next: unknown) { // Used by debuggers.
+    (next as express.NextFunction)();
+}
+
+function useShim(inNext: (req: express.Request, res: express.Response, next: express.NextFunction) => void): () => void {
+    return (inNext as () => void)
+}
+
+//TODO: Move auth into a seperate file:
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
     if (req.session.userId === undefined) {
         res.status(400).json({ message: "Please log in." });
@@ -29,11 +45,8 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
     next();
 }
 
-
-function log_debug(msg: string) {
-    console.log(msg);
-}
-
+//TODO: Extend process.env to specify my options *or create helper function*
+//TODO: Sanity check options (at least that they are defined).
 dotenv.config();
 
 const app = express();
@@ -43,15 +56,17 @@ const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.on('open', () => log_debug("Connected to database"));
 
-app.use(express.json);
-// app.use(session({
-//     secret: 'testing',
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { maxAge: 60000 },
-// }));
+// app.use((req,res,next)=>{log_debug("REQUEST 1"); runNext(next);});
+app.use(express.json());
+app.use(session({
+    secret: 'testing',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 },
+}));
 //TODO: login page before auth middleware!
-// app.use((auth as ()=>{}));
+app.use(useShim(auth));
+// app.use((req,res,next)=>{log_debug("REQUEST 2"); runNext(next);});
 app.use('/coop', gamesroute);
 
 app.listen(3000, () => log_debug("Server Started"));
