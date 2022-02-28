@@ -1,5 +1,6 @@
 import 'express';
 import 'dotenv';
+import { UserType } from '../types/games';
 
 declare module "express-session" {
     interface Session {
@@ -9,6 +10,6 @@ declare module "express-session" {
 
 declare module "express" {
     interface Request {
-        myUser: any; // I don't have a type definition for User.
+        myUser: UserType;
     }
 }

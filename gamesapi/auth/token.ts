@@ -1,4 +1,4 @@
-import express from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { badAuth, isKnown, log_debug, useShim } from '../libs/utils';
 import { Login, Users } from '../models/games';
 import { LoginType, UserType } from '../types/games';
@@ -6,9 +6,10 @@ import { randomUUID } from 'crypto';
 import '../libs/type-extensions';
 import config from '../libs/config';
 
-async function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
+// export done below!
+async function auth(req: Request, res: Response, next: NextFunction) {
     let authHeader = req.header("Authorization");
-    let token:string;
+    let token: string;
     if (authHeader?.startsWith("Bearer ")) {
         let parts = authHeader.split(" ");
         token = parts[1];
@@ -17,7 +18,7 @@ async function auth(req: express.Request, res: express.Response, next: express.N
         badAuth(res);
         return;
     }
-    let login = await Login.findOne({token: token}).populate('user').exec();
+    let login = await Login.findOne({ token: token }).populate('user').exec();
     if (!isKnown(login)) {
         log_debug("No such token");
         badAuth(res);
@@ -37,7 +38,24 @@ async function auth(req: express.Request, res: express.Response, next: express.N
     next();
 }
 
-async function setUser(req: express.Request, res: express.Response, user: UserType, base: any) {
+async function logout(req: Request, res: Response) {
+    let authHeader = req.header("Authorization");
+    let token: string;
+    if (authHeader?.startsWith("Bearer ")) {
+        let parts = authHeader.split(" ");
+        token = parts[1];
+    } else {
+        log_debug("Invalid header");
+        badAuth(res);
+        return;
+    }
+    let result = await Login.findOneAndDelete({ token: token });
+    res.status(201).json({ status: "success", result: result });
+}
+
+// export done below!
+async function setUser(req: Request, res: Response, user: UserType, base: any) {
+    await Login.find({ expires: { "$lt": new Date() } }).deleteMany();
     let token = randomUUID();
     let expires = new Date();
     expires.setDate(expires.getDate() + config.AUTHDAYS);
@@ -55,4 +73,5 @@ const authshim = useShim(auth);
 export default {
     auth: authshim,
     setUser: setUser,
+    logout: logout,
 };

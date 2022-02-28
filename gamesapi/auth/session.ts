@@ -19,12 +19,18 @@ async function auth(req: express.Request, res: express.Response, next: express.N
 }
 
 function setUser(req: express.Request, res: express.Response, user: UserType, base: any) {
-    req.session.userId = user._id;
+    req.session.userId = user._id.toString();
     res.json(base);
+}
+
+function logout(req: express.Request, res: express.Response) {
+    req.session.userId = null;
+    res.status(201).json({ status: "success" });
 }
 
 const authshim = useShim(auth);
 export default {
     auth: authshim,
     setUser: setUser,
+    logout: logout,
 };

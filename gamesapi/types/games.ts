@@ -1,8 +1,11 @@
+import mongoose from 'mongoose';
 import { Vote, Owned } from '../schemas/games'
+
 export { Vote, Owned };
 
 interface DBBase {
-    _id: string,
+    _id: mongoose.Types.ObjectId,
+    save(),
 }
 
 export interface UserType extends DBBase {
@@ -11,6 +14,11 @@ export interface UserType extends DBBase {
     displayName: string,
     registered: Date,
     isAdmin: boolean,
+};
+
+export interface WhenWhoType extends DBBase {
+    when: Date,
+    who: UserType,
 };
 
 export interface LoginType extends DBBase {
@@ -32,7 +40,7 @@ export interface OwnerType extends DBBase {
     installedSince: Date,
     maxPrice: number,
     isOwned: boolean,
-     isInstalled: boolean,
+    isInstalled: boolean,
 };
 
 export interface GameType extends DBBase {
@@ -52,4 +60,5 @@ export interface GameType extends DBBase {
         state: Owned,
         maxPrice: number,
     },
+    added: WhenWhoType,
 };

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { createHmac, randomBytes } from 'crypto';
 import config from './config';
 
@@ -12,11 +12,13 @@ export function runNext(next: unknown) {
     (next as express.NextFunction)();
 }
 
-export function useShim(inNext: (req: express.Request, res: express.Response, next: express.NextFunction) => void): () => void {
-    return (inNext as () => void);
+export function useShim(inNext: (req: express.Request, res: express.Response, next: express.NextFunction) => void): (req: any, res: any, next: any) => void {
+    return (inNext as (req: any, res: any, next: any) => void);
 }
 
-export function reqShim(inNext: (req: express.Request, res: express.Response) => void): (a: any, b: any) => void {
+type actionFunc = (req: express.Request, res: express.Response) => void;
+
+export function reqShim(inNext: actionFunc): (a: any, b: any) => void {
     return (inNext as (a: any, b: any) => void);
 }
 
@@ -43,6 +45,25 @@ export function badAuth(res: express.Response) {
     res.status(400).json({ message: "Please log in." });
 }
 
+export function bindRouterPath(router: Router, method: "get" | "post" | "patch" | "delete", path: string, func: actionFunc) {
+    switch (method.toLowerCase()) {
+        case "get":
+            router.get(path, reqShim(func));
+            break;
+        case "post":
+            router.post(path, reqShim(func));
+            break;
+        case "patch":
+            router.patch(path, reqShim(func));
+            break;
+        case "delete":
+            router.delete(path, reqShim(func));
+            break;
+        default:
+            throw new Error("Out of cheese. Please reboot universe!");
+    }
+}
+
 // ### Password utilities ###
 
 export namespace pw {
@@ -64,7 +85,7 @@ export namespace pw {
         let hmac = createHmac(sHash, bSalt);
         hmac.update(`${username}:${secret}`);
         let newDigest = hmac.digest("base64");
-        return [sHash,sSalt,newDigest].join('$');
+        return [sHash, sSalt, newDigest].join('$');
     }
     export function check(username: string, secret: string, saved_crypt: string): boolean {
         return crypt(username, secret, saved_crypt) == saved_crypt;
