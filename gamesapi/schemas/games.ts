@@ -1,14 +1,26 @@
-import { Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import autopopulate from 'mongoose-autopopulate';
+import { log_debug } from '../libs/utils';
+mongoose.plugin(autopopulate);
 
 export const UserSchema = new Schema({
     loginName: String,
     crypt: String,
     displayName: String,
+    registered: { type: Date, default: Date.now },
+    isAdmin: { type: Boolean, default: false },
+}, {
+    toJSON: {
+        transform: (_doc, ret, _optoins) => {
+            delete ret.crypt;
+            return ret;
+        }
+    }
 })
 
 export const LoginSchema = new Schema({
     token: String,
-    user: { type: 'ObjectId', ref: 'User' },
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true },
     expires: { type: Date, default: Date.now }
 })
 
@@ -19,13 +31,37 @@ export enum Vote {
 }
 
 export const VoteSchema = new Schema({
-    user: { type: 'ObjectId', ref: 'User' },
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true },
     when: { type: 'Date', default: Date.now },
-    vote: Number,
-})
+    vote_id: { type: Number },
+}, {
+    toObject: {
+        virtuals: true,
+    },
+    toJSON: {
+        virtuals: true,
+    },
+});
+VoteSchema.virtual('vote')
+    .get(function (this: any): string {
+        log_debug(`Get vote`);
+        let ret = Vote[this.vote_id as number];
+        log_debug(`==${this.vote_id} => ${ret}`);
+        return ret;
+    })
+    .set(function (this:any, v: number | string) {
+        // let thisthis = JSON.stringify(this);
+        // log_debug(`Set vote = ${v} on ${thisthis}`);
+        if (typeof v === 'number') {
+            (this as any).vote_id = v;
+        } else {
+            (this as any).vote_id = Vote[v as keyof typeof Vote] as number;
+        }
+        log_debug(`==${(this as any).vote_id}`);
+    });
 
 export const OwnerSchema = new Schema({
-    user: { type: 'ObjectId', ref: 'User' },
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true },
     ownedSince: Date,
     installedSince: Date,
     maxPrice: Number,
@@ -48,11 +84,11 @@ export const GameSchema = new Schema({
     aliases: [String],
     tags: [String],
     maxPlayers: Number,
-    links: [{
+    links: {
         type: Map,
         of: String,
-    }],
-    votes: [VoteSchema],
+    },
+    votes: [{ type: VoteSchema, autopopulate: true }],
     owners: [OwnerSchema],
 })
 GameSchema.virtual('voteState').get(() => {
@@ -74,9 +110,9 @@ GameSchema.virtual('voteState').get(() => {
 GameSchema.virtual('ownedState').get(() => {
     let owners = (this as unknown as { owners: [{ isOwned: boolean, isInstalled: boolean, maxPrice: Number }] }).owners;
     let count = owners.length;
-    let owned = owners.filter(o=>o.isOwned).length;
-    let installed = owners.filter(o=>o.isInstalled).length;
-    let minPrice = owners.reduce((a,b) => {
+    let owned = owners.filter(o => o.isOwned).length;
+    let installed = owners.filter(o => o.isInstalled).length;
+    let minPrice = owners.reduce((a, b) => {
         if (a.maxPrice <= 0) return b;
         if (a.maxPrice < b.maxPrice) return a;
         return b;
