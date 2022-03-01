@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { Games } from '../models/games';
-import { Owned, Vote } from '../schemas/games';
+import { Owned } from "../types/Owned";
+import { Vote } from "../types/Vote";
 import { handleError, log_debug, isKnown } from '../libs/utils';
-import { GameType, OwnerType, VoteType } from '../types/games';
+import { GameType } from "../schemas/Game";
+import { OwnerType } from "../schemas/Owner";
+import { VoteType } from "../schemas/Vote";
 import config from '../libs/config';
 import '../libs/type-extensions';
 
@@ -89,8 +92,6 @@ export async function quickSearch(req: Request, res: Response) {
     }
     res.json({ status: "success", results: results });
 }
-
-//TODO: Add search by ownership and vote states.
 
 export async function addGame(req: Request, res: Response) {
     const gameData: GameType = req.body;
@@ -324,7 +325,7 @@ export async function deleteGame(req: Request, res: Response) {
             err404(res);
             return;
         }
-        if (!req.myUser.isAdmin) {
+        if (!req.myUser.isAdmin && req.myUser._id != before.added.who._id) {
             res.status(403).json({
                 status: "error",
                 message: "You are not authorised to delete this Game",

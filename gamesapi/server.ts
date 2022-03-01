@@ -1,8 +1,11 @@
 import 'dotenv/config';
 import express from 'express';
 import session from 'express-session';
+import './libs/schemainit';
 import gamesroute from './routes/games';
 import authroute from './routes/auth';
+import userroute from './routes/user'
+import grouproute from './routes/group'
 import './libs/type-extensions';
 import { log_debug, runNext } from './libs/utils';
 import config from "./libs/config";
@@ -35,5 +38,7 @@ app.use('/auth', authroute);
 app.use(auth.auth);
 // app.use((req,res,next)=>{log_debug("REQUEST 2"); runNext(next);});
 app.use('/coop', gamesroute);
+app.use('/user', userroute);
+app.use('/group',grouproute)
 
 app.listen(config.API_PORT, () => log_debug("Server Started"));

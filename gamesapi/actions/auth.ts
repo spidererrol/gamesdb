@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { handleError, isKnown, log_debug, pw } from '../libs/utils';
 import { Users } from '../models/games';
-import { UserType } from '../types/games';
+import { UserType } from "../schemas/User";
 import auth from '../auth';
 
 export async function login(req: Request, res: Response) {

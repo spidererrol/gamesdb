@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { badAuth, isKnown, log_debug, useShim } from '../libs/utils';
-import { Login, Users } from '../models/games';
-import { LoginType, UserType } from '../types/games';
+import { Login } from '../models/games';
 import { randomUUID } from 'crypto';
 import '../libs/type-extensions';
 import config from '../libs/config';
+import { UserType } from '../schemas/User';
 
 // export done below!
 async function auth(req: Request, res: Response, next: NextFunction) {

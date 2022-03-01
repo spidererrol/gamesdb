@@ -1,6 +1,6 @@
 import 'express';
 import 'dotenv';
-import { UserType } from '../types/games';
+import { UserType } from "../schemas/User";
 
 declare module "express-session" {
     interface Session {
