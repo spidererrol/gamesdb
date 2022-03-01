@@ -19,6 +19,18 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 60000 },
 }));
+
+// Start dev only:
+import fs from 'fs';
+if (fs.existsSync("TODO.html"))
+    app.use('/TODO', express.Router().get('/', (req, res) => {
+        res.status(200);
+        res.contentType("text/html");
+        res.header("Refresh", "10");
+        res.sendFile(process.cwd() + "/TODO.html");
+    }));
+// End dev only
+
 app.use('/auth', authroute);
 app.use(auth.auth);
 // app.use((req,res,next)=>{log_debug("REQUEST 2"); runNext(next);});

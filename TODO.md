@@ -1,0 +1,30 @@
+- [X] Import todos from keep.
+- [ ] Add Groups
+  - [ ] Private (invite only)
+  - [ ] group-game has state include, auto, or exclude
+  - [ ] Groups can auto match games on min/max players (both ranges) and tags to include or exclude
+  - [ ] Any group member can include or exclude a game.
+  - [ ] group-game can have virtual for vote and owned states.
+- [ ] Add minPlayers to Game. Default 1
+- [ ] Allow delete Game by `added.who`
+- [X] Add /user prefix. Requires auth.
+  - [ ] Group join, invite, leave.
+  - [X] Move PATCH /auth/register to PATCH /user/update
+- [ ] Add /group prefix. Requires auth.
+  - [ ] Create, list, edit, delete groups here.
+  - [ ] Also user join/leave.
+  - [ ] Only allow delete of group if no users.
+  - [ ] Auto delete private groups when last user leaves.
+- [ ] List games in a group
+- [ ] Search games in a specified group
+  - [ ] by name, alias, or tag
+  - [ ] by tag
+  - [ ] by min/max players
+  - [ ] by owned status
+  - [ ] by vote status
+- [ ] Search games NOT in a group (mainly for adding to a group)
+  - [ ] by name, alias, or tag
+  - [ ] by tag
+  - [ ] by min/max players
+  - [ ] by owned status
+  - [ ] by vote status
