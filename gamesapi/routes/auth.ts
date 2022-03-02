@@ -1,17 +1,17 @@
-import express from 'express';
-import { bindRouterPath } from '../libs/utils';
-import * as actions from '../actions/auth';
+import express from 'express'
+import { bindRouterPath } from '../libs/utils'
+import * as actions from '../actions/auth'
 
-const router = express.Router();
+const router = express.Router()
 
-const bindPath = bindRouterPath.bind(null, router);
+const bindPath = bindRouterPath.bind(null, router)
 
-bindPath('post','/login',actions.login);
+bindPath('post', '/login', actions.login)
 
-bindPath('post','/register',actions.register);
+bindPath('post', '/register', actions.register)
 
 // bindPath('patch','/register',actions.update); // Moved to: PATCH /user/update
 
-bindPath('get','/logout',actions.logout);
+bindPath('get', '/logout', actions.logout)
 
-export default router;
+export default router

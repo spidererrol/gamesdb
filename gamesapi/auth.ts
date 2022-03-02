@@ -1,5 +1,5 @@
-import config from "./libs/config";
+import config from "./libs/config"
 
-const auth = require('./auth/' + config.AUTHTYPE);
+const auth = require('./auth/' + config.AUTHTYPE)
 
-export default auth.default;
+export default auth.default

@@ -1,12 +1,12 @@
-import { Schema } from 'mongoose';
-import { DBBase } from '../types/DBBase';
+import { Schema } from 'mongoose'
+import { DBBase } from '../types/DBBase'
 
 export interface UserType extends DBBase {
-    loginName: string;
-    crypt: string;
-    displayName: string;
-    registered: Date;
-    isAdmin: boolean;
+    loginName: string
+    crypt: string
+    displayName: string
+    registered: Date
+    isAdmin: boolean
 }
 
 export const UserSchema = new Schema({
@@ -18,8 +18,8 @@ export const UserSchema = new Schema({
 }, {
     toJSON: {
         transform: (_doc, ret, _optoins) => {
-            delete ret.crypt;
-            return ret;
+            delete ret.crypt
+            return ret
         }
     }
-});
+})

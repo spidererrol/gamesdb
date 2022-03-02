@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose';
-import { DBBase } from '../types/DBBase';
-import { GroupSchema, GroupType } from './Group';
-import { UserSchema, UserType } from './User';
+import { Schema } from 'mongoose'
+import { DBBase } from '../types/DBBase'
+import { GroupSchema, GroupType } from './Group'
+import { UserSchema, UserType } from './User'
 
 export interface UserGroupType extends DBBase {
     user: UserType,

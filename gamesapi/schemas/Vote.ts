@@ -1,14 +1,14 @@
-import { Schema } from 'mongoose';
-import { isKnown, log_debug } from '../libs/utils';
-import { Vote } from '../types/Vote';
-import { DBBase } from '../types/DBBase';
-import { UserType } from './User';
+import { Schema } from 'mongoose'
+import { isKnown, log_debug } from '../libs/utils'
+import { Vote } from '../types/Vote'
+import { DBBase } from '../types/DBBase'
+import { UserType } from './User'
 
 export interface VoteType extends DBBase {
-    user: UserType;
-    when: Date;
-    vote: string;
-    vote_id: number;
+    user: UserType
+    when: Date
+    vote: string
+    vote_id: number
 }
 
 export const VoteSchema = new Schema({
@@ -22,13 +22,13 @@ export const VoteSchema = new Schema({
     toJSON: {
         virtuals: true,
     },
-});
+})
 VoteSchema.virtual('vote')
     .get(function (this: any): string {
-        log_debug(`Get vote`);
-        let ret = Vote[this.vote_id as number];
-        log_debug(`==${this.vote_id} => ${ret}`);
-        return ret;
+        log_debug(`Get vote`)
+        let ret = Vote[this.vote_id as number]
+        log_debug(`==${this.vote_id} => ${ret}`)
+        return ret
     })
     .set(function (this: any, v: number | string) {
         // let thisthis = JSON.stringify(this);
@@ -36,12 +36,12 @@ VoteSchema.virtual('vote')
         if (typeof v === 'number') {
             if (!isKnown(Vote[v]))
                 throw new Error("Invalid vote!");
-            (this).vote_id = v;
+            (this).vote_id = v
         } else {
-            let vote_id = Vote[v as keyof typeof Vote] as number;
+            let vote_id = Vote[v as keyof typeof Vote] as number
             if (!isKnown(vote_id))
                 throw new Error("Invalid vote!");
-            (this).vote_id = vote_id;
+            (this).vote_id = vote_id
         }
-        log_debug(`==${(this).vote_id}`);
-    });
+        log_debug(`==${(this).vote_id}`)
+    })

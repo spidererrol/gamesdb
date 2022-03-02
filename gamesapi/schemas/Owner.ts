@@ -1,14 +1,14 @@
-import { Schema } from 'mongoose';
-import { DBBase } from '../types/DBBase';
-import { UserType } from './User';
+import { Schema } from 'mongoose'
+import { DBBase } from '../types/DBBase'
+import { UserType } from './User'
 
 export interface OwnerType extends DBBase {
-    user: UserType;
-    ownedSince: Date;
-    installedSince: Date;
-    maxPrice: number;
-    isOwned: boolean;
-    isInstalled: boolean;
+    user: UserType
+    ownedSince: Date
+    installedSince: Date
+    maxPrice: number
+    isOwned: boolean
+    isInstalled: boolean
 }
 
 export const OwnerSchema = new Schema({
@@ -23,10 +23,10 @@ export const OwnerSchema = new Schema({
     toJSON: {
         virtuals: true,
     },
-});
+})
 OwnerSchema.virtual('isOwned').get(function (this: OwnerType) {
-    return this.ownedSince !== null && this.ownedSince !== undefined;
-});
+    return this.ownedSince !== null && this.ownedSince !== undefined
+})
 OwnerSchema.virtual('isInstalled').get(function (this: OwnerType) {
-    return this.installedSince !== null && this.installedSince !== undefined;
-});
+    return this.installedSince !== null && this.installedSince !== undefined
+})

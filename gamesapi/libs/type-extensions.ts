@@ -1,15 +1,15 @@
-import 'express';
-import 'dotenv';
-import { UserType } from "../schemas/User";
+import 'express'
+import 'dotenv'
+import { UserType } from "../schemas/User"
 
 declare module "express-session" {
     interface Session {
-        userId: string;
+        userId: string
     }
 }
 
 declare module "express" {
     interface Request {
-        myUser: UserType;
+        myUser: UserType
     }
 }

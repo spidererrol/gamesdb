@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 export interface DBBase {
-    _id: mongoose.Types.ObjectId;
-    save();
+    _id: mongoose.Types.ObjectId
+    save()
 }

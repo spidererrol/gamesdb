@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose';
-import { DBBase } from '../types/DBBase';
-import { WhenWhoType, WhenWhoSchema } from './WhenWho';
+import { Schema } from 'mongoose'
+import { DBBase } from '../types/DBBase'
+import { WhenWhoType, WhenWhoSchema } from './WhenWho'
 
 export interface RangeFilterType extends DBBase {
     above: number,

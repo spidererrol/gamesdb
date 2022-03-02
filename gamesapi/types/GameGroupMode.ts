@@ -5,4 +5,4 @@ export enum GameGroupMode {
     Exclude
 }
 
-export type GameGroupModeStrings = "Include"|"Auto"|"Exclude";
+export type GameGroupModeStrings = "Include" | "Auto" | "Exclude"
