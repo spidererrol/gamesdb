@@ -15,6 +15,7 @@ export interface GameType extends DBBase {
     aliases: string[];
     tags: string[];
     maxPlayers: number;
+    minPlaters: number;
     links: {};
     votes: VoteType[];
     owners: OwnerType[];
@@ -35,6 +36,7 @@ export const GameSchema = new Schema({
     aliases: [String],
     tags: [String],
     maxPlayers: Number,
+    minPlayers: { type: Number, default: 1 },
     links: {
         type: Map,
         of: String,
@@ -49,54 +51,4 @@ export const GameSchema = new Schema({
     toJSON: {
         virtuals: true,
     },
-});
-GameSchema.virtual('voteState').get(function (this: GameType) {
-    let votes = this.votes;
-    let count = votes.length;
-    let vote: Vote;
-    if (votes.filter(v => v.vote_id == Vote.Veto).length > 0) {
-        vote = Vote.Veto;
-    } else if (votes.filter(v => v.vote_id == Vote.Desire).length > 0) {
-        vote = Vote.Desire;
-    } else {
-        vote = Vote.Accept;
-    }
-    return {
-        count: count,
-        vote_id: vote,
-        vote: Vote[vote],
-    };
-});
-GameSchema.virtual('ownedState').get(function (this: GameType) {
-    let owners = this.owners;
-    let count = owners.length;
-    let owned = owners.filter(o => o.isOwned).length;
-    let installed = owners.filter(o => o.isInstalled).length;
-    let minPrice: number | null = null;
-    if (owners.length >= 1) {
-        minPrice = owners.filter(o => !o.isOwned).reduce((a, b) => {
-            if (a.maxPrice <= 0)
-                return b;
-            if (a.maxPrice < b.maxPrice)
-                return a;
-            return b;
-        }).maxPrice;
-    }
-    let state: Owned;
-    log_debug(`owned = ${owned}, count = ${count}, installed = ${installed}`);
-    if (installed == count) {
-        state = Owned.Installed;
-    } else if (count == 0 || owned < count) {
-        state = Owned.Unowned;
-    } else if (installed < owned) {
-        state = Owned.Owned;
-    } else {
-        state = Owned.Installed;
-    }
-    return {
-        count: count,
-        state_id: state,
-        state: Owned[state],
-        maxPrice: minPrice,
-    };
 });
