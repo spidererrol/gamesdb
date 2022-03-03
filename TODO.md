@@ -1,4 +1,5 @@
 - [X] Import todos from keep.
+- [ ] Store & unique on lowercase Game/Group/User name/alias/tag
 - [ ] Add Groups
   - [X] Private (invite only)
   - [X] group-game has state include, auto, or exclude
