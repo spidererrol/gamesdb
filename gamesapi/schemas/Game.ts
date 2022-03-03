@@ -52,3 +52,18 @@ export const GameSchema = new Schema({
         virtuals: true,
     },
 })
+GameSchema.query.nameish = function ( term: RegExp | string) {
+    let qterm: RegExp
+    if (term instanceof RegExp) {
+        qterm = term
+    } else {
+        qterm = new RegExp(term, 'i')
+    }
+    return this.where({
+        $or: [
+            { "name": { $regex: qterm } },
+            { "aliases": { $regex: qterm } },
+            { "tags": { $regex: qterm } },
+        ],
+    })
+}

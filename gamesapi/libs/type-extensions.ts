@@ -17,3 +17,9 @@ declare module "express" {
         myGame: GameType,
     }
 }
+
+declare module "mongoose" {
+    interface Query<ResultType, DocType, THelpers = {}, RawDocType = DocType> {
+        nameish(term: any): any,
+    }
+}
