@@ -26,6 +26,11 @@ function err404(res: Response) {
 
 // Actions:
 
+export async function TODO(req: Request, res: Response) {
+    log_debug("TODO")
+    res.status(500).json({ status: "error", message: "This function has not been implemented yet!" })
+}
+
 export async function getAllPublic(req: Request, res: Response) {
     log_debug("Request all public groups")
     try {
@@ -65,7 +70,6 @@ export async function create(req: Request, res: Response) {
             group: dbGroup
         })
         let dbJoin = await join.save()
-        //FIXME: _ids in UserGroup seeming to be mangled?
         res.json({ group: dbGroup, status: "success", membership: dbJoin, myUser: req.myUser })
     } catch (error) {
         handleError(error, res)
