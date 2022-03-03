@@ -2,5 +2,6 @@ import mongoose from 'mongoose'
 
 export interface DBBase {
     _id: mongoose.Types.ObjectId
-    save()
+    save():any
+    updateOne(...args:any):any
 }

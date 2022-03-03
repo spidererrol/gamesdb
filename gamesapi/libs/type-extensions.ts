@@ -1,6 +1,7 @@
 import 'express'
 import 'dotenv'
 import { UserType } from "../schemas/User"
+import { GroupType } from '../schemas/Group'
 
 declare module "express-session" {
     interface Session {
@@ -10,6 +11,7 @@ declare module "express-session" {
 
 declare module "express" {
     interface Request {
-        myUser: UserType
+        myUser: UserType,
+        myGroup: GroupType,
     }
 }

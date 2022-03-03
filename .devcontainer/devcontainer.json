@@ -21,7 +21,9 @@
 		"dbaeumer.vscode-eslint",
 		"sleistner.vscode-fileutils",
 		"humao.rest-client",
-		"yzhang.markdown-all-in-one"
+		"yzhang.markdown-all-in-one",
+		"TabNine.tabnine-vscode",
+		"Gruntfuggly.todo-tree"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
