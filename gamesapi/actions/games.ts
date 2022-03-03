@@ -60,37 +60,13 @@ export async function searchGame(req: Request, res: Response) {
     }
 };
 
-//TODO: A version of quickSearch which hints as to what matched.
+//TODO: A version of quickSearch which hints as to what matched?
 // Would need to ensure that you can indicate multiple areas.
 export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
-    let results: GameType[] = []
-    let byname = Games.find({
-        name: { "$regex": query, "$options": "i" }
-    }).limit(config.PAGELIMIT + 1).exec()
-    let byalias = Games.find({
-        aliases: { "$regex": query, "$options": "i" }
-    }).limit(config.PAGELIMIT + 1).exec()
-    let bytags = Games.find({
-        tags: { "$regex": query, "$options": "i" }
-    }).limit(config.PAGELIMIT + 1).exec()
-    results = results.concat(await byname, await byalias, await bytags)
-    let more = false
-    let uniqMap = new Map<string, boolean>()
-    let uniq: GameType[] = []
-    for (const entry of results) {
-        if (uniqMap.has(entry._id.toString()))
-            continue
-        uniqMap.set(entry._id.toString(), true)
-        uniq.push(entry)
-    }
-    results = uniq
-    if (results.length > config.PAGELIMIT) {
-        more = true
-        results = results.splice(0, config.PAGELIMIT)
-    }
-    res.json({ status: "success", results: results })
+    let q = Games.find().nameish(req.params.query)
+    getList(q, config.PAGELIMIT, res)
 }
 
 export async function addGame(req: Request, res: Response) {
