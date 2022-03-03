@@ -9,7 +9,7 @@ const bindPath = bindRouterPath.bind(null, router)
 
 bindPath("get", "/", actions.getAllGames)
 
-bindPath("get", '/findname/:name', actions.getByName)
+// bindPath("get", '/findname/:name', actions.getByName) // Use quick search instead.
 
 bindPath("post", "/search", actions.searchGame)
 bindPath("get", "/search/:query", actions.quickSearch)

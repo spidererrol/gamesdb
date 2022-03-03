@@ -35,19 +35,19 @@ export async function getAllGames(req: Request, res: Response) {
     }
 }
 
-export async function getByName(req: Request, res: Response) {
-    const name: string = req.params.name
-    log_debug(`Find game by name (${name})`)
-    try {
-        getList(
-            Games.find().where('name').regex(name),
-            config.PAGELIMIT,
-            res
-        )
-    } catch (err) {
-        handleError(err, res)
-    }
-}
+// export async function getByName(req: Request, res: Response) {
+//     const name: string = req.params.name
+//     log_debug(`Find game by name (${name})`)
+//     try {
+//         getList(
+//             Games.find().where('name').regex(name),
+//             config.PAGELIMIT,
+//             res
+//         )
+//     } catch (err) {
+//         handleError(err, res)
+//     }
+// }
 
 export async function searchGame(req: Request, res: Response) {
     const search: any = req.body
