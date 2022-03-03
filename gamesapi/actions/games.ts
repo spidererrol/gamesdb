@@ -119,13 +119,12 @@ export async function addGame(req: Request, res: Response) {
             })
             return
         }
-        const newgame = new Games({
+        const newgame = await Games.create({
             name: setName,
             maxPlayers: maxPlayers,
-            added: { who: req.myUser._id },
+            added: { who: req.myUser },
         })
-        let dbGame = await newgame.save()
-        res.json({ status: "success", game: dbGame })
+        res.json({ status: "success", game: newgame })
     } catch (err) {
         handleError(err, res)
     }
