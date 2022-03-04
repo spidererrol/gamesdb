@@ -49,15 +49,6 @@ app.use('/user', userroute)
 app.use('/group', grouproute)
 app.use('/test', testroute)
 
-app.param("group", async (req, res, next, group_id) => {
-    let group = await Group.findById(group_id)
-    if (!isKnown(group)) {
-        res.status(404).json({ status: "error", message: "No such group" })
-        return
-    }
-    (req as express.Request).myGroup = group
-    next()
-})
 app.param("game", async (req, res, next, game_id) => {
     let game = await Games.findById(game_id)
     if (!isKnown(game)) {

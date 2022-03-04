@@ -1,19 +1,18 @@
 import { Schema } from 'mongoose'
 import '../libs/schemainit'
 import { DBBase } from '../types/DBBase'
+import { UserType } from './User'
 
-export interface UserType extends DBBase {
+export interface ShadowType extends DBBase {
     loginName: string
-    displayName: string
-    registered: Date
-    isAdmin: boolean
+    crypt: string
+    user: UserType
 }
 
-export const UserSchema = new Schema({
+export const ShadowSchema = new Schema({
     loginName: String,
-    displayName: String,
-    registered: { type: Date, default: Date.now },
-    isAdmin: { type: Boolean, default: false },
+    crypt: String,
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true }
 }, {
     toJSON: {
         transform: (_doc, ret, _optoins) => {

@@ -5,6 +5,7 @@ import '../libs/type-extensions'
 import { GroupType } from '../schemas/Group'
 import config from '../libs/config'
 import { UserGroupType } from '../schemas/UserGroup'
+import { HTTPSTATUS } from '../types/httpstatus'
 
 // Helper functions:
 
@@ -58,12 +59,15 @@ export async function create(req: Request, res: Response) {
             res.status(406).json({ status: "error", message: "name is required" })
             return
         }
-        let existing = await Group.findOne({ name: req.body.name })
+        let existing = await Group.findOne().nameish(req.body.name)
+        //.findOne({ name: req.body.name })
         if (isKnown(existing)) {
+            //FIXME: Don't hand out non-member private group?
             res.status(409).json({ status: "error", message: "Group already exists", group: existing })
             return
         }
         let group = new Group(req.body)
+        group.members.push(req.myUser)
         let dbGroup = await group.save()
         let join = new UserGroup({
             user: req.myUser,
@@ -84,6 +88,68 @@ export async function update(req: Request, res: Response) {
         })
         const after = await Group.findById(req.params.group)
         res.json({ status: "success", result: result, before: req.myGroup, after: after })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function quickSearch(req: Request, res: Response) {
+    let query: string = req.params.query
+    log_debug(`Quick search for ${query}`)
+    let q = Group.find().nameish(req.params.query, req.myUser)
+    getList(q, config.PAGELIMIT, res)
+}
+
+export async function join(req: Request, res: Response) {
+    log_debug(`Join`)
+    try {
+        if (req.myGroup.private) {
+            res.status(HTTPSTATUS.FORBIDDEN).json({ status: "error", message: "Group is private" })
+            return
+        }
+        let usergroup: UserGroupType
+        let ugs = await UserGroup.find({
+            user: req.myUser,
+            group: req.myGroup
+        })
+        if (ugs.length > 0) {
+            log_debug("Already in group")
+            res.status(HTTPSTATUS.CONFLICT).json({ status: "error", message: "Already a member" })
+            return
+        } else {
+            usergroup = await UserGroup.create({
+                user: req.myUser,
+                group: req.myGroup
+            })
+            req.myGroup.members.push(req.myUser)
+        }
+        await req.myGroup.save()
+        res.json({ status: "success", usergroup: usergroup })
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
+export async function leave(req: Request, res: Response) {
+    log_debug(`Leave`)
+    try {
+        let ug = await UserGroup.findOne({
+            user: req.myUser,
+            group: req.myGroup
+        })
+        if (!isKnown(ug)) {
+            res.status(HTTPSTATUS.NOT_FOUND).json({ status: "error", message: "Not a member", ug: ug })
+            return
+        }
+        await UserGroup.findByIdAndDelete(ug._id)
+        req.myGroup.members = req.myGroup.members.filter((u) => u._id.toString() != req.myUser._id.toString())
+        await req.myGroup.save()
+        if (req.myGroup.private && req.myGroup.members.length == 0) {
+            await Group.findByIdAndDelete(req.myGroup._id)
+            res.json({ status: "success", message: "Group removed" })
+            return
+        }
+        res.json({ status: "success", message: "Group left" })
     } catch (error) {
         handleError(error, res)
     }

@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
 import { isKnown, log_debug } from '../libs/utils'
 import { UserGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
@@ -16,8 +17,8 @@ export interface GameGroupType extends DBBase {
 }
 
 export const GameGroupSchema = new Schema({
-    game: { type: GameSchema, autopopulate: true },
-    group: { type: GroupSchema, autopopulate: true },
+    game: { type: 'ObjectId', ref: 'Game', autopopulate: true },
+    group: { type: 'ObjectId', ref: 'Group', autopopulate: true },
     mode_id: Number,
 }, {
     toObject: {

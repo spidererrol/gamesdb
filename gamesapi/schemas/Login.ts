@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
 import { DBBase } from '../types/DBBase'
 import { UserType } from "./User"
 

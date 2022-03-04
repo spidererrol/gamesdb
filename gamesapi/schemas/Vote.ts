@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
 import { isKnown, log_debug } from '../libs/utils'
 import { Vote } from '../types/Vote'
 import { DBBase } from '../types/DBBase'

@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
 import { log_debug } from '../libs/utils'
 import { VoteSchema } from "./Vote"
 import { WhenWhoSchema } from './WhenWho'

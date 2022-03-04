@@ -5,7 +5,7 @@
   - [X] group-game has state include, auto, or exclude
   - [/] Groups can auto match games on min/max players (both ranges) and tags to include or exclude
   - [ ] Any group member can include or exclude a game.
-  - [→] group-game can have virtual for vote and owned states.
+  - [/] group-game can have virtual for vote and owned states.
 - [X] Add minPlayers to Game. Default 1
 - [X] Allow delete Game by `added.who`
 - [X] Add /user prefix. Requires auth.

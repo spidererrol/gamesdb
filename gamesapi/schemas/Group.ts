@@ -1,9 +1,11 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
+import { isKnown } from '../libs/utils'
 import { GameGroup, UserGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
-import { GameType } from './Game'
+import { GameSchema, GameType } from './Game'
 import { GameGroupType } from './GameGroup'
-import { UserType } from './User'
+import { UserSchema, UserType } from './User'
 import { UserGroupType } from './UserGroup'
 import { WhenWhoType, WhenWhoSchema } from './WhenWho'
 
@@ -22,7 +24,9 @@ export interface GroupType extends DBBase {
         maxPlayers: RangeFilterType,
         includeTags: String[],
         excludeTags: String[],
-    }
+    },
+    members: UserType[], // Duplicates UserGroup but wanted for searching for private groups
+    included: GameType[], // Duplicates GameGroup, don't know if I need it.
 }
 
 export const RangeFilterSchema = new Schema({
@@ -40,7 +44,9 @@ export const GroupSchema = new Schema({
         maxPlayers: { type: RangeFilterSchema, autopopulate: true },
         includeTags: [String],
         excludeTags: [String],
-    }
+    },
+    members: [{ type: UserSchema, autopopulate: true }],
+    games: [{ type: GameSchema, autopopulate: true }],
 }, {
     toJSON: {
         virtuals: true
@@ -59,3 +65,28 @@ GroupSchema.virtual('groups')
         let gamegroups = await GameGroup.find({ group: this._id })
         return gamegroups.map((gg: GameGroupType) => gg.game)
     })
+GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
+    let qterm: RegExp
+    if (term instanceof RegExp) {
+        qterm = term
+    } else {
+        qterm = new RegExp(term, 'i')
+    }
+    if (isKnown(user)) {
+        return this.where({
+            "name": { $regex: qterm },
+            $or: [
+                {
+                    "private": false,
+                },
+                {
+                    "members._id": (user as UserType)._id,
+                }
+            ],
+        })
+    } else {
+        return this.where({
+            "name": { $regex: qterm },
+        })
+    }
+}

@@ -8,11 +8,14 @@ import { OwnerType } from "../schemas/Owner"
 import { VoteType } from "../schemas/Vote"
 import config from '../libs/config'
 import '../libs/type-extensions'
+import { HTTPSTATUS } from '../types/httpstatus'
 
 // Helper functions:
 
 // Actions:
 
 export function test(req: Request, res: Response) {
-    throw new Error("TODO")
+    res.status(HTTPSTATUS.NOT_IMPLEMENTED).json({
+        status: "error", message: "Not yet implemented"
+    })
 }

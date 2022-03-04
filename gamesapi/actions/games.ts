@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Games } from '../models/games'
+import { GameGroup, Games } from '../models/games'
 import { Owned } from "../types/Owned"
 import { Vote } from "../types/Vote"
 import { handleError, log_debug, isKnown } from '../libs/utils'
@@ -8,6 +8,7 @@ import { OwnerType } from "../schemas/Owner"
 import { VoteType } from "../schemas/Vote"
 import config from '../libs/config'
 import '../libs/type-extensions'
+import { HTTPSTATUS } from '../types/httpstatus'
 
 // Helper functions:
 
@@ -60,8 +61,6 @@ export async function searchGame(req: Request, res: Response) {
     }
 };
 
-//TODO: A version of quickSearch which hints as to what matched?
-// Would need to ensure that you can indicate multiple areas.
 export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
@@ -301,10 +300,15 @@ export async function deleteGame(req: Request, res: Response) {
             return
         }
         if (!req.myUser.isAdmin && req.myUser._id != before.added.who._id) {
-            res.status(403).json({
+            res.status(HTTPSTATUS.FORBIDDEN).json({
                 status: "error",
                 message: "You are not authorised to delete this Game",
             })
+            return
+        }
+        const groups = await GameGroup.find({ game: before._id })
+        if (groups.length > 0) {
+            res.status(HTTPSTATUS.CONFLICT).json({ status: "error", message: "Game is in use" })
             return
         }
         const result = await Games.findByIdAndDelete(req.params.id)

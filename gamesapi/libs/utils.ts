@@ -4,7 +4,7 @@ import config from './config'
 
 // ### FUNCTIONS ###
 
-export function log_debug(msg: string) {
+export function log_debug(msg: any) {
     console.log(msg)
 }
 
