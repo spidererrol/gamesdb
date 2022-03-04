@@ -13,8 +13,9 @@ declare module "express-session" {
 declare module "express" {
     interface Request {
         myUser: UserType,
-        myGroup: GroupType,
-        myGame: GameType,
+        reqUser: UserType,
+        reqGroup: GroupType,
+        reqGame: GameType,
     }
 }
 

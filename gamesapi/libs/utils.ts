@@ -1,6 +1,7 @@
 import express, { Router } from 'express'
 import { createHmac, randomBytes } from 'crypto'
 import config from './config'
+import { Games, Users, Group } from '../models/games'
 
 // ### FUNCTIONS ###
 
@@ -62,6 +63,38 @@ export function bindRouterPath(router: Router, method: "get" | "post" | "patch" 
         default:
             throw new Error("Out of cheese. Please reboot universe!")
     }
+}
+
+export function setupParams(app: express.Router) {
+    app.param("game", async (req, res, next, game_id) => {
+        let game = await Games.findById(game_id)
+        if (!isKnown(game)) {
+            res.status(404).json({ status: "error", message: "No such game" })
+            return
+        }
+        (req as express.Request).reqGame = game
+        next()
+    })
+    app.param("user", async (req, res, next, user_id) => {
+        let user = await Users.findById(user_id)
+        if (!isKnown(user)) {
+            res.status(404).json({ status: "error", message: "No such user" })
+            return
+        }
+        (req as express.Request).myUser = user
+        next()
+    })
+    app.param("group", async (req, res, next, group_id) => {
+        let group = await Group.findById(group_id)
+        if (!isKnown(group)) {
+            res.status(404).json({ status: "error", message: "No such group" })
+            return
+        }
+        (req as express.Request).reqGroup = group
+        next()
+    })
+
+
 }
 
 // ### Password utilities ###

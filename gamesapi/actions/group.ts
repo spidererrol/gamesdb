@@ -83,11 +83,11 @@ export async function create(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     log_debug(`Update group (${req.params.group})`)
     try {
-        let result = await req.myGroup.updateOne({
+        let result = await req.reqGroup.updateOne({
             "$set": req.body
         })
         const after = await Group.findById(req.params.group)
-        res.json({ status: "success", result: result, before: req.myGroup, after: after })
+        res.json({ status: "success", result: result, before: req.reqGroup, after: after })
     } catch (error) {
         handleError(error, res)
     }
@@ -103,14 +103,14 @@ export async function quickSearch(req: Request, res: Response) {
 export async function join(req: Request, res: Response) {
     log_debug(`Join`)
     try {
-        if (req.myGroup.private) {
+        if (req.reqGroup.private) {
             res.status(HTTPSTATUS.FORBIDDEN).json({ status: "error", message: "Group is private" })
             return
         }
         let usergroup: UserGroupType
         let ugs = await UserGroup.find({
             user: req.myUser,
-            group: req.myGroup
+            group: req.reqGroup
         })
         if (ugs.length > 0) {
             log_debug("Already in group")
@@ -119,11 +119,11 @@ export async function join(req: Request, res: Response) {
         } else {
             usergroup = await UserGroup.create({
                 user: req.myUser,
-                group: req.myGroup
+                group: req.reqGroup
             })
-            req.myGroup.members.push(req.myUser)
+            req.reqGroup.members.push(req.myUser)
         }
-        await req.myGroup.save()
+        await req.reqGroup.save()
         res.json({ status: "success", usergroup: usergroup })
     } catch (err) {
         handleError(err, res)
@@ -135,21 +135,42 @@ export async function leave(req: Request, res: Response) {
     try {
         let ug = await UserGroup.findOne({
             user: req.myUser,
-            group: req.myGroup
+            group: req.reqGroup
         })
         if (!isKnown(ug)) {
-            res.status(HTTPSTATUS.NOT_FOUND).json({ status: "error", message: "Not a member", ug: ug })
+            res.status(HTTPSTATUS.NOT_FOUND).json({
+                status: "error", message: "Not a member",
+                //  ug: ug, g: req.reqGroup, u: req.myUser
+            })
             return
         }
         await UserGroup.findByIdAndDelete(ug._id)
-        req.myGroup.members = req.myGroup.members.filter((u) => u._id.toString() != req.myUser._id.toString())
-        await req.myGroup.save()
-        if (req.myGroup.private && req.myGroup.members.length == 0) {
-            await Group.findByIdAndDelete(req.myGroup._id)
+        req.reqGroup.members = req.reqGroup.members.filter((u) => u._id.toString() != req.myUser._id.toString())
+        await req.reqGroup.save()
+        if (req.reqGroup.private && req.reqGroup.members.length == 0) {
+            await Group.findByIdAndDelete(req.reqGroup._id)
             res.json({ status: "success", message: "Group removed" })
             return
         }
         res.json({ status: "success", message: "Group left" })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function invite(req: Request, res: Response) {
+    log_debug(`Invite`)
+    try {
+        let ug = await UserGroup.findOne({
+            user: req.reqUser,
+            group: req.reqGroup
+        })
+        if (isKnown(ug)) {
+            res.status(HTTPSTATUS.CONFLICT).json({
+                status: "error", message: "User is already a member"
+            })
+        }
+        TODO(req,res) //FIXME: WIP!
     } catch (error) {
         handleError(error, res)
     }

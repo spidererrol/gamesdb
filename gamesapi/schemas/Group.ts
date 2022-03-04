@@ -55,16 +55,26 @@ export const GroupSchema = new Schema({
         virtuals: true,
     }
 })
-GroupSchema.virtual('users')
-    .get(async function (this: GroupType): Promise<UserType[]> {
-        let usergroups = await UserGroup.find({ group: this._id })
-        return usergroups.map((ug: UserGroupType) => ug.user)
-    })
-GroupSchema.virtual('groups')
-    .get(async function (this: GroupType): Promise<GameType[]> {
-        let gamegroups = await GameGroup.find({ group: this._id })
-        return gamegroups.map((gg: GameGroupType) => gg.game)
-    })
+// Already added real mappings for these to allow searching!
+// GroupSchema.virtual('users')
+//     .get(async function (this: GroupType): Promise<UserType[]> {
+//         try {
+//             let usergroups = await UserGroup.find({ group: this })
+//             return usergroups.map((ug: UserGroupType) => ug.user)
+//         } catch (err) {
+//             return []
+//         }
+//     })
+// GroupSchema.virtual('games')
+//     .get(async function (this: GroupType): Promise<GameType[]> {
+//         try {
+//             let gamegroups = await GameGroup.find({ group: this })
+//             return gamegroups.map((gg: GameGroupType) => gg.game)
+//         }
+//         catch (err) {
+//             return []
+//         }
+//     })
 GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     let qterm: RegExp
     if (term instanceof RegExp) {
