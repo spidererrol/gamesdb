@@ -11,4 +11,6 @@ bindPath('patch', '/update', auth_actions.update)
 
 bindPath('get', '/memberships', user_actions.memberships)
 
+bindPath('get','/search/:query',user_actions.quickSearch)
+
 export default router

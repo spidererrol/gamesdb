@@ -1,11 +1,12 @@
 import { Request, Response } from 'express'
 import { Group, UserGroup } from '../models/games'
-import { handleError, log_debug, isKnown } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse } from '../libs/utils'
 import '../libs/type-extensions'
 import { GroupType } from '../schemas/Group'
 import config from '../libs/config'
 import { UserGroupType } from '../schemas/UserGroup'
 import { HTTPSTATUS } from '../types/httpstatus'
+import { UserType } from '../schemas/User'
 
 // Helper functions:
 
@@ -42,7 +43,7 @@ export async function getAllPublic(req: Request, res: Response) {
 }
 
 export async function getAllPrivate(req: Request, res: Response) {
-    log_debug("Request all (available) public groups")
+    log_debug("Request all (available) private groups")
     try {
         let ugs = await UserGroup.find({
             user: req.myUser
@@ -62,7 +63,6 @@ export async function create(req: Request, res: Response) {
         let existing = await Group.findOne().nameish(req.body.name)
         //.findOne({ name: req.body.name })
         if (isKnown(existing)) {
-            //FIXME: Don't hand out non-member private group?
             res.status(409).json({ status: "error", message: "Group already exists", group: existing })
             return
         }
@@ -161,17 +161,43 @@ export async function leave(req: Request, res: Response) {
 export async function invite(req: Request, res: Response) {
     log_debug(`Invite`)
     try {
-        let ug = await UserGroup.findOne({
+        if (!req.reqGroup.private) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Group is public. User can join at will.")
+        }
+        if (req.reqUser._id.toString() == req.myUser._id.toString()) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "You can't invite yourself to a group")
+        }
+        if (!req.reqGroup.isMember(req.myUser)) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "You are not a member of group")
+        }
+        if (req.reqGroup.isMember(req.reqUser)) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "User is already a member")
+        }
+        let usergroup = await UserGroup.create({
             user: req.reqUser,
             group: req.reqGroup
         })
-        if (isKnown(ug)) {
-            res.status(HTTPSTATUS.CONFLICT).json({
-                status: "error", message: "User is already a member"
-            })
-        }
-        TODO(req,res) //FIXME: WIP!
+        req.reqGroup.members.push(req.reqUser)
+        await req.reqGroup.save()
+        res.json({ status: "success", usergroup: usergroup })
     } catch (error) {
         handleError(error, res)
+    }
+}
+
+export async function expel(req: Request, res: Response) {
+    log_debug(`Expel`)
+    try {
+        if (!req.myUser.isAdmin)
+            return errorResponse(res, HTTPSTATUS.FORBIDDEN, "Admin access required to expel a member")
+        let result = await UserGroup.deleteMany({
+            user: req.reqUser,
+            group: req.reqGroup
+        })
+        req.reqGroup.members = req.reqGroup.members.filter((u: UserType) => u._id.toString() != req.reqUser._id.toString())
+        await req.reqGroup.save()
+        res.json({ status: "success", result: result })
+    } catch (err) {
+        handleError(err, res)
     }
 }

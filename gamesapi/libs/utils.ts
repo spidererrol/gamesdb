@@ -2,6 +2,7 @@ import express, { Router } from 'express'
 import { createHmac, randomBytes } from 'crypto'
 import config from './config'
 import { Games, Users, Group } from '../models/games'
+import { HTTPSTATUS } from '../types/httpstatus'
 
 // ### FUNCTIONS ###
 
@@ -81,7 +82,7 @@ export function setupParams(app: express.Router) {
             res.status(404).json({ status: "error", message: "No such user" })
             return
         }
-        (req as express.Request).myUser = user
+        (req as express.Request).reqUser = user
         next()
     })
     app.param("group", async (req, res, next, group_id) => {
@@ -95,6 +96,14 @@ export function setupParams(app: express.Router) {
     })
 
 
+}
+
+export function errorResponse(res: express.Response, code: HTTPSTATUS, message: string, more?: any): void {
+    let ret = { ...more }
+    ret.status = "error"
+    ret.message = message
+    res.status(code).json(ret)
+    return
 }
 
 // ### Password utilities ###

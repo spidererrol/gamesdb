@@ -1,9 +1,24 @@
 import { Request, Response } from 'express'
-import { UserGroup } from '../models/games'
+import { UserGroup, Users } from '../models/games'
 import '../libs/type-extensions'
 import { UserGroupType } from '../schemas/UserGroup'
+import { log_debug } from '../libs/utils'
+import config from '../libs/config'
 
 // Helper functions:
+
+async function getList(query: any, limit: number = config.PAGELIMIT, res?: Response): Promise<any> {
+    const list = await query.limit(limit + 1)
+    return getRawList(list, limit, res)
+}
+
+function getRawList(list: any, limit: number, res?: Response) {
+    const more: boolean = list.length > limit
+    const ret = { status: "success", users: list.slice(0, limit), more: more }
+    res?.json(ret)
+    return ret
+}
+
 
 // Actions:
 
@@ -13,4 +28,11 @@ export async function memberships(req: Request, res: Response) {
         status: "success",
         memberships: ugs.map((ug: UserGroupType) => ug.group)
     })
+}
+
+export async function quickSearch(req: Request, res: Response) {
+    let query: string = req.params.query
+    log_debug(`Quick search for ${query}`)
+    let q = Users.find().nameish(req.params.query)
+    getList(q, config.PAGELIMIT, res)
 }

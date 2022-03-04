@@ -27,6 +27,8 @@ export interface GroupType extends DBBase {
     },
     members: UserType[], // Duplicates UserGroup but wanted for searching for private groups
     included: GameType[], // Duplicates GameGroup, don't know if I need it.
+
+    isMember(user: UserType): boolean,
 }
 
 export const RangeFilterSchema = new Schema({
@@ -75,6 +77,9 @@ export const GroupSchema = new Schema({
 //             return []
 //         }
 //     })
+GroupSchema.methods.isMember = function (this: GroupType, user: UserType): boolean {
+    return this.members.map((u: UserType) => u._id.toString()).includes(user._id.toString())
+}
 GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     let qterm: RegExp
     if (term instanceof RegExp) {

@@ -23,7 +23,7 @@ bindPath('get', '/:group/leave', actions.leave) // Remove current user from grou
 
 bindPath('get', '/:group/invite/:user', actions.invite) // Invite :user into private :group
 
-bindPath('get', '/:group/expel/:user', actions.TODO) // ADMIN ONLY. Remove :user from :group
+bindPath('get', '/:group/expel/:user', actions.expel) // ADMIN ONLY. Remove :user from :group
 
 bindPath('get', '/:group/add/:game', actions.TODO)
 

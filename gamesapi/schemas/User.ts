@@ -22,3 +22,18 @@ export const UserSchema = new Schema({
         }
     }
 })
+UserSchema.query.nameish = function (term: RegExp | string) {
+    let qterm: RegExp
+    if (term instanceof RegExp) {
+        qterm = term
+    } else {
+        qterm = new RegExp(term, 'i')
+    }
+    return this.where({
+        $or:
+            [
+                { "loginName": { $regex: qterm }, },
+                { "displayName": { $regex: qterm }, },
+            ]
+    })
+}
