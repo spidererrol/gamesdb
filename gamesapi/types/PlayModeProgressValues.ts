@@ -1,5 +1,5 @@
 
-export enum PlayModeProgress {
+export enum PlayModeProgressValues {
     Unplayed = "Unplayed",
     Playing = "Playing",
     Paused = "Paused",

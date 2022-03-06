@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose'
 import { DBBase } from '../types/DBBase'
-import { PlayModeProgress } from '../types/PlayModeProgress'
+import { PlayModeProgressValues } from '../types/PlayModeProgressValues'
 import { GroupType } from './Group'
 import { PlayModeSchema, PlayModeType } from './PlayMode'
 
@@ -8,7 +8,7 @@ import { PlayModeSchema, PlayModeType } from './PlayMode'
 export interface PlayModeProgressType extends DBBase {
     playmode: PlayModeType,
     group: GroupType,
-    progress: PlayModeProgress
+    progress: PlayModeProgressValues
 }
 
 export const PlayModeProgressSchema = new Schema({

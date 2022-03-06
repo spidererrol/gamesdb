@@ -1,10 +1,6 @@
 import { Request, Response } from 'express'
-import { GameGroup, Games, PlayMode } from '../models/games'
-import { Vote } from "../types/Vote"
+import { PlayMode } from '../models/games'
 import { handleError, log_debug, isKnown, errorResponse, getList } from '../libs/utils'
-import { GameType } from "../schemas/Game"
-import { OwnerType } from "../schemas/Owner"
-import config from '../libs/config'
 import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
 
