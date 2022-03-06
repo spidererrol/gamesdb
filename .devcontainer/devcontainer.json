@@ -31,7 +31,12 @@
 	"portsAttributes": {
 		"3000": {
 			"label": "Games DB",
-			"onAutoForward": "notify", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
+			"onAutoForward": "openBrowser", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
+			"requireLocalPort": true, // Only really whilst I want to use "test.rest"
+		},
+		"3001": {
+			"label": "Games API",
+			"onAutoForward": "silent", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
 			"requireLocalPort": true, // Only really whilst I want to use "test.rest"
 		},
 		"5555": {
