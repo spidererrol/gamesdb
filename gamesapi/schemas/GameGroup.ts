@@ -5,8 +5,9 @@ import { UserGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
 import { GameGroupMode, GameGroupModeStrings } from '../types/GameGroupMode'
 import { Vote } from '../types/Vote'
-import { GameSchema, GameType } from './Game'
-import { GroupSchema, GroupType } from './Group'
+import { GameType } from './Game'
+import { GroupType } from './Group'
+import { PlayModeProgressSchema, PlayModeProgressType } from './PlayModeProgress'
 import { UserGroupType } from './UserGroup'
 
 export interface GameGroupType extends DBBase {
@@ -14,12 +15,14 @@ export interface GameGroupType extends DBBase {
     group: GroupType,
     mode_id: GameGroupMode,
     mode: GameGroupModeStrings,
+    playmodes: PlayModeProgressType[],
 }
 
 export const GameGroupSchema = new Schema({
     game: { type: 'ObjectId', ref: 'Game', autopopulate: true },
     group: { type: 'ObjectId', ref: 'Group', autopopulate: true },
     mode_id: Number,
+    playmodes: [{ type: PlayModeProgressSchema, autopopulate: true }],
 }, {
     toObject: {
         virtuals: true,
@@ -30,7 +33,7 @@ export const GameGroupSchema = new Schema({
 })
 GameGroupSchema.virtual('mode')
     .get(function (this: any): string {
-        log_debug(`Get mode`)
+        // log_debug(`Get mode`)
         let ret = GameGroupMode[this.mode_id as number]
         log_debug(`==${this.mode_id} => ${ret}`)
         return ret
@@ -48,7 +51,7 @@ GameGroupSchema.virtual('mode')
                 throw new Error("Invalid mode!");
             (this).mode_id = mode_id
         }
-        log_debug(`==${(this).mode_id}`)
+        // log_debug(`==${(this).mode_id}`)
     })
 GameGroupSchema.virtual('voteState').get(async function (this: GameGroupType) {
     let groupusers_raw = await UserGroup.find({ group: this._id })

@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Games } from '../models/games'
 import { Owned } from "../types/Owned"
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import { VoteType } from "../schemas/Vote"
@@ -14,8 +14,7 @@ import { HTTPSTATUS } from '../types/httpstatus'
 
 // Actions:
 
-export function test(req: Request, res: Response) {
-    res.status(HTTPSTATUS.NOT_IMPLEMENTED).json({
-        status: "error", message: "Not yet implemented"
-    })
+export async function TODO(req: Request, res: Response) {
+    log_debug("TODO")
+    errorResponse(res,HTTPSTATUS.NOT_IMPLEMENTED,"This function has not been implemented yet!")
 }

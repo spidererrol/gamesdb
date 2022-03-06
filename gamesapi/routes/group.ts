@@ -21,13 +21,18 @@ bindPath('get', '/:group/join', actions.join) // Join current user into public g
 
 bindPath('get', '/:group/leave', actions.leave) // Remove current user from group
 
+bindPath('get', '/:group/progress/:game',actions.TODO)
+bindPath('post', '/:group/progress/:game',actions.TODO)
+bindPath('patch', '/:group/progress/:game',actions.TODO)
+bindPath('get', '/:group/progress',actions.TODO)
+
 bindPath('get', '/:group/invite/:user', actions.invite) // Invite :user into private :group
 
 bindPath('get', '/:group/expel/:user', actions.expel) // ADMIN ONLY. Remove :user from :group
 
-bindPath('get', '/:group/add/:game', actions.TODO)
+bindPath('get', '/:group/add/:game', actions.includeGame)
 
-bindPath('get', '/:group/remove/:game', actions.TODO)
+bindPath('get', '/:group/remove/:game', actions.excludeGame)
 
 bindPath('patch', '/:group', actions.update)
 

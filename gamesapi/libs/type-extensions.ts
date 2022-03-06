@@ -3,6 +3,8 @@ import 'dotenv'
 import { UserType } from "../schemas/User"
 import { GroupType } from '../schemas/Group'
 import { GameType } from '../schemas/Game'
+import { PlayModeType } from '../schemas/PlayMode'
+import { PlayModeProgressType } from '../schemas/PlayModeProgress'
 
 declare module "express-session" {
     interface Session {
@@ -16,6 +18,8 @@ declare module "express" {
         reqUser: UserType,
         reqGroup: GroupType,
         reqGame: GameType,
+        reqPlayMode: PlayModeType,
+        reqPlayModeProgress: PlayModeProgressType,
     }
 }
 

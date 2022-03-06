@@ -1,9 +1,12 @@
 import express from 'express'
-import { bindRouterPath } from '../libs/utils'
+import { bindRouterPath, setupParams } from '../libs/utils'
 import '../libs/type-extensions'
 import * as actions from '../actions/games'
+import * as playmode from '../actions/playmode'
 
 const router = express.Router()
+
+setupParams(router)
 
 const bindPath = bindRouterPath.bind(null, router)
 
@@ -32,6 +35,12 @@ bindPath("delete", '/:id/tags', actions.deleteTag)
 bindPath("post", '/:id/vote', actions.vote)
 
 bindPath("patch", '/:id/owned', actions.setOwnership)
+
+bindPath("post", "/:game/playmode", playmode.add)
+
+bindPath("get", "/:game/playmode", playmode.get)
+
+bindPath("patch", "/:game/playmode/:playmode", playmode.update)
 
 bindPath("get", '/:id', actions.getGame)
 

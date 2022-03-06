@@ -26,9 +26,9 @@ export const VoteSchema = new Schema({
 })
 VoteSchema.virtual('vote')
     .get(function (this: any): string {
-        log_debug(`Get vote`)
+        // log_debug(`Get vote`)
         let ret = Vote[this.vote_id as number]
-        log_debug(`==${this.vote_id} => ${ret}`)
+        // log_debug(`==${this.vote_id} => ${ret}`)
         return ret
     })
     .set(function (this: any, v: number | string) {
@@ -44,5 +44,5 @@ VoteSchema.virtual('vote')
                 throw new Error("Invalid vote!");
             (this).vote_id = vote_id
         }
-        log_debug(`==${(this).vote_id}`)
+        // log_debug(`==${(this).vote_id}`)
     })

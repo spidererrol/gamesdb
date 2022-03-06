@@ -1,18 +1,14 @@
 import { Schema } from 'mongoose'
 import '../libs/schemainit'
-import { isKnown } from '../libs/utils'
-import { GameGroup, UserGroup } from '../models/games'
+import { inRange, intersect, isKnown, isKnown_type } from '../libs/utils'
+import { GameGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
+import { GameGroupMode } from '../types/GameGroupMode'
 import { GameSchema, GameType } from './Game'
 import { GameGroupType } from './GameGroup'
+import { RangeFilterSchema, RangeFilterType } from './RangeFilter'
 import { UserSchema, UserType } from './User'
-import { UserGroupType } from './UserGroup'
 import { WhenWhoType, WhenWhoSchema } from './WhenWho'
-
-export interface RangeFilterType extends DBBase {
-    above: number,
-    below: number,
-}
 
 export interface GroupType extends DBBase {
     name: string,
@@ -22,19 +18,16 @@ export interface GroupType extends DBBase {
     filters: {
         minPlayers: RangeFilterType,
         maxPlayers: RangeFilterType,
-        includeTags: String[],
-        excludeTags: String[],
+        includeTags: string[],
+        excludeTags: string[],
     },
     members: UserType[], // Duplicates UserGroup but wanted for searching for private groups
-    included: GameType[], // Duplicates GameGroup, don't know if I need it.
+    games: GameType[], // Duplicates GameGroup, don't know if I need it.
 
     isMember(user: UserType): boolean,
+    includesGame(game: GameType): boolean,
+    gameMatches(game: GameType): boolean,
 }
-
-export const RangeFilterSchema = new Schema({
-    above: Number,
-    below: Number,
-})
 
 export const GroupSchema = new Schema({
     name: String,
@@ -79,6 +72,30 @@ export const GroupSchema = new Schema({
 //     })
 GroupSchema.methods.isMember = function (this: GroupType, user: UserType): boolean {
     return this.members.map((u: UserType) => u._id.toString()).includes(user._id.toString())
+}
+GroupSchema.methods.includesGame = function (this: GroupType, game: GameType): boolean {
+    return this.games.map((g: GameType) => g._id.toString()).includes(game._id.toString())
+}
+GroupSchema.methods.gameMatches = async function (this: GroupType, game: GameType): Promise<boolean> {
+    let gg = await GameGroup.findOne({
+        game: game,
+        group: this
+    })
+    if (isKnown_type<GameGroupType>(gg)) {
+        if (gg.mode_id == GameGroupMode.Exclude)
+            return false
+        if (gg.mode_id == GameGroupMode.Include)
+            return true
+    }
+    if (isKnown(this.filters.excludeTags) && intersect(this.filters.excludeTags, game.tags))
+        return false
+    if (!inRange(this.filters.minPlayers, game.minPlayers))
+        return false
+    if (!inRange(this.filters.maxPlayers, game.maxPlayers))
+        return false
+    if (isKnown(this.filters.includeTags) && intersect(this.filters.includeTags, game.tags))
+        return false
+    return true
 }
 GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     let qterm: RegExp

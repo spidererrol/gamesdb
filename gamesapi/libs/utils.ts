@@ -1,8 +1,14 @@
 import express, { Router } from 'express'
 import { createHmac, randomBytes } from 'crypto'
 import config from './config'
-import { Games, Users, Group } from '../models/games'
+import { Games, Users, Group, GameGroup, PlayMode, PlayModeProgress } from '../models/games'
 import { HTTPSTATUS } from '../types/httpstatus'
+import './type-extensions'
+import { RangeFilterType } from "../schemas/RangeFilter"
+import { GroupType } from '../schemas/Group'
+import { GameType } from '../schemas/Game'
+import { GameGroupMode } from '../types/GameGroupMode'
+import { GameGroupType } from '../schemas/GameGroup'
 
 // ### FUNCTIONS ###
 
@@ -38,6 +44,12 @@ export function handleError(err: any, res: express.Response): void {
 }
 
 export function isKnown(value: any): boolean {
+    if (value === undefined) return false
+    if (value === null) return false
+    return true
+}
+
+export function isKnown_type<T>(value?: T | null): value is T {
     if (value === undefined) return false
     if (value === null) return false
     return true
@@ -94,7 +106,22 @@ export function setupParams(app: express.Router) {
         (req as express.Request).reqGroup = group
         next()
     })
-
+    app.param("playmode", async (req, res, next, playmode_id) => {
+        let playmode = await PlayMode.findById(playmode_id)
+        if (!isKnown(playmode)) {
+            return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such playmode")
+        }
+        (req as express.Request).reqPlayMode = playmode
+        next()
+    })
+    app.param("progress", async (req, res, next, progress_id) => {
+        let progress = await PlayModeProgress.findById(progress_id)
+        if (!isKnown(progress)) {
+            return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such progress")
+        }
+        (req as express.Request).reqPlayModeProgress = progress
+        next()
+    })
 
 }
 
@@ -104,6 +131,15 @@ export function errorResponse(res: express.Response, code: HTTPSTATUS, message: 
     ret.message = message
     res.status(code).json(ret)
     return
+}
+
+export async function getList(listkey: string, query: any, res: express.Response, limit: number = config.PAGELIMIT): Promise<any> {
+    const list = await query.limit(limit + 1)
+    const more: boolean = list.length > limit
+    const ret: any = { status: "success", more: more }
+    ret[listkey] = list.slice(0, limit)
+    res.json(ret)
+    return ret
 }
 
 // ### Password utilities ###
@@ -132,6 +168,50 @@ export namespace pw {
     export function check(username: string, secret: string, saved_crypt: string): boolean {
         return crypt(username, secret, saved_crypt) == saved_crypt
     }
+}
+
+export function inRange(inRange?: RangeFilterType, against?: number): boolean {
+    if (!isKnown(against))
+        return true
+    if (!isKnown(inRange))
+        return true
+    let range: RangeFilterType = inRange as RangeFilterType
+    if (isKnown_type<number>(range.above) && isKnown_type<number>(against) && range.above > against)
+        return false
+    if (isKnown_type<number>(range.below) && isKnown_type<number>(against) && range.below > against)
+        return false
+    return true
+}
+export function intersect(arra: string[], arrb: string[]): boolean {
+    for (const a of arra) {
+        for (const b of arrb) {
+            if (a == b)
+                return true
+        }
+    }
+    return false
+}
+
+export async function setGameGroupMode(group: GroupType, game: GameType, mode: GameGroupMode): Promise<GameGroupType> {
+    let gg = await GameGroup.findOne({
+        group: group,
+        game: game
+    })
+    if (!isKnown(gg)) {
+        gg = await GameGroup.create({
+            group: group,
+            game: game,
+        })
+    }
+    gg.mode_id = mode
+    await gg.save()
+    if (mode == GameGroupMode.Exclude) {
+        group.games = group.games.filter((g: GameType) => g._id.toString() != game._id.toString())
+    } else {
+        group.games.push(game)
+    }
+    group.save()
+    return gg as GameGroupType
 }
 
 // ### Environment ###

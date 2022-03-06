@@ -1,12 +1,17 @@
 import { Request, Response } from 'express'
-import { Group, UserGroup } from '../models/games'
-import { handleError, log_debug, isKnown, errorResponse } from '../libs/utils'
+import { GameGroup, Group, UserGroup } from '../models/games'
+import { handleError, log_debug, isKnown, errorResponse, setGameGroupMode, isKnown_type } from '../libs/utils'
 import '../libs/type-extensions'
 import { GroupType } from '../schemas/Group'
 import config from '../libs/config'
 import { UserGroupType } from '../schemas/UserGroup'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { UserType } from '../schemas/User'
+import { GameType } from '../schemas/Game'
+import { GameGroupMode } from '../types/GameGroupMode'
+import { GameGroupType } from '../schemas/GameGroup'
+import { recalcGroup } from './gamegroup'
+import { TODO } from './test'
 
 // Helper functions:
 
@@ -27,11 +32,6 @@ function err404(res: Response) {
 }
 
 // Actions:
-
-export async function TODO(req: Request, res: Response) {
-    log_debug("TODO")
-    res.status(500).json({ status: "error", message: "This function has not been implemented yet!" })
-}
 
 export async function getAllPublic(req: Request, res: Response) {
     log_debug("Request all public groups")
@@ -87,6 +87,9 @@ export async function update(req: Request, res: Response) {
             "$set": req.body
         })
         const after = await Group.findById(req.params.group)
+        if (isKnown_type<GroupType>(after) && isKnown(req.body.filters)) {
+            recalcGroup(after)
+        }
         res.json({ status: "success", result: result, before: req.reqGroup, after: after })
     } catch (error) {
         handleError(error, res)
@@ -201,3 +204,35 @@ export async function expel(req: Request, res: Response) {
         handleError(err, res)
     }
 }
+
+export async function includeGame(req: Request, res: Response) {
+    log_debug(`Add "${req.reqGame.name}" to "${req.reqGroup.name}"`)
+    try {
+        if (!req.reqGroup.isMember(req.myUser))
+            return errorResponse(res, HTTPSTATUS.FORBIDDEN, "Only members may add a game")
+        if (req.reqGroup.includesGame(req.reqGame))
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Game is already included")
+
+        let gg: GameGroupType = await setGameGroupMode(req.reqGroup, req.reqGame, GameGroupMode.Include)
+        res.json({ status: "success", result: gg })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function excludeGame(req: Request, res: Response) {
+    log_debug(`Exclude "${req.reqGame.name}" from "${req.reqGroup.name}"`)
+    try {
+        if (!req.reqGroup.isMember(req.myUser))
+            return errorResponse(res, HTTPSTATUS.FORBIDDEN, "Only members may exclude a game")
+        if (!req.reqGroup.includesGame(req.reqGame))
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Game is not included")
+
+        let gg: GameGroupType = await setGameGroupMode(req.reqGroup, req.reqGame, GameGroupMode.Exclude)
+        res.json({ status: "success", result: gg })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export { TODO }

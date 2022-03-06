@@ -28,6 +28,18 @@
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
+	"portsAttributes": {
+		"3000": {
+			"label": "Games DB",
+			"onAutoForward": "silent", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
+			"requireLocalPort": true, // Only really whilst I want to use "test.rest"
+		},
+		"5555": {
+			"label": "TabNine",
+			"onAutoForward": "silent",
+			"requireLocalPort": true, // This doesn't seem to work for TabNine. You will need to change to :5556 in the browser when it cannot connect during authenticating.
+		}
+	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",

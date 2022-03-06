@@ -16,7 +16,7 @@ export interface GameType extends DBBase {
     aliases: string[]
     tags: string[]
     maxPlayers: number
-    minPlaters: number
+    minPlayers: number
     links: {}
     votes: VoteType[]
     owners: OwnerType[]
@@ -43,7 +43,7 @@ export const GameSchema = new Schema({
         of: String,
     },
     votes: [{ type: VoteSchema, autopopulate: true }],
-    owners: [OwnerSchema],
+    owners: [{ type: OwnerSchema, autopopulate: true }],
     added: { type: WhenWhoSchema, autopopulate: true },
 }, {
     toObject: {
@@ -53,7 +53,7 @@ export const GameSchema = new Schema({
         virtuals: true,
     },
 })
-GameSchema.query.nameish = function ( term: RegExp | string) {
+GameSchema.query.nameish = function (term: RegExp | string) {
     let qterm: RegExp
     if (term instanceof RegExp) {
         qterm = term
