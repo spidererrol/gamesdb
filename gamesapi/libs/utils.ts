@@ -142,6 +142,11 @@ export async function getList(listkey: string, query: any, res: express.Response
     return ret
 }
 
+export async function bg(then: Promise<any>): Promise<void> {
+    await then
+    return
+}
+
 // ### Password utilities ###
 
 export namespace pw {

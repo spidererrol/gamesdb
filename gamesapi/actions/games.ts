@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 import { GameGroup, Games } from '../models/games'
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, bg } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import config from '../libs/config'
 import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
+import { TODO } from './test'
 
 // Helper functions:
 
@@ -368,3 +369,73 @@ export async function setOwnership(req: Request, res: Response) {
         handleError(err, res)
     }
 }
+
+export async function addLink(req: Request, res: Response) {
+    log_debug(`Add link to game (${req.reqGame._id})`)
+    try {
+        if (!isKnown(req.body.name)) {
+            return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "name is required")
+        }
+        if (!isKnown(req.body.href)) {
+            return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "href is required")
+        }
+        // if (!isKnown(req.reqGame.links))
+        //     req.reqGame.links = {}
+        if (isKnown(req.reqGame.links.get(req.body.name))) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Link name already exists")
+        }
+        // req.reqGame.links[req.body.name] = req.body.href
+        // let result = await req.reqGame.save()
+        // res.json({ status: "success", result: result, game: req.reqGame })
+        let upd: any = {}
+        upd[`links.${req.body.name}`] = req.body.href
+        let result = await req.reqGame.updateOne({
+            "$set": upd
+        })
+        let after = await Games.findById(req.reqGame._id)
+        res.json({ status: "success", result: result, before: req.reqGame, after: after })
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
+export async function delLink(req: Request, res: Response) {
+    log_debug(`Delete link ${req.body.name} from game (${req.reqGame._id})`)
+    try {
+        if (!isKnown(req.body.name)) {
+            return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "name is required")
+        }
+        if (!isKnown(req.reqGame.links.get(req.body.name))) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Link name doesn't exists")
+        }
+        req.reqGame.links.delete(req.body.name)
+        let result = await req.reqGame.save()
+        res.json({ status: "success", result: result, game: req.reqGame })
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
+export async function editLink(req: Request, res: Response) {
+    log_debug(`Update link on game (${req.reqGame._id})`)
+    try {
+        if (!isKnown(req.body.name)) {
+            return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "name is required")
+        }
+        if (!isKnown(req.body.href)) {
+            return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "href is required")
+        }
+        if (!isKnown(req.reqGame.links))
+            req.reqGame.links = new Map<string, string>()
+        if (!isKnown(req.reqGame.links.get(req.body.name))) {
+            return errorResponse(res, HTTPSTATUS.CONFLICT, "Link name doesn't exists")
+        }
+        req.reqGame.links.set(req.body.name, req.body.href)
+        let result = await req.reqGame.save()
+        res.json({ status: "success", result: result, game: req.reqGame })
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
+export { TODO }

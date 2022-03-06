@@ -17,7 +17,7 @@ export interface GameType extends DBBase {
     tags: string[]
     maxPlayers: number
     minPlayers: number
-    links: {}
+    links: Map<string, string>//{ [index: string]: string }
     votes: VoteType[]
     owners: OwnerType[]
     voteState: {

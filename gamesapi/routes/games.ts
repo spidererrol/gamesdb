@@ -25,16 +25,20 @@ bindPath("get", '/votes', actions.getVoteTypes)
 // ##### Keep these at the end #####
 
 bindPath("post", '/:id/aliases', actions.addAlias)
-
 bindPath("delete", '/:id/aliases', actions.deleteAlias)
 
 bindPath("post", '/:id/tags', actions.addTag)
-
 bindPath("delete", '/:id/tags', actions.deleteTag)
 
 bindPath("post", '/:id/vote', actions.vote)
+bindPath("patch", '/:id/vote', actions.vote)
 
+bindPath('post', '/:id/owned', actions.setOwnership)
 bindPath("patch", '/:id/owned', actions.setOwnership)
+
+bindPath('post', '/:game/link', actions.addLink)
+bindPath('patch', '/:game/link', actions.editLink)
+bindPath('delete', '/:game/link', actions.delLink)
 
 bindPath("post", "/:game/playmode", playmode.add)
 
