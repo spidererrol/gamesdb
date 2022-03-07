@@ -21,7 +21,7 @@ app.set('view engine', 'ejs')
 app.set('view options', {
     views: ["gamesapi/views/"],
 })
-app.use(express.static("gamesapi/public"))
+app.use(express.static("gamesweb/build"))
 
 // Start dev only:
 import fs from 'fs'
@@ -35,5 +35,11 @@ if (fs.existsSync("TODO.html"))
 // End dev only
 
 app.use('/api', apiroute)
+
+app.use('/', (req, res) => {
+    // This is to allow ReactJS routes
+
+    res.sendFile(process.cwd() + "/gamesweb/build/index.html")
+})
 
 app.listen(config.API_PORT, () => log_debug("Server Started"))
