@@ -1,21 +1,23 @@
 - [X] Import todos from keep.
-- [ ] Store & unique on lowercase Game/Group/User name/alias/tag
+- [X] Store & unique on lowercase Game/Group/User name/alias/tag (used regexp searches instead)
 - [ ] Add Groups
   - [X] Private (invite only)
   - [X] group-game has state include, auto, or exclude
-  - [/] Groups can auto match games on min/max players (both ranges) and tags to include or exclude
-  - [ ] Any group member can include or exclude a game.
-  - [/] group-game can have virtual for vote and owned states.
+  - [X] Groups can auto match games on min/max players (both ranges) and tags to include or exclude
+    - [ ] Make Groups recalculate auto games on change of filters
+    - [ ] Make Games recalculate auto groups on change of tags or players levels
+  - [X] Any group member can include or exclude a game.
+  - [/] group-game can have virtual for vote and owned states? - is this needed
 - [X] Add minPlayers to Game. Default 1
 - [X] Allow delete Game by `added.who`
 - [X] Add /user prefix. Requires auth.
-  - [ ] Group join, invite, leave.
+  - [X] Group join, invite, leave.
   - [X] Move PATCH /auth/register to PATCH /user/update
-- [ ] Add /group prefix. Requires auth.
-  - [ ] Create, list, edit, delete groups here.
-  - [ ] Also user join/leave.
-  - [ ] Only allow delete of group if no users.
-  - [ ] Auto delete private groups when last user leaves.
+- [X] Add /group prefix. Requires auth.
+  - [X] Create, list, edit, delete groups here.
+  - [X] Also user join/leave.
+  - [X] Only allow delete of group if no users.
+  - [X] Auto delete private groups when last user leaves.
 - [ ] List games in a group
 - [ ] Search games in a specified group
   - [ ] by name, alias, or tag
@@ -29,3 +31,7 @@
   - [ ] by min/max players
   - [ ] by owned status
   - [ ] by vote status
+
+### ReactJS
+
+  - [ ] https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md
