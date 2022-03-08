@@ -2,32 +2,35 @@ import React, { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
 import Login from './Login'
+import * as api from './libs/api'
+import AuthTok from './libs/AuthTok'
+import StateObj from './libs/StateObj'
+
+async function logout(authTok: AuthTok) {
+  await new api.auth(authTok.get).logout()
+  authTok.set("none")
+}
 
 function App() {
-  const [authTok, setAuthTok] = useState("none")
+  // const [authTok, setAuthTok] = useState("none")
+  const auth = new AuthTok(useState("none"))
+  const user = new StateObj<any>(useState<any>({}))
   // eslint-disable-next-line eqeqeq
-  if (authTok == "none") {
+  if (auth.get == "none") {
     return (
-      <Login setAuthTok={setAuthTok} />
+      <Login authTok={auth} user={user} />
     )
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <p>Welcome {user.get.displayName}</p>
       </header>
+      <nav>
+
+      </nav>
+      <button onClick={(e) => logout(auth)}>Logout</button>
     </div>
   )
 }
