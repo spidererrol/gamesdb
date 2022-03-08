@@ -8,11 +8,14 @@ import { HTTPSTATUS } from '../types/httpstatus'
 
 export async function login(req: Request, res: Response) {
     log_debug("Got Login Request")
+    // log_debug(req.body)
     try {
         const shadow: ShadowType = await Shadow.findOne({ loginName: req.body.username }).exec()
         if (isKnown(shadow) && pw.check(shadow.loginName, req.body.secret, shadow.crypt)) {
+            log_debug("Auth Success")
             auth.setUser(req, res, shadow.user, { status: "success", user: shadow.user })
         } else {
+            log_debug("Auth Failure")
             res.status(400).json({ status: "failure", message: "Invalid username or password" })
         }
     } catch (err) {
