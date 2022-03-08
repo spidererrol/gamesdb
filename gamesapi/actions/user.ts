@@ -36,3 +36,10 @@ export async function quickSearch(req: Request, res: Response) {
     let q = Users.find().nameish(req.params.query)
     getList(q, config.PAGELIMIT, res)
 }
+
+export async function get(req: Request, res: Response) {
+    res.json({
+        status: "success",
+        user: req.myUser,
+    })
+}
