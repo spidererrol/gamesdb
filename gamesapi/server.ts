@@ -7,8 +7,11 @@ import './libs/type-extensions'
 import { log_debug } from './libs/utils'
 import config from "./libs/config"
 import './libs/dbinit'
+import cors from 'cors'
 
 const app = express()
+
+app.use(cors()) //FIXME: Should be properly configured for production.
 
 app.use(express.json())
 app.use(session({
