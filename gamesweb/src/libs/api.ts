@@ -23,18 +23,16 @@ export class api {
         return api.url(subpath)
     }
 
-    async req(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, sendData?: any): Promise<any> {
+    static async req(method: "GET" | "POST" | "PATCH" | "DELETE", url: string, headers: any, sendData?: any): Promise<any> {
         let reqobj: any = {
             method: method,
-            headers: {
-                "Authorization": `Bearer ${this.authtok}`,
-            },
+            headers: headers,
         }
         if (sendData !== undefined) {
             reqobj.headers["Content-Type"] = "application/json"
             reqobj.body = JSON.stringify(sendData)
         }
-        let url = this.url(path)
+        // let url = this.url(path)
         console.log("URL: " + url)
         let req = await fetch(url, reqobj)
         if (req.ok) {
@@ -54,8 +52,25 @@ export class api {
             } catch (error: any) {
                 throw new Error("Decoding failed: " + error.message)
             }
+        } else {
+            const ct = req.headers.get("Content-Type")
+            if (ct === null) {
+                return null
+            }
+            if (ct.includes("json")) {
+                console.log("is json")
+                let data: any = await req.json()
+                throw new Error(data.message)
+            } else {
+                throw new Error("Not JSON: " + await req.text())
+            }
         }
-        throw new Error("Request failed")
+    }
+
+    async req(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, sendData?: any): Promise<any> {
+        return api.req(method, this.url(path), {
+            "Authorization": `Bearer ${this.authtok}`,
+        }, sendData)
     }
 
 }
@@ -92,13 +107,31 @@ export class auth extends api {
         } else {
             // console.dir(data)
             // console.dir(errors)
-            throw new Error("Login failed")
+            throw new Error("Login failed: " + data.message)
         }
     }
 
-    async logout(): Promise<any> {
+    logout(): Promise<any> {
         // console.log("lgout")
         return this.req("GET", "logout")
+    }
+
+    /*
+    # @name register
+    POST {{authurl}}register
+    Content-Type: application/json
+    
+    {"username":"tim","secret":"timtest","displayname":"Tim"}
+    
+    */
+
+    static register(regtoken: string,username: string, secret: string, displayname: string): Promise<any> {
+        return auth.req("POST", this.url("register"), {}, {
+            regtoken,
+            username,
+            secret,
+            displayname
+        })
     }
 
 }

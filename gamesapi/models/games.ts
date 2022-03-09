@@ -5,6 +5,7 @@ import { GroupSchema } from '../schemas/Group'
 import { LoginSchema } from "../schemas/Login"
 import { PlayModeSchema } from '../schemas/PlayMode'
 import { PlayModeProgressSchema } from '../schemas/PlayModeProgress'
+import { RegTokenSchema } from '../schemas/RegToken'
 import { ShadowSchema } from '../schemas/Shadow'
 import { UserSchema } from "../schemas/User"
 import { UserGroupSchema } from '../schemas/UserGroup'
@@ -18,3 +19,4 @@ export const UserGroup = mongoose.model('UserGroup', UserGroupSchema)
 export const GameGroup = mongoose.model('GameGroup', GameGroupSchema)
 export const PlayMode = mongoose.model('PlayMode', PlayModeSchema)
 export const PlayModeProgress = mongoose.model('PlayModeProgress', PlayModeProgressSchema)
+export const RegToken = mongoose.model('RegToken', RegTokenSchema)

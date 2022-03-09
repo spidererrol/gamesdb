@@ -31,7 +31,11 @@
   - [ ] by min/max players
   - [ ] by owned status
   - [ ] by vote status
+- [ ] Require a registration token
+- [ ] Only allow admin to create tokens
+- [ ] Create a default token when no tokens and no users.
 
 ### ReactJS
 
   - [ ] https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md
+  - [ ] https://reactjs.org/docs/state-and-lifecycle.html
