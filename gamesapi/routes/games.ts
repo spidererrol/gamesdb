@@ -40,11 +40,13 @@ bindPath('post', '/:game/link', actions.addLink)
 bindPath('patch', '/:game/link', actions.editLink)
 bindPath('delete', '/:game/link', actions.delLink)
 
+bindPath("get", "/:game/playmode/:playmode", playmode.get)
+bindPath("patch", "/:game/playmode/:playmode", playmode.update)
+
 bindPath("post", "/:game/playmode", playmode.add)
 
-bindPath("get", "/:game/playmode", playmode.get)
-
-bindPath("patch", "/:game/playmode/:playmode", playmode.update)
+bindPath("get", "/:game/playmodes", playmode.getAll)
+bindPath("get", "/:game/playmode", playmode.getAll)
 
 bindPath("get", '/:id', actions.getGame)
 

@@ -46,7 +46,7 @@ export async function getAllPrivate(req: Request, res: Response) {
     log_debug("Request all (available) private groups")
     try {
         let ugs = await UserGroup.find({
-            user: req.myUser
+            user: req.myUser,
         }).limit(config.PAGELIMIT + 1)
         getRawList(ugs.map((ug: UserGroupType) => ug.group).filter((g: GroupType) => g.private), config.PAGELIMIT, res)
     } catch (err) {
@@ -91,6 +91,15 @@ export async function update(req: Request, res: Response) {
             recalcGroup(after)
         }
         res.json({ status: "success", result: result, before: req.reqGroup, after: after })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function get(req: Request, res: Response) {
+    log_debug(`Retrieve group (${req.params.group})`)
+    try {
+        res.json({ group: req.reqGroup })
     } catch (error) {
         handleError(error, res)
     }

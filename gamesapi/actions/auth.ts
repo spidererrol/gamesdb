@@ -58,6 +58,7 @@ export async function register(req: Request, res: Response) {
         const newuser = new Users({
             loginName: req.body.username.toLowerCase(),
             displayName: req.body.displayname,
+            isAdmin: userCount == 0,
         })
         const dbUser = await newuser.save()
         const crypt = pw.crypt(req.body.username, req.body.secret)

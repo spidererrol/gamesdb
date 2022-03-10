@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import './App.css'
-import Login from './Login'
-import * as api from './libs/api'
+import Login from './component/Login'
 import AuthTok from './libs/AuthTok'
 import StateObj from './libs/StateObj'
-
-async function logout(authTok: AuthTok) {
-  await new api.auth(authTok.get).logout()
-  authTok.set("none")
-}
+import { BrowserRouter, Route, Routes} from 'react-router-dom'
+import Home from './component/Home'
+import Layout from './component/Layout'
+import NoPage from './component/NoPage'
+import { gamesapi } from './libs/gamesapi'
+import Group from './component/Group'
 
 function App() {
   // const [authTok, setAuthTok] = useState("none")
   const auth = new AuthTok(useState("none"))
   const user = new StateObj<any>(useState<any>({}))
+  let api:gamesapi = new gamesapi(auth);
   // eslint-disable-next-line eqeqeq
   if (auth.get == "none") {
     return (
@@ -21,15 +22,18 @@ function App() {
     )
   }
 
+  // https://www.w3schools.com/react/react_router.asp
   return (
     <div className="App">
-      <header>
-        <p>Welcome {user.get.displayName}</p>
-      </header>
-      <nav>
-
-      </nav>
-      <button onClick={(e) => logout(auth)}>Logout</button>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout api={api} user={user} />}>
+            <Route index element={<Home api={api} />} />
+            <Route path="group/:groupid" element={<Group api={api} />} />
+            <Route path="*" element={<NoPage api={api} />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   )
 }

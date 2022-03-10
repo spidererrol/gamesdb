@@ -35,6 +35,7 @@ bindPath('get', '/:group/add/:game', actions.includeGame)
 
 bindPath('get', '/:group/remove/:game', actions.excludeGame)
 
+bindPath('get', '/:group', actions.get)
 bindPath('patch', '/:group', actions.update)
 
 export default router

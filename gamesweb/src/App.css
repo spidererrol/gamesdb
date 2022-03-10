@@ -44,3 +44,69 @@ label::after {
 .error {
     color: hsl(0 100% 50%);
 }
+
+nav ul {
+    list-style-type: none;
+    margin-inline: 0;
+    padding-inline: 0;
+}
+
+nav li {
+    display: inline;
+    background: hsl(214 91% 57%);
+    padding: 0.5rem;
+    margin: 1px;
+    border-radius: 10px;
+}
+
+nav li a {
+    color: black;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.memberships,.memberslist,.gameslist {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.memberships>.group.private .button {
+    background: hsl(0, 100%, 50%);
+}
+
+.memberships>.group.public .button {
+    background: hsl(120, 100%, 50%);
+}
+
+.memberslist>.member,.gameslist>.GroupGame{
+    border: 1px solid black;
+    margin: 1px;
+}
+
+.button {
+    min-width: 5rem;
+    min-height: 1.5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 1px;
+}
+
+pre {
+    text-align: left;
+}
+
+.debug {
+    border: 1px dotted black;
+    margin: 5px;
+    position: relative;
+}
+
+.debug::before {
+    content: 'Debug:';
+    position: relative;
+    top: -0.5rem;
+    left: 0.5rem;
+    background: white;
+    border: 1px dotted black;
+}

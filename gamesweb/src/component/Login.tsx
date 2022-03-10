@@ -1,6 +1,7 @@
 import React from 'react'
-import * as api from './libs/api'
-import AuthTok from './libs/AuthTok'
+import { api_user } from "../libs/api/user"
+import { api_auth } from "../libs/api/auth"
+import AuthTok from '../libs/AuthTok'
 
 interface Props {
     authTok: AuthTok
@@ -53,7 +54,7 @@ class Login extends React.Component<Props, State> {
         let auth
         try {
             console.log("start login")
-            auth = await api.auth.login(name, pass)
+            auth = await api_auth.login(name, pass)
             console.log("login okish")
         } catch (err: any) {
             console.log("login failed: " + err.message)
@@ -63,7 +64,7 @@ class Login extends React.Component<Props, State> {
         this.props.authTok.set(auth.authtok)
         let user
         try {
-            user = await new api.user(auth.authtok).get()
+            user = await new api_user(auth.authtok).get()
         } catch (error: any) {
             throw new Error("Failed to get user: " + error.message)
         }
@@ -103,7 +104,7 @@ class Login extends React.Component<Props, State> {
         if (pass === undefined || pass === '') return
         if (disp === undefined || disp === '') return
         try {
-            await api.auth.register(tok, user, pass, disp)
+            await api_auth.register(tok, user, pass, disp)
             this.setState({ registerSuccess: true })
         } catch (err: any) {
             this.setState({ registerError: err.message })

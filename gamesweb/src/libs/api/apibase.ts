@@ -1,5 +1,5 @@
 
-export class api {
+export class apibase {
     authtok: string
 
     constructor(authtok: string = "none") {
@@ -20,7 +20,7 @@ export class api {
         return full
     }
     url(subpath: string): string {
-        return api.url(subpath)
+        return apibase.url(subpath)
     }
 
     static async req(method: "GET" | "POST" | "PATCH" | "DELETE", url: string, headers: any, sendData?: any): Promise<any> {
@@ -68,86 +68,11 @@ export class api {
     }
 
     async req(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, sendData?: any): Promise<any> {
-        return api.req(method, this.url(path), {
+        return apibase.req(method, this.url(path), {
             "Authorization": `Bearer ${this.authtok}`,
         }, sendData)
     }
 
 }
 
-export class auth extends api {
 
-    static url(subpath: string): string {
-        return api.url("auth/" + subpath)
-    }
-    url(subpath: string): string {
-        return auth.url(subpath)
-    }
-
-    static async login(user: string, pass: string): Promise<auth> {
-        // console.log("try login")
-        // console.log(this.url("auth/login"))
-        let req = await fetch(this.url("login"), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username: user,
-                secret: pass,
-            })
-        })
-        // console.log("post login")
-        let data = await req.json()
-        // console.dir(data)
-        // console.dir(errors)
-        if (req.ok) {
-            // console.log("req.ok")
-            return new auth(data.token)
-        } else {
-            // console.dir(data)
-            // console.dir(errors)
-            throw new Error("Login failed: " + data.message)
-        }
-    }
-
-    logout(): Promise<any> {
-        // console.log("lgout")
-        return this.req("GET", "logout")
-    }
-
-    /*
-    # @name register
-    POST {{authurl}}register
-    Content-Type: application/json
-    
-    {"username":"tim","secret":"timtest","displayname":"Tim"}
-    
-    */
-
-    static register(regtoken: string,username: string, secret: string, displayname: string): Promise<any> {
-        return auth.req("POST", this.url("register"), {}, {
-            regtoken,
-            username,
-            secret,
-            displayname
-        })
-    }
-
-}
-
-export class user extends api {
-    static url(subpath: string): string {
-        return api.url("user/" + subpath)
-    }
-    url(subpath: string): string {
-        return user.url(subpath)
-    }
-
-    async get(): Promise<any> {
-        console.log("get user")
-        let ret = await this.req("GET", "/")
-        console.log("got user")
-        return ret
-    }
-}

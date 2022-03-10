@@ -23,7 +23,8 @@
 		"humao.rest-client",
 		"yzhang.markdown-all-in-one",
 		"TabNine.tabnine-vscode",
-		"Gruntfuggly.todo-tree"
+		"Gruntfuggly.todo-tree",
+		"burkeholland.simple-react-snippets"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -31,7 +32,7 @@
 	"portsAttributes": {
 		"3000": {
 			"label": "Games DB",
-			"onAutoForward": "openBrowser", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
+			"onAutoForward": "notify", // May want to set this to "notify" or "openBrowser" when I move to ReactJS
 			"requireLocalPort": true, // Only really whilst I want to use "test.rest"
 		},
 		"3001": {

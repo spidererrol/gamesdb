@@ -29,7 +29,7 @@ export async function add(req: Request, res: Response) {
     }
 }
 
-export async function get(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response) {
     try {
         getList("playmodes", PlayMode.find({ game: req.reqGame }), res)
     } catch (error) {
@@ -50,6 +50,20 @@ export async function update(req: Request, res: Response) {
         })
         const after = await PlayMode.findById(req.params.playmode)
         res.json({ status: "success", result: result, before: req.reqPlayMode, after: after })
+    } catch (err) {
+        handleError(err, res)
+    }
+
+}
+
+export async function get(req: Request, res: Response) {
+    log_debug(`Get playmode`)
+    try {
+        if (!isKnown(req.reqPlayMode)) {
+            errorResponse(res, HTTPSTATUS.NOT_FOUND, "Playmode not found")
+            return
+        }
+        res.json({ status: "success", playmode: req.reqPlayMode })
     } catch (err) {
         handleError(err, res)
     }
