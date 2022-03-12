@@ -1,3 +1,14 @@
+:root {
+    --bg-main: black;
+    --fg-main: white;
+    --border-main: hsl(0, 0%, 50%);
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--fg-main);
+}
+
 .App {
     text-align: center;
 }
@@ -80,14 +91,14 @@ nav li a {
 }
 
 .memberslist>.member,.gameslist>.GroupGame{
-    border: 1px solid black;
+    border: 1px solid var(--border-main);
     margin: 1px;
 }
 
 .button {
     min-width: 5rem;
     min-height: 1.5rem;
-    border: 1px solid black;
+    border: 1px solid var(--border-main);
     border-radius: 5px;
     margin: 1px;
 }
@@ -97,7 +108,7 @@ pre {
 }
 
 .debug {
-    border: 1px dotted black;
+    border: 1px dotted var(--border-main);
     margin: 5px;
     position: relative;
 }
@@ -107,6 +118,34 @@ pre {
     position: relative;
     top: -0.5rem;
     left: 0.5rem;
-    background: white;
-    border: 1px dotted black;
+    background: var(--bg-main);
+    border: 1px dotted var(--border-main);
+}
+
+.GroupGame .header .name {
+    display: inline-block
+}
+
+.voteicon.vote_Accept {
+    color: hsl(120, 100%, 59%)
+}
+
+.voteicon.vote_Veto {
+    color:hsl(0, 100%, 50%)
+}
+
+.voteicon.vote_Desire {
+    color:hsl(60, 100%, 50%)
+}
+
+.GroupGame.vote_Accept {
+}
+
+.GroupGame.vote_Veto {
+    color:hsl(0, 0%, 50%);
+    font-style: italic;
+}
+
+.GroupGame.vote_Desire {
+    border-color: gold;
 }

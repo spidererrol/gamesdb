@@ -1,9 +1,12 @@
-import { isKnown_type } from "../libs/utils"
+import { Request, Response } from 'express'
+import { isKnown_type, log_debug } from "../libs/utils"
 import { GameGroup, Games, Group } from "../models/games"
 import { GameType } from "../schemas/Game"
 import { GameGroupType } from "../schemas/GameGroup"
 import { GroupType } from "../schemas/Group"
 import { GameGroupMode } from "../types/GameGroupMode"
+import { isKnown, err404 } from '../libs/utils'
+import '../libs/type-extensions'
 
 async function autoGameGroup(game: GameType, group: GroupType): Promise<void> {
     if (group.gameMatches(game)) {
@@ -47,4 +50,19 @@ export async function recalcGame(game: GameType): Promise<void> {
     for await (const group of Group.find()) {
         await autoGameGroup(game, group)
     }
+}
+
+export async function get(req: Request, res: Response) {
+    log_debug("Got GameGroup Request")
+    let gameGroup = await GameGroup.findOne({
+        game: req.reqGame,
+        group: req.reqGroup
+    })
+    if (!isKnown(gameGroup))
+        err404(res, "GameGroup")
+    log_debug("Success")
+    let ret = {...gameGroup.toObject()}
+    ret["voteState"] = await gameGroup.voteState()
+    ret["ownedState"] = await gameGroup.ownedState()
+    res.json({ status: "success", gamegroup: ret })
 }

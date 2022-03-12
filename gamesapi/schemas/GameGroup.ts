@@ -17,6 +17,17 @@ export interface GameGroupType extends DBBase {
     mode_id: GameGroupMode,
     mode: GameGroupModeStrings,
     playmodes: PlayModeProgressType[],
+    voteState: { 
+        count: number,
+        vote_id: Vote,
+        vote: string,
+    },
+    ownedState: { 
+        count: number,
+        state_id: Owned,
+        state: string,
+        maxPrice: number,
+    }
 }
 
 export const GameGroupSchema = new Schema({
@@ -36,7 +47,7 @@ GameGroupSchema.virtual('mode')
     .get(function (this: any): string {
         // log_debug(`Get mode`)
         let ret = GameGroupMode[this.mode_id as number]
-        log_debug(`==${this.mode_id} => ${ret}`)
+        // log_debug(`==${this.mode_id} => ${ret}`)
         return ret
     })
     .set(function (this: any, v: number | string) {
@@ -54,10 +65,11 @@ GameGroupSchema.virtual('mode')
         }
         // log_debug(`==${(this).mode_id}`)
     })
-GameGroupSchema.virtual('voteState').get(async function (this: GameGroupType) {
-    let groupusers_raw = await UserGroup.find({ group: this._id })
-    let groupusers = groupusers_raw.map((gu: UserGroupType) => gu.user._id)
-    let votes = this.game.votes.filter(v => groupusers.includes(v.user._id))
+GameGroupSchema.methods.voteState = async function (this: GameGroupType) {
+    // log_debug("gen voteState")
+    let groupusers_raw = await UserGroup.find({ group: this.group })
+    let groupusers = groupusers_raw.map((gu: UserGroupType) => gu.user._id.toString())
+    let votes = this.game.votes.filter(v => groupusers.includes(v.user._id.toString()))
     let count = votes.length
     let vote: Vote
     if (votes.filter(v => v.vote_id == Vote.Veto).length > 0) {
@@ -67,16 +79,18 @@ GameGroupSchema.virtual('voteState').get(async function (this: GameGroupType) {
     } else {
         vote = Vote.Accept
     }
-    return {
+    let out = {
         count: count,
         vote_id: vote,
         vote: Vote[vote],
     }
-})
-GameGroupSchema.virtual('ownedState').get(async function (this: GameGroupType) {
-    let groupusers_raw = await UserGroup.find({ group: this._id })
-    let groupusers = groupusers_raw.map((gu: UserGroupType) => gu.user._id)
-    let owners = this.game.owners.filter(o => groupusers.includes(o.user._id))
+    // log_debug(out)
+    return out
+}
+GameGroupSchema.methods.ownedState = async function (this: GameGroupType) {
+    let groupusers_raw = await UserGroup.find({ group: this.group })
+    let groupusers = groupusers_raw.map((gu: UserGroupType) => gu.user._id.toString())
+    let owners = this.game.owners.filter(o => groupusers.includes(o.user._id.toString()))
     let count = owners.length
     let owned = owners.filter(o => o.isOwned).length
     let installed = owners.filter(o => o.isInstalled).length
@@ -91,7 +105,7 @@ GameGroupSchema.virtual('ownedState').get(async function (this: GameGroupType) {
         }).maxPrice
     }
     let state: Owned
-    log_debug(`owned = ${owned}, count = ${count}, installed = ${installed}`)
+    // log_debug(`GameGroup.ownedState : owned = ${owned}, count = ${count}, installed = ${installed}`)
     if (installed == count) {
         state = Owned.Installed
     } else if (count == 0 || owned < count) {
@@ -107,4 +121,4 @@ GameGroupSchema.virtual('ownedState').get(async function (this: GameGroupType) {
         state: Owned[state],
         maxPrice: minPrice,
     }
-})
+}

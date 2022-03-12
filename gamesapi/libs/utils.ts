@@ -12,6 +12,10 @@ import { GameGroupType } from '../schemas/GameGroup'
 
 // ### FUNCTIONS ###
 
+export function err404(res: express.Response,thingtype: string) {
+    res.status(404).json({ status: "error", message: `${thingtype} not found` })
+}
+
 export function log_debug(msg: any) {
     console.log(msg)
 }
@@ -43,7 +47,7 @@ export function handleError(err: any, res: express.Response): void {
     return
 }
 
-export function isKnown(value: any): boolean {
+export function isKnown(value?: any | null): value is any {
     if (value === undefined) return false
     if (value === null) return false
     return true

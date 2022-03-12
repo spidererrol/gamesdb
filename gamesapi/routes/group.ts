@@ -2,6 +2,7 @@ import express from 'express'
 import { bindRouterPath, setupParams } from '../libs/utils'
 import * as actions from '../actions/group'
 import * as pmp_actions from '../actions/playmodeprogress'
+import * as gg_actions from '../actions/gamegroup'
 import "../libs/type-extensions"
 
 const router = express.Router()
@@ -25,7 +26,7 @@ bindPath('get', '/:group/leave', actions.leave) // Remove current user from grou
 bindPath('get', '/:group/progress/:playmode', pmp_actions.getProgress)
 bindPath('post', '/:group/progress/:playmode', pmp_actions.setProgress)
 bindPath('patch', '/:group/progress/:playmode', pmp_actions.setProgress)
-bindPath('get', '/:group/progress', actions.TODO)
+bindPath('get', '/:group/progress', actions.TODO) //TODO: get all progresses?
 
 bindPath('get', '/:group/invite/:user', actions.invite) // Invite :user into private :group
 
@@ -34,6 +35,8 @@ bindPath('get', '/:group/expel/:user', actions.expel) // ADMIN ONLY. Remove :use
 bindPath('get', '/:group/add/:game', actions.includeGame)
 
 bindPath('get', '/:group/remove/:game', actions.excludeGame)
+
+bindPath('get', '/:group/:game', gg_actions.get)
 
 bindPath('get', '/:group', actions.get)
 bindPath('patch', '/:group', actions.update)

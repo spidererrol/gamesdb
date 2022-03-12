@@ -5,10 +5,79 @@ import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { PlayModeProgressValues } from '../types/PlayModeProgressValues'
 import { PlayModeProgressType } from '../schemas/PlayModeProgress'
+import { VoteType } from '../schemas/Vote'
+import { Vote } from '../types/Vote'
+import { OwnerType } from '../schemas/Owner'
+import { Owned } from '../types/Owned'
 
 // Helper functions:
 
 // Actions:
+
+/* From game:
+export async function vote(req: Request, res: Response) {
+    log_debug(`Voting for ${req.params.id}`)
+    try {
+        const game = await Games.findById(req.params.id).populate("votes")
+        if (!isKnown(game)) {
+            err404(res)
+            return
+        }
+        let newvote: string = req.body.vote
+        let myvote: any
+        for (const vote of game.votes) {
+            // log_debug(`Vote: ${vote.user._id} == ${req.myUser._id}`);
+            if (vote.user._id.toString() == req.myUser._id.toString()) {
+                // log_debug("Hit existing vote");
+                myvote = vote
+                break
+            }
+        }
+        if (isKnown(myvote)) {
+            myvote.vote = newvote//Vote[newvote as keyof typeof Vote];
+            myvote.when = new Date()
+            // myvotes[0].save();
+            // log_debug("Updated vote: " + myvote);
+        } else {
+            let vote = game.votes.push({
+                user: req.myUser._id,
+                when: new Date(),
+                vote: newvote,//Vote[newvote as keyof typeof Vote],
+            })
+            // log_debug("Added vote: " + vote);
+            // vote.save();
+        }
+        let result = game.save()
+        // let newgame = await Games.findById(req.params.id).populate("votes");
+        res.json({
+            status: "success",
+            game: game,
+            result: result,
+            //    after: newgame
+        })
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
+*/
+
+function setOwned(ownstate: OwnerType, newstate: Owned): void {
+    switch (newstate) {
+        case Owned.Installed:
+            ownstate.isOwned = true
+            ownstate.isInstalled = true
+            break
+        case Owned.Owned:
+            ownstate.isOwned = true
+            ownstate.isInstalled = false
+            break
+        case Owned.Unowned:
+            ownstate.isOwned = false
+            ownstate.isInstalled = false
+            break
+    }
+}
 
 export async function setProgress(req: Request, res: Response) {
     try {
@@ -24,7 +93,42 @@ export async function setProgress(req: Request, res: Response) {
                 group: req.reqGroup
             })
         if (isKnown_type<PlayModeProgressType>(pmp)) {
-            pmp.progress = PlayModeProgressValues[req.body.progress as keyof typeof PlayModeProgressValues]
+            if (isKnown(req.body.progress))
+                pmp.progress = PlayModeProgressValues[req.body.progress as keyof typeof PlayModeProgressValues]
+            let updatepm = false
+            if (isKnown(req.body.vote)) {
+                let vote: string = req.body.vote as string
+                let myvotes = pmp.playmode.votes.filter(v => v.user == req.myUser)
+                let myvote: VoteType
+                if (myvotes.length > 0) {
+                    myvote = myvotes[0]
+                    myvote.vote = vote
+                } else {
+                    pmp.playmode.votes.push({
+                        user: req.myUser,
+                        vote: vote,
+                    } as unknown as VoteType)
+                }
+                updatepm = true
+            }
+            if (isKnown(req.body.owned)) {
+                let newowned = req.body.owned as string
+                let myowned = pmp.playmode.owners.filter(v => v.user == req.myUser)
+                let myown: OwnerType
+                if (myowned.length > 0) {
+                    myown = myowned[0]
+                    setOwned(myown, Owned[newowned as keyof typeof Owned])
+                } else {
+                    myown = {
+                        user: req.myUser,
+                        isOwned: false, isInstalled: false
+                    } as unknown as OwnerType
+                    setOwned(myown, Owned[newowned as keyof typeof Owned])
+                    pmp.playmode.owners.push(myown)
+                }
+                updatepm = true
+            }
+            let pmresult = await pmp.playmode.save()
             let result = await pmp.save()
             res.json({ status: "success", progress: pmp, result: result })
         } else {
@@ -49,7 +153,10 @@ export async function getProgress(req: Request, res: Response) {
                 group: req.reqGroup
             })
         if (isKnown_type<PlayModeProgressType>(pmp)) {
-            res.json({ status: "success", progress: pmp })
+            let outpmp: any = { ...(pmp as any).toObject() }
+            outpmp.voteState = await (pmp as any).voteState()
+            outpmp.ownedState = await (pmp as any).ownedState()
+            res.json({ status: "success", progress: outpmp })
         } else {
             errorResponse(res, HTTPSTATUS.INTERNAL_ERROR, "Cannot create progress object")
         }

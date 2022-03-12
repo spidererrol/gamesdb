@@ -1,6 +1,5 @@
 import { Schema } from 'mongoose'
 import '../libs/schemainit'
-import { log_debug } from '../libs/utils'
 import { VoteSchema } from "./Vote"
 import { WhenWhoSchema } from './WhenWho'
 import { Vote } from '../types/Vote'
@@ -20,15 +19,6 @@ export interface GameType extends DBBase {
     links: Map<string, string>//{ [index: string]: string }
     votes: VoteType[]
     owners: OwnerType[]
-    voteState: {
-        count: number
-        vote: Vote
-    }
-    ownedState: {
-        count: number
-        state: Owned
-        maxPrice: number
-    }
     added: WhenWhoType
 }
 
