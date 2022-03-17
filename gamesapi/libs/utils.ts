@@ -12,7 +12,7 @@ import { GameGroupType } from '../schemas/GameGroup'
 
 // ### FUNCTIONS ###
 
-export function err404(res: express.Response,thingtype: string) {
+export function err404(res: express.Response, thingtype: string) {
     res.status(404).json({ status: "error", message: `${thingtype} not found` })
 }
 
@@ -137,6 +137,16 @@ export function errorResponse(res: express.Response, code: HTTPSTATUS, message: 
     return
 }
 
+/**
+ * Old method of returning a list of items in a standard way
+ * 
+ * @deprecated
+ * @param listkey key name to store the resulting list under
+ * @param query query to process
+ * @param res response object
+ * @param limit default:config.PAGELIMIT max number of items to return
+ * @returns the object that has been sent out.
+ */
 export async function getList(listkey: string, query: any, res: express.Response, limit: number = config.PAGELIMIT): Promise<any> {
     const list = await query.limit(limit + 1)
     const more: boolean = list.length > limit
@@ -144,6 +154,39 @@ export async function getList(listkey: string, query: any, res: express.Response
     ret[listkey] = list.slice(0, limit)
     res.json(ret)
     return ret
+}
+
+export async function getList_Paged(listkey: string, query: any, res: express.Response, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
+    if (pageno < 0) {
+        if (isKnown_type<express.Request>(req)) {
+            if ('page' in req.query) {
+                pageno = +(req.query.page as string)
+            } else {
+                pageno = 0
+            }
+        } else {
+            pageno = 0
+        }
+    }
+    if (limit < 0) {
+        if (isKnown_type<express.Request>(req)) {
+            if ('limit' in req.query) {
+                limit = +(req.query.limit as string)
+            } else {
+                limit = config.PAGELIMIT
+            }
+        } else {
+            limit = config.PAGELIMIT
+        }
+    }
+    log_debug(`>Page:${pageno}, Limit:${limit}`)
+    const list = await query.skip(pageno * limit).limit(limit + 1)
+    const more: boolean = list.length > limit
+    const ret: any = { status: "success", more: more }
+    ret[listkey] = list.slice(0, limit)
+    log_debug(ret)
+    res.json(ret)
+    return
 }
 
 export async function bg(then: Promise<any>): Promise<void> {

@@ -11,11 +11,6 @@ interface LayoutState {
 
 class Layout extends React.Component<LayoutProps, LayoutState> {
   state = {}
-  async logout() {
-    await this.props.api.auth.logout()
-    this.props.api.authtok = "none"
-  }
-
   render() {
     return (
       <div className="Layout">
@@ -24,14 +19,13 @@ class Layout extends React.Component<LayoutProps, LayoutState> {
           <nav>
             <ul>
               <li><Link to="/">Home</Link></li>
-              <li><Link to="/moose">Test</Link></li>
+              <li><Link to="/groups">Groups</Link></li>
             </ul>
           </nav>
         </header>
         <article>
           <Outlet />
         </article>
-        <button onClick={(e) => this.logout()}>Logout</button>
       </div>
 
     )

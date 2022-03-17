@@ -12,20 +12,9 @@ import { GameGroupMode } from '../types/GameGroupMode'
 import { GameGroupType } from '../schemas/GameGroup'
 import { recalcGroup } from './gamegroup'
 import { TODO } from './test'
+import { getList_Paged } from '../libs/utils'
 
 // Helper functions:
-
-async function getList(query: any, limit: number = config.PAGELIMIT, res?: Response): Promise<any> {
-    const list = await query.limit(limit + 1)
-    return getRawList(list, limit, res)
-}
-
-function getRawList(list: any, limit: number, res?: Response<any, Record<string, any>>) {
-    const more: boolean = list.length > limit
-    const ret = { status: "success", groups: list.slice(0, limit), more: more }
-    res?.json(ret)
-    return ret
-}
 
 function err404(res: Response) {
     res.status(404).json({ status: "error", message: "Game not found" })
@@ -36,19 +25,23 @@ function err404(res: Response) {
 export async function getAllPublic(req: Request, res: Response) {
     log_debug("Request all public groups")
     try {
-        getList(Group.find({ private: false, }), config.PAGELIMIT, res)
+        await getList_Paged("groups", Group.find({ private: false, }), res, req)
     } catch (err) {
         handleError(err, res)
     }
 }
 
+// export const getAllPrivate = TODO
 export async function getAllPrivate(req: Request, res: Response) {
     log_debug("Request all (available) private groups")
     try {
-        let ugs = await UserGroup.find({
+        let ugs = UserGroup.find({
             user: req.myUser,
-        }).limit(config.PAGELIMIT + 1)
-        getRawList(ugs.map((ug: UserGroupType) => ug.group).filter((g: GroupType) => g.private), config.PAGELIMIT, res)
+            private: true,
+        })
+        // .limit(config.PAGELIMIT + 1)
+        // getRawList(ugs.map((ug: UserGroupType) => ug.group).filter((g: GroupType) => g.private), config.PAGELIMIT, res)
+        await getList_Paged("groups", ugs, res, req)
     } catch (err) {
         handleError(err, res)
     }
@@ -109,7 +102,7 @@ export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
     let q = Group.find().nameish(req.params.query, req.myUser)
-    getList(q, config.PAGELIMIT, res)
+    getList_Paged("groups", q, res)
 }
 
 export async function join(req: Request, res: Response) {

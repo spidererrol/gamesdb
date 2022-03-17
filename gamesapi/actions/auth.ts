@@ -6,6 +6,7 @@ import auth from '../auth'
 import { ShadowType } from '../schemas/Shadow'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { RegTokenType } from '../schemas/RegToken'
+import config from '../libs/config'
 
 export async function login(req: Request, res: Response) {
     log_debug("Got Login Request")
@@ -24,6 +25,27 @@ export async function login(req: Request, res: Response) {
     }
 }
 
+export async function addRegToken(req: Request, res: Response) {
+    if (!req.myUser.isAdmin) {
+        res.status(HTTPSTATUS.FORBIDDEN).json({
+            status: "error",
+            message: "You are not authorised to create RegTokens"
+        })
+        return
+    }
+    await cleanRegTokens()
+    let oldTok = await RegToken.findOne({ token: req.body.token })
+    if (isKnown(oldTok)) {
+        res.status(HTTPSTATUS.CONFLICT).json({
+            status: "error",
+            message: "The requested token already exists"
+        })
+        return
+    }
+    let newTok = await RegToken.create({ ...req.body })
+    res.json({ status: "success", regtoken: newTok })
+}
+
 export async function register(req: Request, res: Response) {
     log_debug("Got Register Request")
     try {
@@ -32,7 +54,7 @@ export async function register(req: Request, res: Response) {
             const regtokCount = await RegToken.countDocuments()
             if (regtokCount == 0) {
                 await RegToken.create({
-                    token: "admin",
+                    token: config.INIT_REGTOKEN,
                     registrations: 1,
                 })
             }
@@ -40,6 +62,7 @@ export async function register(req: Request, res: Response) {
 
         if (!isKnown(req.body.regtoken))
             throw new Error("regtoken is required")
+        await cleanRegTokens()
         const regtoken = await RegToken.findOne({
             token: req.body.regtoken,
             registrations: { $gt: 0 },
@@ -75,6 +98,15 @@ export async function register(req: Request, res: Response) {
     } catch (err) {
         handleError(err, res)
     }
+}
+
+async function cleanRegTokens() {
+    return RegToken.deleteMany({
+        $or: [
+            { registrations: { $eq: 0 }, },
+            { expires: { $lt: new Date() } },
+        ]
+    })
 }
 
 // Internal func, no export!

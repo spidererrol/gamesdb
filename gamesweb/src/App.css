@@ -123,7 +123,25 @@ pre {
 }
 
 .GroupGame .header .name {
-    display: inline-block
+    display: inline-block;
+}
+
+.GroupGame>.header {
+    border-bottom: 1px dashed hsl(0, 0%, 50%);
+}
+
+.GroupGame .header {
+    display: flex;
+    justify-content:left;
+}
+
+.playmodes .PlayMode {
+    display: flex;
+    justify-content: left;
+}
+
+.PlayMode > div {
+    display: inline-block;
 }
 
 .voteicon.vote_Accept {

@@ -1,16 +1,6 @@
-import React from "react"
-import { Link } from "react-router-dom"
-import { GroupType } from "../libs/types/Group"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "../GeneralProps"
 
-interface GroupSelectorProps extends GeneralProps {
-
-}
-
-interface GroupSelectorState {
-    memberships: any[]
-}
-
+/*
 class GroupSelector extends React.Component<GroupSelectorProps, GroupSelectorState> {
     state = { memberships: ["Loading..."] as any[] }
 
@@ -56,5 +46,10 @@ class GroupSelector extends React.Component<GroupSelectorProps, GroupSelectorSta
         )
     }
 }
+*/
 
-export default GroupSelector
+function ListGroups(props:GeneralProps) {
+    return <>TODO:List</>
+}
+
+export default ListGroups

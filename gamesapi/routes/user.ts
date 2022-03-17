@@ -13,6 +13,8 @@ bindPath('get', '/memberships', user_actions.memberships)
 
 bindPath('get', '/search/:query', user_actions.quickSearch)
 
+bindPath('post', '/regtoken/add', auth_actions.addRegToken)
+
 bindPath('get', '/', user_actions.get)
 
 export default router

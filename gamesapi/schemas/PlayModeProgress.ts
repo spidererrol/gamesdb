@@ -81,7 +81,10 @@ PlayModeProgressSchema.methods.ownedState = async function (this: PlayModeProgre
                 error: `No GameGroup for game=${this.game} group=${this.group}`,
             }
         }
-        return gg.ownedState()
+        let os = await gg.ownedState()
+        os = {...os}
+        os.maxPrice = 0.0
+        return os
     }
     let ug_members = await UserGroup.find({ group: this.group })
     let member_ids = ug_members.map(ug => ug.user._id.toString())

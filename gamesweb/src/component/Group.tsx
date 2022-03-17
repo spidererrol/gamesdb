@@ -36,8 +36,7 @@ function Group(props: GeneralProps) {
         <p>{group.private ? "private" : "public"}</p>
         <br />
         <div className="memberslist"><div className="label">Members:</div>{members}</div>
-        <div className="gameslist"><div className="label">Games:</div>{games}</div>
-        <pre className="debug">{JSON.stringify(group, null, 2)}</pre>
+        <div className="label">Games:</div><div className="gameslist">{games}</div>
     </>)
 }
 

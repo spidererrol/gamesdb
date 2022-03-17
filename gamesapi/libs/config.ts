@@ -24,4 +24,8 @@ export default class config {
     static get PAGELIMIT(): number {
         return getEnv.Number("PAGELIMIT")
     }
+
+    static get INIT_REGTOKEN() : string {
+        return getEnv.String("INIT_REGTOKEN","admin")
+    }
 }

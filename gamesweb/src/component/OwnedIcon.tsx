@@ -6,11 +6,16 @@ interface OIProps {
 function OwnedIcon(props: OIProps) {
     let classes = "ownedicon owned_" + props.owned
     let icon = "?"
-    if (props.owned === "Unowned")
-        icon = "£" + props.maxPrice
-        if (props.owned === "Owned")
+    if (props.owned === "Unowned") {
+        if (props.maxPrice === 0) {
+            icon = "free"
+        } else {
+            icon = "£" + props.maxPrice.toFixed(2)
+        }
+    }
+    if (props.owned === "Owned")
         icon = "O"
-        if (props.owned === "Installed")
+    if (props.owned === "Installed")
         icon = "I"
     return <span className={classes} title={props.owned}>{icon}</span>
 }
