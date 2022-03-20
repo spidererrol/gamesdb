@@ -18,21 +18,51 @@ export class api_group extends apibase {
         return ret.group
     }
 
-    async gamegroup(groupid: string,gameid: string) {
+    async gamegroup(groupid: string, gameid: string) {
         debug("get gamegroup")
-        let ret = await this.req("GET",`/${groupid}/${gameid}`)
+        let ret = await this.req("GET", `/${groupid}/${gameid}`)
         return ret.gamegroup
     }
 
-    async getProgress(groupid: string,playmodeid: string) {
+    async getProgress(groupid: string, playmodeid: string) {
         debug("get progress")
-        let ret = await this.req("GET",`/${groupid}/progress/${playmodeid}`)
+        let ret = await this.req("GET", `/${groupid}/progress/${playmodeid}`)
         return ret.progress
     }
 
-    async getAll(): Promise<GroupType[]> {
+    async getAvailable(): Promise<GroupType[]> {
         debug("get groups")
-        let ret = await this.req("GET","/")
+        let ret = await this.req("GET", "/available")
         return ret.groups
+    }
+
+    async create(newgroup: any) {
+        debug("create group")
+        let ret = await this.req("POST", "/create", newgroup)
+        return ret
+    }
+
+    async update(groupid: string, newgroup: any) {
+        debug("update group")
+        let ret = await this.req("PATCH", `/${groupid}`, newgroup)
+        return ret
+    }
+
+    async del(groupid: string) {
+        debug("delete group")
+        let ret = await this.req("DELETE", `/${groupid}`)
+        return ret
+    }
+
+    async join(groupid: string) {
+        debug("join group")
+        let ret = await this.req("GET", `/${groupid}/join`)
+        return ret
+    }
+
+    async leave(groupid: string) {
+        debug("leave group")
+        let ret = await this.req("GET", `/${groupid}/leave`)
+        return ret
     }
 }

@@ -104,7 +104,7 @@ export function setupParams(app: express.Router) {
     app.param("group", async (req, res, next, group_id) => {
         let group = await Group.findById(group_id)
         if (!isKnown(group)) {
-            res.status(404).json({ status: "error", message: "No such group" })
+            res.status(404).json({ status: "error", message: "No such group: " + group_id })
             return
         }
         (req as express.Request).reqGroup = group
@@ -140,14 +140,14 @@ export function errorResponse(res: express.Response, code: HTTPSTATUS, message: 
 /**
  * Old method of returning a list of items in a standard way
  * 
- * @deprecated
+ * @deprecated Use getList instead
  * @param listkey key name to store the resulting list under
  * @param query query to process
  * @param res response object
  * @param limit default:config.PAGELIMIT max number of items to return
  * @returns the object that has been sent out.
  */
-export async function getList(listkey: string, query: any, res: express.Response, limit: number = config.PAGELIMIT): Promise<any> {
+export async function getList_deprecated(listkey: string, query: any, res: express.Response, limit: number = config.PAGELIMIT): Promise<any> {
     const list = await query.limit(limit + 1)
     const more: boolean = list.length > limit
     const ret: any = { status: "success", more: more }
@@ -156,7 +156,19 @@ export async function getList(listkey: string, query: any, res: express.Response
     return ret
 }
 
-export async function getList_Paged(listkey: string, query: any, res: express.Response, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
+export type getList_Mapper = (inlist: any[]) => any[]
+
+interface getList_Args {
+    listkey: string
+    query: any
+    res: express.Response
+    mapper?: getList_Mapper | null
+    req?: express.Request
+    pageno?: number
+    limit?: number
+}
+
+export async function getList({ listkey, query, res, mapper, req, pageno = -1, limit = -1 }: getList_Args): Promise<void> {
     if (pageno < 0) {
         if (isKnown_type<express.Request>(req)) {
             if ('page' in req.query) {
@@ -179,14 +191,28 @@ export async function getList_Paged(listkey: string, query: any, res: express.Re
             limit = config.PAGELIMIT
         }
     }
-    log_debug(`>Page:${pageno}, Limit:${limit}`)
+    // log_debug(`>Page:${pageno}, Limit:${limit}`)
     const list = await query.skip(pageno * limit).limit(limit + 1)
     const more: boolean = list.length > limit
     const ret: any = { status: "success", more: more }
-    ret[listkey] = list.slice(0, limit)
-    log_debug(ret)
+    if (isKnown_type<getList_Mapper>(mapper)) {
+        ret[listkey] = mapper(list.slice(0, limit))
+    } else {
+        ret[listkey] = list.slice(0, limit)
+    }
+    // log_debug(ret)
     res.json(ret)
     return
+}
+
+export async function getList_Paged(listkey: string, query: any, res: express.Response, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
+    return getList({ listkey, query, res, req, pageno, limit })
+}
+
+
+
+export async function getList_Mapped(listkey: string, query: any, res: express.Response, mapper: getList_Mapper, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
+    return getList({ listkey, query, res, req, pageno, limit, mapper })
 }
 
 export async function bg(then: Promise<any>): Promise<void> {

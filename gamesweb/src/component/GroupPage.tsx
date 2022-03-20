@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { GroupType } from "../libs/types/Group"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 import GroupGame from "./GroupGame"
+import Loading from "./bits/Loading"
 
-function Group(props: GeneralProps) {
+function GroupPage(props: GeneralProps) {
     let params = useParams()
     let [group, setGroup] = useState<GroupType>({ name: "pending" } as GroupType)
-    let [members, setMembers] = useState<any[]>([<div className="loading">Loading...</div>])
-    let [games, setGames] = useState<any[]>([<div className="loading">Loading...</div>])
+    let [members, setMembers] = useState<any[]>([<Loading key="loading" />])
+    let [games, setGames] = useState<any[]>([<Loading key="loading" />])
     useEffect(() => {
         if (params.groupid !== undefined)
             props.api.group.get(params.groupid).then((g) => setGroup(() => g)).catch((reason) => setGroup(() => { return { name: "Error: " + reason } as GroupType }))
@@ -26,7 +27,7 @@ function Group(props: GeneralProps) {
         let out: any[] = []
         if (group.games !== undefined) {
             for (const game of group.games) {
-                out.push(<GroupGame gameid={game._id.toString()} groupid={params.groupid as string} {...props} />)
+                out.push(<GroupGame key={game._id.toString()} gameid={game._id.toString()} groupid={params.groupid as string} {...props} />)
             }
         }
         setGames(() => out)
@@ -41,4 +42,4 @@ function Group(props: GeneralProps) {
 }
 
 
-export default Group
+export default GroupPage

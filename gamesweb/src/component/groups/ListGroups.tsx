@@ -1,55 +1,25 @@
-import { GeneralProps } from "../GeneralProps"
+import { useEffect, useState } from "react"
+import { anyElementList } from "../../libs/types/helpers"
+import { GeneralProps } from "../props/GeneralProps"
+import GroupItem from "./GroupItem"
 
-/*
-class GroupSelector extends React.Component<GroupSelectorProps, GroupSelectorState> {
-    state = { memberships: ["Loading..."] as any[] }
+function ListGroups(props: GeneralProps) {
+    let [el_list, set_el_list] = useState<anyElementList>([<div key="loading" className="loading">Loading...</div>])
 
-    componentDidMount() {
-        console.log("Generating groups...")
-        this.props.api.user.memberships().then((memberships: GroupType[]) => {
-            let grouprender = []
-            for (const group of memberships) {
-                console.log("Group: " + group.name)
-                let group_id = group._id.toString()
-                let group_path = "/group/" + group_id
-                let classes = "group"
-                if (group.private)
-                    classes += " private"
-                else
-                    classes += " public"
-                grouprender.push(<div className={classes} key={group._id.toString()}>
-                    <Link to={group_path}>
-                        <div className="button">{group.name}</div>
-                    </Link>
-                </div>)
+    useEffect(() => {
+        props.api.group.getAvailable().then(groups => {
+            let outlist: anyElementList = []
+            for (const group of groups) {
+                outlist.push(<GroupItem key={group._id.toString()} group={group} {...props} />)
             }
-            this.setState({ memberships: grouprender })
+            set_el_list(outlist)
         })
-    }
+    }, [props,props.dbupdates.groups])
 
-    render() {
-        return (
-            <div className="memberships">
-                <div className="legend">Groups: </div>
-                {this.state.memberships}
-                <div className="group new">
-                    <Link to="/groups/add">
-                        <div className="button" title="Create a new Group">Add</div>
-                    </Link>
-                </div>
-                <div className="group new">
-                    <Link to="/groups/join">
-                        <div className="button" title="Join a public Group">Join</div>
-                    </Link>
-                </div>
-            </div>
-        )
-    }
-}
-*/
-
-function ListGroups(props:GeneralProps) {
-    return <>TODO:List</>
+    return <fieldset className="grouplist ListGroups">
+        <legend>Groups</legend>
+        {el_list}
+    </fieldset>
 }
 
 export default ListGroups

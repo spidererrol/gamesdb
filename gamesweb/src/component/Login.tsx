@@ -2,6 +2,7 @@ import React from 'react'
 import { api_user } from "../libs/api/user"
 import { api_auth } from "../libs/api/auth"
 import AuthTok from '../libs/AuthTok'
+import { InputRefObject } from '../libs/types/InputRefObject'
 
 interface Props {
     authTok: AuthTok
@@ -13,8 +14,6 @@ interface State {
     registerError: string
     registerSuccess: boolean
 }
-
-type InputRefObject = React.RefObject<HTMLInputElement>
 
 class Login extends React.Component<Props, State> {
     userRef: InputRefObject

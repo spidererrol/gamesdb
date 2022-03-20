@@ -1,9 +1,10 @@
 import React from "react"
 import { Link, Outlet } from "react-router-dom"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 
 interface LayoutProps extends GeneralProps {
   user: any
+  logoutfunc: React.MouseEventHandler<HTMLButtonElement>
 }
 
 interface LayoutState {
@@ -20,6 +21,7 @@ class Layout extends React.Component<LayoutProps, LayoutState> {
             <ul>
               <li><Link to="/">Home</Link></li>
               <li><Link to="/groups">Groups</Link></li>
+              <li className="last"><button className="logout" onClick={this.props.logoutfunc}>Logout</button></li>
             </ul>
           </nav>
         </header>

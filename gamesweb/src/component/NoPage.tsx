@@ -1,5 +1,5 @@
 import React from "react"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 
 interface NoPageProps extends GeneralProps {
     

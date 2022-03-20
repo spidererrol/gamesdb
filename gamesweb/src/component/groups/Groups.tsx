@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom"
-import { GeneralProps } from "../GeneralProps"
+import { GeneralProps } from "../props/GeneralProps"
 
 function Groups(props: GeneralProps) {
     return <>

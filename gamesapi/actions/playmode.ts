@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { PlayMode } from '../models/games'
-import { handleError, log_debug, isKnown, errorResponse, getList } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, getList_deprecated } from '../libs/utils'
 import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
 
@@ -31,7 +31,7 @@ export async function add(req: Request, res: Response) {
 
 export async function getAll(req: Request, res: Response) {
     try {
-        getList("playmodes", PlayMode.find({ game: req.reqGame }), res)
+        getList_deprecated("playmodes", PlayMode.find({ game: req.reqGame }), res)
     } catch (error) {
         handleError(error, res)
     }

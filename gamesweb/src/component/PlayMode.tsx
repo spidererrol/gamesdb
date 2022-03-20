@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { PlayModeProgressType, PlayModeType } from "../libs/types/PlayMode"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 import OwnedIcon from "./OwnedIcon"
 import VoteIcon from "./VoteIcon"
 

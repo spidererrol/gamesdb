@@ -1,7 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { GroupType } from "../libs/types/Group"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 
 interface GroupSelectorProps extends GeneralProps {
 

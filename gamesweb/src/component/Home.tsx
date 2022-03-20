@@ -1,5 +1,5 @@
 import React from "react"
-import { GeneralProps } from "./GeneralProps"
+import { GeneralProps } from "./props/GeneralProps"
 import GroupSelector from "./GroupSelector"
 
 interface HomeState {
@@ -16,7 +16,7 @@ class Home extends React.Component<GeneralProps, HomeState> {
     render() {
         return (
             <div className="home">
-                <GroupSelector api={this.props.api} />
+                <GroupSelector {...this.props} />
                 <button onClick={(e) => this.logout()}>Logout</button>
             </div>
         )

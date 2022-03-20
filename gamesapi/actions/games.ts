@@ -182,7 +182,8 @@ export async function addTag(req: Request, res: Response) {
             return
         }
         log_debug(req.body)
-        for (const addtag of tags) {
+        for (const addtagu of tags) {
+            let addtag = addtagu.toLocaleLowerCase()
             if (game.tags.includes(addtag))
                 continue
             game.tags.push(addtag)

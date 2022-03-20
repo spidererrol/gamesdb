@@ -1,3 +1,8 @@
-import { UserType } from "../../../../gamesapi/schemas/User"
+import { DBBase } from "./DBBase"
 
-export type { UserType }
+export interface UserType extends DBBase {
+    loginName: string
+    displayName: string
+    registered: Date
+    isAdmin: boolean
+}

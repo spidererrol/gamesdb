@@ -17,6 +17,8 @@ bindPath('get', '/', actions.getAllPublic)
 
 bindPath('get', '/private', actions.getAllPrivate)
 
+bindPath('get', '/available', actions.getGroupsForMe)
+
 bindPath("get", "/search/:query", actions.quickSearch)
 
 bindPath('get', '/:group/join', actions.join) // Join current user into public group
@@ -40,5 +42,6 @@ bindPath('get', '/:group/:game', gg_actions.get)
 
 bindPath('get', '/:group', actions.get)
 bindPath('patch', '/:group', actions.update)
+bindPath('delete', '/:group', actions.del)
 
 export default router

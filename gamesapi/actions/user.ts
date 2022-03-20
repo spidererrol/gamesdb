@@ -26,7 +26,7 @@ export async function memberships(req: Request, res: Response) {
     let ugs = await UserGroup.find({ user: req.myUser })
     res.json({
         status: "success",
-        memberships: ugs.map((ug: UserGroupType) => ug.group)
+        memberships: ugs.map((ug: UserGroupType) => ug.group).sort((a,b)=>a.name.localeCompare(b.name))
     })
 }
 

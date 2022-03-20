@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { GameGroup, Group, UserGroup } from '../models/games'
-import { handleError, log_debug, isKnown, errorResponse, setGameGroupMode, isKnown_type } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, setGameGroupMode, isKnown_type, getList_Mapped } from '../libs/utils'
 import '../libs/type-extensions'
 import { GroupType } from '../schemas/Group'
 import config from '../libs/config'
@@ -13,6 +13,7 @@ import { GameGroupType } from '../schemas/GameGroup'
 import { recalcGroup } from './gamegroup'
 import { TODO } from './test'
 import { getList_Paged } from '../libs/utils'
+let debug = require("debug")("actions/group")
 
 // Helper functions:
 
@@ -47,8 +48,34 @@ export async function getAllPrivate(req: Request, res: Response) {
     }
 }
 
+export async function getGroupsForMe(req: Request, res: Response) {
+    debug("getGroupsForMe")
+    try {
+        let groups = Group.find({
+            $or: [
+                { private: false },
+                { "members._id": req.myUser._id.toString() }
+            ]
+        }).sort("name")
+        await getList_Mapped("groups", groups, res,
+            groups => {
+                let out = []
+                for (const group of groups) {
+                    let outgroup: any = { ...group.toObject() }
+                    outgroup.isMember = group.members.map((u: UserType) => u._id.toString()).includes(req.myUser._id.toString())
+                    out.push(outgroup)
+                }
+                return out
+            }
+            , req)
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
 export async function create(req: Request, res: Response) {
     try {
+        log_debug("Create Group")
         if (!isKnown(req.body.name)) {
             res.status(406).json({ status: "error", message: "name is required" })
             return
@@ -60,6 +87,10 @@ export async function create(req: Request, res: Response) {
             return
         }
         let group = new Group(req.body)
+        group.added = {
+            when: new Date(),
+            who: req.myUser,
+        }
         group.members.push(req.myUser)
         let dbGroup = await group.save()
         let join = new UserGroup({
@@ -158,6 +189,16 @@ export async function leave(req: Request, res: Response) {
             return
         }
         res.json({ status: "success", message: "Group left" })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function del(req: Request, res: Response) {
+    log_debug("Delete group")
+    try {
+        let result = await Group.findByIdAndDelete(req.reqGroup._id)
+        return result
     } catch (error) {
         handleError(error, res)
     }

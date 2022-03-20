@@ -2,6 +2,8 @@
     --bg-main: black;
     --fg-main: white;
     --border-main: hsl(0, 0%, 50%);
+    --bg-tag: green;
+    --fg-tag: white;
 }
 
 body {
@@ -22,6 +24,11 @@ body {
     .App-logo {
         animation: App-logo-spin infinite 20s linear;
     }
+}
+
+.smallnumber {
+    width: 4rem;
+    text-align: center;
 }
 
 .App-header {
@@ -46,6 +53,32 @@ body {
     to {
         transform: rotate(360deg);
     }
+}
+
+.Exclude .tag, .tag.Exclude {
+    --bg-tag: hsl(0, 100%, 30%);
+}
+
+.tag {
+    position: relative;
+    display: inline-block;
+    border: 0px;
+    background: var(--bg-tag);
+    border-radius: 10px;
+    color: var(--fg-tag);
+    margin: 4px;
+    padding: 3px;
+}
+
+.tag button.deltag {
+    border: 1px solid black;
+    background: transparent;
+    position: relative;
+    top: 0px;
+    right: 0px;
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
 }
 
 label::after {
@@ -93,6 +126,45 @@ nav li a {
 .memberslist>.member,.gameslist>.GroupGame{
     border: 1px solid var(--border-main);
     margin: 1px;
+}
+
+.ListGroups {
+    display: flex;
+}
+
+.ListGroups .GroupItem {
+    border: 1px solid hsl(0, 0%, 50%);
+    margin: 1px;
+}
+
+.ListGroups .GroupItem.private {
+    border-color: hsl(0, 100%, 50%);
+}
+
+.ListGroups .GroupItem.member {
+    border-color: hsl(120, 100%, 25%);
+}
+
+.ListGroups .GroupItem.private.member {
+    border-color: hsl(22, 100%, 50%)
+}
+
+.AddGroup, .EditGroup {
+    display: flex;
+    justify-content: left;
+}
+
+button.logout {
+    border: none;
+    background: transparent;
+    color: black;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+nav li.last {
+    margin-left: 2rem;
 }
 
 .button {
