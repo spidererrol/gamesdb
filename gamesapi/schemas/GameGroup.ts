@@ -95,7 +95,7 @@ GameGroupSchema.methods.ownedState = async function (this: GameGroupType) {
     let owned = owners.filter(o => o.isOwned).length
     let installed = owners.filter(o => o.isInstalled).length
     let minPrice: number | null = null
-    if (owners.length >= 1) {
+    if (owners.length >= 1 && owners.filter(o => !o.isOwned).length >= 1) {
         minPrice = owners.filter(o => !o.isOwned).reduce((a, b) => {
             if (a.maxPrice <= 0)
                 return b

@@ -9,8 +9,10 @@ export interface GameType extends DBBase {
     tags: string[]
     maxPlayers: number
     minPlayers: number
-    links: Map<string, string>//{ [index: string]: string }
+    links: { [index: string]: string } // Map in the database, but object in the returned json.
     votes: VoteType[]
     owners: OwnerType[]
     added: WhenWhoType
+    myVote: VoteType | null
+    myOwner: OwnerType | null
 }

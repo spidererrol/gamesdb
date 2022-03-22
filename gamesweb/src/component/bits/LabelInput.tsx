@@ -12,6 +12,8 @@ interface LIProps extends GeneralProps {
     type: string
     value?: string
     defaultChecked?: boolean
+    min?: number
+    max?: number
 }
 
 const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLInputElement>) {
@@ -25,6 +27,8 @@ const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLIn
             placeholder={(props.label_as_placeholder ?? false) ? props.label : props.placeholder}
             defaultValue={props.value}
             defaultChecked={props.defaultChecked}
+            min={props.min}
+            max={props.max}
         />
     </div>
 })

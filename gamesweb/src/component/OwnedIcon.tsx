@@ -1,3 +1,5 @@
+import { isKnown } from "../libs/utils"
+
 interface OIProps {
     owned: string,
     maxPrice: number,
@@ -7,7 +9,9 @@ function OwnedIcon(props: OIProps) {
     let classes = "ownedicon owned_" + props.owned
     let icon = "?"
     if (props.owned === "Unowned") {
-        if (props.maxPrice === 0) {
+        if (!isKnown(props.maxPrice)) {
+            icon = "U"
+        } else if (props.maxPrice === 0) {
             icon = "free"
         } else {
             icon = "£" + props.maxPrice.toFixed(2)

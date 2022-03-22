@@ -72,7 +72,6 @@ export class apibase {
             "Authorization": `Bearer ${this.authtok}`,
         }, sendData)
     }
-
 }
 
 

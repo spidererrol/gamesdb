@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { handleError, isKnown, isKnown_type, log_debug, pw } from '../libs/utils'
+import { getList, handleError, isKnown, isKnown_type, log_debug, pw } from '../libs/utils'
 import { RegToken, Shadow, Users } from '../models/games'
 import { UserType } from "../schemas/User"
 import auth from '../auth'
@@ -44,6 +44,24 @@ export async function addRegToken(req: Request, res: Response) {
     }
     let newTok = await RegToken.create({ ...req.body })
     res.json({ status: "success", regtoken: newTok })
+}
+
+export async function getRegTokens(req: Request, res: Response) {
+    if (!req.myUser.isAdmin) {
+        res.status(HTTPSTATUS.FORBIDDEN).json({
+            status: "error",
+            message: "You are not authorised to create RegTokens"
+        })
+        return
+    }
+    await cleanRegTokens()
+    let toks = RegToken.find()
+    getList({
+        listkey: "regtokens",
+        query: toks,
+        res: res,
+        req: req,
+    })
 }
 
 export async function register(req: Request, res: Response) {

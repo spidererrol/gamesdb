@@ -7,31 +7,33 @@ interface LayoutProps extends GeneralProps {
   logoutfunc: React.MouseEventHandler<HTMLButtonElement>
 }
 
-interface LayoutState {
-}
+function Layout(props: LayoutProps) {
+  let admin = <></>
+  if (props.myuser.get.isAdmin)
+    admin = <li><Link to="/admin">Admin</Link></li>
+  return (
+    <div className="Layout">
+      <header>
+        <p>Welcome {props.user.get.displayName}</p>
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/groups">Groups</Link></li>
+            <li><Link to="/games">Games</Link></li>
+            <li className="gap"></li>
+            {admin}
+            <li>
+              <button className="logout" onClick={props.logoutfunc}>Logout</button>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <article>
+        <Outlet />
+      </article>
+    </div>
 
-class Layout extends React.Component<LayoutProps, LayoutState> {
-  state = {}
-  render() {
-    return (
-      <div className="Layout">
-        <header>
-          <p>Welcome {this.props.user.get.displayName}</p>
-          <nav>
-            <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/groups">Groups</Link></li>
-              <li className="last"><button className="logout" onClick={this.props.logoutfunc}>Logout</button></li>
-            </ul>
-          </nav>
-        </header>
-        <article>
-          <Outlet />
-        </article>
-      </div>
-
-    )
-  }
+  )
 }
 
 export default Layout

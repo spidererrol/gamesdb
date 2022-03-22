@@ -1,22 +1,56 @@
 import { Request, Response } from 'express'
 import { GameGroup, Games } from '../models/games'
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown, errorResponse, bg } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, bg, getList } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import config from '../libs/config'
 import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { TODO } from './test'
+import { UserType } from '../schemas/User'
 
 // Helper functions:
 
-async function getList(query: any, limit: number = config.PAGELIMIT, res?: Response): Promise<any> {
-    const list = await query.limit(limit + 1)
-    const more: boolean = list.length > limit
-    const ret = { status: "success", games: list.slice(0, limit), more: more }
-    res?.json(ret)
-    return ret
+function fillGame(g: GameType, req: Request): GameType {
+    let gout: any = { ...g.toObject() }
+    let myvotes = g.votes.filter((v: any) => v.user._id == req.myUser._id.toString())
+    if (myvotes.length >= 1) {
+        gout.myVote = myvotes[0]
+        gout.myVote.user = undefined
+    } else {
+        gout.myVote = null
+    }
+    let myowners = g.owners.filter((o: any) => o.user._id == req.myUser._id.toString())
+    if (myowners.length >= 1) {
+        gout.myOwner = myowners[0]
+        gout.myOwner.user = undefined
+    } else {
+        gout.myOwner = null
+    }
+    let linksobj: any = {}
+    if (isKnown(g.links)) {
+        for (const [k, v] of g.links) {
+            linksobj[k] = v
+        }
+    }
+    gout.links = linksobj
+    return gout
+}
+
+async function legacy_getList(query: any, res: Response, req: Request): Promise<any> {
+    return getList({
+        listkey: "games",
+        mapeach: g => fillGame(g, req),
+        query,
+        res,
+        req,
+    })
+    // const list = await query.limit(limit + 1)
+    // const more: boolean = list.length > limit
+    // const ret = { status: "success", games: list.slice(0, limit), more: more }
+    // res?.json(ret)
+    // return ret
 }
 
 function err404(res: Response) {
@@ -29,7 +63,7 @@ export async function getAllGames(req: Request, res: Response) {
     // let myuser = req.myUser;
     log_debug("Request all games")
     try {
-        getList(Games.find(), config.PAGELIMIT, res)
+        legacy_getList(Games.find(), res, req)
     } catch (err) {
         handleError(err, res)
     }
@@ -54,7 +88,7 @@ export async function searchGame(req: Request, res: Response) {
     log_debug(`Request game by search`)
     log_debug(search)
     try {
-        getList(Games.find(search), config.PAGELIMIT, res)
+        legacy_getList(Games.find(search), res, req)
     } catch (err) {
         handleError(err, res)
     }
@@ -64,7 +98,7 @@ export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
     let q = Games.find().nameish(req.params.query)
-    getList(q, config.PAGELIMIT, res)
+    legacy_getList(q, res, req)
 }
 
 export async function addGame(req: Request, res: Response) {
@@ -196,7 +230,8 @@ export async function addTag(req: Request, res: Response) {
 }
 
 export async function deleteTag(req: Request, res: Response) {
-    const game_id: string = req.params.id, tags: string[] = req.body
+    const game_id: string = req.params.id
+    // const tags: string[] = req.body
     log_debug('Delete tags')
     try {
         const game = await Games.findById(game_id)
@@ -263,7 +298,7 @@ export async function getGame(req: Request, res: Response) {
     try {
         const game = await Games.findById(req.params.id)
         if (isKnown(game)) {
-            res.json({ status: "success", game: game })
+            res.json({ status: "success", game: fillGame(game, req) })
         } else {
             err404(res)
         }
@@ -380,8 +415,8 @@ export async function addLink(req: Request, res: Response) {
         if (!isKnown(req.body.href)) {
             return errorResponse(res, HTTPSTATUS.BAD_REQUEST, "href is required")
         }
-        // if (!isKnown(req.reqGame.links))
-        //     req.reqGame.links = {}
+        if (!isKnown(req.reqGame.links))
+            req.reqGame.links = new Map<string, string>()
         if (isKnown(req.reqGame.links.get(req.body.name))) {
             return errorResponse(res, HTTPSTATUS.CONFLICT, "Link name already exists")
         }

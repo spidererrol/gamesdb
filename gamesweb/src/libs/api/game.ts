@@ -21,8 +21,22 @@ export class api_game extends apibase {
 
     async playmodes(gameid: string): Promise<PlayModeType[]> {
         debug("get playmodes")
-        let ret = await this.req("GET",`/${gameid}/playmode`)
+        let ret = await this.req("GET", `/${gameid}/playmode`)
         return ret.playmodes
+    }
+
+    async getAll(): Promise<GameType[]> {
+        debug("get all games")
+        let ret = await this.req("GET", '/')
+        return ret.games
+    }
+
+    async vote(gameid: string, vote: "Desire" | "Accept" | "Vote") {
+        debug("vote")
+        let ret = await this.req("POST", `/${gameid}/vote`, {
+            vote
+        })
+        return ret
     }
 
 }

@@ -4,6 +4,8 @@
     --border-main: hsl(0, 0%, 50%);
     --bg-tag: green;
     --fg-tag: white;
+    --item-bg: hsl(214 91% 57%);
+    --item-fg: black;
 }
 
 body {
@@ -81,6 +83,20 @@ body {
     border-radius: 10px;
 }
 
+.cloud {
+    display: flex;
+    justify-content: center;
+}
+
+.cloud .item {
+    display: inline-block;
+    background: var(--item-bg);
+    color: var(--item-fg);
+    border-radius: 10px;
+    padding: 0.25rem;
+    margin: 0.25rem;
+}
+
 label::after {
     content: ':'
 }
@@ -97,7 +113,7 @@ nav ul {
 
 nav li {
     display: inline;
-    background: hsl(214 91% 57%);
+    background: var(--item-bg);
     padding: 0.5rem;
     margin: 1px;
     border-radius: 10px;
@@ -107,6 +123,16 @@ nav li a {
     color: black;
     text-decoration: none;
     font-weight: 600;
+}
+
+.voteicon::before,.ownedicon::before {
+    content: '[';
+    color: hsl(0 0% 50%);
+}
+
+.voteicon::after,.ownedicon::after {
+    content: ']';
+    color: hsl(0 0% 50%);
 }
 
 .memberships,.memberslist,.gameslist {
@@ -161,6 +187,71 @@ button.logout {
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
+}
+
+nav li.gap {
+    width: 2rem;
+    background: var(--bg-main);
+}
+
+.RegTokens {
+    display: flex;
+    justify-content: left;
+}
+
+.ListGames {
+    display: flex;
+    justify-content: left;
+}
+
+.game .prop {
+    text-align: left;
+    /* border: 1px solid red; */
+}
+
+.links {
+    display: flex;
+    justify-content: left;
+}
+
+.link a {
+    color:hsl(187, 87%, 49%);
+}
+
+.link {
+    display: inline-block;
+    margin: 3px;
+    padding-right: 0.5rem;
+    position: relative;
+    /* border: 1px solid red; */
+}
+
+.link::after {
+    position: absolute;
+    content: '➚';
+    border: 1px solid var(--fg-main);
+    font-size: 0.5rem;
+    top: 0px;
+}
+
+.game .alias {
+    /* border: 1px solid var(--fg-main); */
+    text-align: left;
+}
+
+.game .alias::before {
+    content: 'aka ';
+}
+
+.RegTokens .token {
+    border: 1px solid var(--fg-main);
+    height: 100%;
+    padding: 2px;
+    margin: 3px;
+}
+
+.RegTokens .token .name {
+    text-decoration: underline;
 }
 
 nav li.last {
@@ -226,9 +317,6 @@ pre {
 
 .voteicon.vote_Desire {
     color:hsl(60, 100%, 50%)
-}
-
-.GroupGame.vote_Accept {
 }
 
 .GroupGame.vote_Veto {

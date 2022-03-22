@@ -17,7 +17,7 @@ function GroupGame(props: GGProps) {
     const [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
     const [game, setGame] = useState<GameType>({ name: "Loading..." } as GameType)
     const [gamegroup, setGameGroup] = useState<GameGroupType>({ voteState: { vote: "Loading..." }, ownedState: { state: "Loading..." } } as GameGroupType)
-    const [playmodes, setPlayModes] = useState<any[]>([<div className="loading">Loading...</div>])
+    const [playmodes, setPlayModes] = useState<any[]>([<div key="loading" className="loading">Loading...</div>])
     useEffect(() => {
         props.api.game.playmodes(props.gameid).then((p) => setdbPlaymodes(p))
         props.api.game.get(props.gameid).then((g) => setGame(g))

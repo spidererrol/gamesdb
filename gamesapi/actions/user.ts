@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { UserGroup, Users } from '../models/games'
 import '../libs/type-extensions'
 import { UserGroupType } from '../schemas/UserGroup'
-import { log_debug } from '../libs/utils'
+import { getList_Paged, log_debug } from '../libs/utils'
 import config from '../libs/config'
 
 // Helper functions:
@@ -26,7 +26,7 @@ export async function memberships(req: Request, res: Response) {
     let ugs = await UserGroup.find({ user: req.myUser })
     res.json({
         status: "success",
-        memberships: ugs.map((ug: UserGroupType) => ug.group).sort((a,b)=>a.name.localeCompare(b.name))
+        memberships: ugs.map((ug: UserGroupType) => ug.group).sort((a, b) => a.name.localeCompare(b.name))
     })
 }
 
@@ -42,4 +42,9 @@ export async function get(req: Request, res: Response) {
         status: "success",
         user: req.myUser,
     })
+}
+
+export async function getAll(req: Request, res: Response) {
+    let user = Users.find().sort("name")
+    await getList_Paged("users", user, res, req)
 }

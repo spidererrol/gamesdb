@@ -65,4 +65,16 @@ export class api_group extends apibase {
         let ret = await this.req("GET", `/${groupid}/leave`)
         return ret
     }
+
+    async invite(groupid: string, userid: string) {
+        debug("invite")
+        let ret = await this.req("GET", `/${groupid}/invite/${userid}`)
+        return ret
+    }
+
+    async expel(groupid: string, userid: string) {
+        debug("expel")
+        let ret = await this.req("GET", `/${groupid}/expel/${userid}`)
+        return ret
+    }
 }

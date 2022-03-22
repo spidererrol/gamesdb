@@ -1,5 +1,7 @@
 import { apibase } from "./apibase"
 import { GroupType } from "../types/Group"
+import { UserType } from "../types/User"
+import { RegTokenType } from "../types/RegToken"
 
 
 export class api_user extends apibase {
@@ -20,6 +22,24 @@ export class api_user extends apibase {
     async memberships(): Promise<GroupType[]> {
         let ret = await this.req("GET", "memberships")
         return ret.memberships as GroupType[]
+    }
+
+    async getAll(): Promise<UserType[]> {
+        let ret = await this.req("GET", "all")
+        return ret.users as UserType[]
+    }
+
+    async getRegTokens(): Promise<RegTokenType[]> {
+        let ret = await this.req("GET", "regtoken")
+        return ret.regtokens as RegTokenType[]
+    }
+
+    addRegToken(token: string, registrations?: number, expires?: Date) {
+        return this.req("POST","regtoken",{
+            token,
+            registrations,
+            expires
+        })
     }
 
 }

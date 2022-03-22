@@ -157,18 +157,20 @@ export async function getList_deprecated(listkey: string, query: any, res: expre
 }
 
 export type getList_Mapper = (inlist: any[]) => any[]
+export type getList_MapOne = (item: any) => any
 
 interface getList_Args {
     listkey: string
     query: any
     res: express.Response
     mapper?: getList_Mapper | null
+    mapeach?: getList_MapOne | null
     req?: express.Request
     pageno?: number
     limit?: number
 }
 
-export async function getList({ listkey, query, res, mapper, req, pageno = -1, limit = -1 }: getList_Args): Promise<void> {
+export async function getList({ listkey, query, res, mapper, mapeach, req, pageno = -1, limit = -1 }: getList_Args): Promise<void> {
     if (pageno < 0) {
         if (isKnown_type<express.Request>(req)) {
             if ('page' in req.query) {
@@ -192,9 +194,13 @@ export async function getList({ listkey, query, res, mapper, req, pageno = -1, l
         }
     }
     // log_debug(`>Page:${pageno}, Limit:${limit}`)
-    const list = await query.skip(pageno * limit).limit(limit + 1)
+    const resultcount = query.count
+    let list = await query.skip(pageno * limit).limit(limit + 1)
     const more: boolean = list.length > limit
-    const ret: any = { status: "success", more: more }
+    const ret: any = { status: "success", more: more, count: resultcount }
+    if (isKnown(mapeach)) {
+        list = list.map(mapeach)
+    }
     if (isKnown_type<getList_Mapper>(mapper)) {
         ret[listkey] = mapper(list.slice(0, limit))
     } else {
@@ -208,8 +214,6 @@ export async function getList({ listkey, query, res, mapper, req, pageno = -1, l
 export async function getList_Paged(listkey: string, query: any, res: express.Response, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
     return getList({ listkey, query, res, req, pageno, limit })
 }
-
-
 
 export async function getList_Mapped(listkey: string, query: any, res: express.Response, mapper: getList_Mapper, req?: express.Request, pageno: number = -1, limit: number = -1): Promise<void> {
     return getList({ listkey, query, res, req, pageno, limit, mapper })

@@ -13,7 +13,10 @@ bindPath('get', '/memberships', user_actions.memberships)
 
 bindPath('get', '/search/:query', user_actions.quickSearch)
 
-bindPath('post', '/regtoken/add', auth_actions.addRegToken)
+bindPath('post', '/regtoken', auth_actions.addRegToken)
+bindPath('get', '/regtoken', auth_actions.getRegTokens)
+
+bindPath('get', '/all', user_actions.getAll)
 
 bindPath('get', '/', user_actions.get)
 

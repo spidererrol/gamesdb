@@ -1,7 +1,6 @@
-import React, { createRef, useCallback, useEffect, useRef, useState } from "react"
+import React, { createRef, useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { GroupType } from "../../libs/types/Group"
-import { isKnown } from "../../libs/utils"
 import LabelInput from "../bits/LabelInput"
 import LabelTextarea from "../bits/LabelTextarea"
 import MinMaxEdit from "../bits/MinMaxEdit"
