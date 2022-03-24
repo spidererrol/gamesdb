@@ -9,7 +9,6 @@ import GroupJoinButton from "../bits/GroupJoinButton"
 import GroupEditButton from "../bits/GroupEditButton"
 import GroupDelButton from "../bits/GroupDelButton"
 import { Link } from "react-router-dom"
-import TagSetView from "../bits/TagSetView"
 import TagCloud from "../bits/TagCloud"
 
 interface GIProps extends GeneralProps {

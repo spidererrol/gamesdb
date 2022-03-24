@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
@@ -20,8 +20,8 @@ function EditGame(props: EGProps): JSX.Element {
 
     const [game, setGame] = useState<GameType>({
         name: "Loading...",
-        aliases:[],
-        tags:[],
+        aliases: [],
+        tags: [],
     } as unknown as GameType)
 
     let aliases = makeElements(game.aliases, useCallback(a => <div key={a} className="alias">{a}</div>, []))

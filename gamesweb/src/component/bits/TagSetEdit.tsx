@@ -16,7 +16,7 @@ function TagSetEdit(props: TSEProps) {
 
     const deltag = useCallback((e, tag) => {
         e.preventDefault()
-        props.setter(props.getter.filter(t => t != tag))
+        props.setter(props.getter.filter(t => t !== tag))
     }, [props])
 
     useEffect(() => {

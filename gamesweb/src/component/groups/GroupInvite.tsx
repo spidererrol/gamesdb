@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams } from "react-router-dom"
 import { GroupType } from "../../libs/types/Group"
-import { anyElementList } from "../../libs/types/helpers"
 import { isKnown } from "../../libs/utils"
 import GenericCloud, { CloudItem } from "../bits/GenericCloud"
 import Loading from "../bits/Loading"
