@@ -4,6 +4,7 @@ import { RegTokenType } from "../../libs/types/RegToken"
 import LabelInput from "../bits/LabelInput"
 import Loading from "../bits/Loading"
 import { GeneralProps } from "../props/GeneralProps"
+import RegToken from "./RegToken"
 
 function RegTokens(props: GeneralProps) {
     const [toks, setToks] = useState<RegTokenType[]>([])
@@ -18,12 +19,8 @@ function RegTokens(props: GeneralProps) {
         props.api.user.getRegTokens().then(results => setToks(results))
     }, [props.api.user, props.dbupdates.regtokens])
     useEffect(() => {
-        setTokElements(toks.map((rt: RegTokenType) => <div key={rt._id} className="token">
-            <div className="name">{rt.token}</div>
-            <div className="limit">{rt.registrations ?? "unlimited"}</div>
-            <div className="expires">{rt.expires?.toString() ?? "forever"}</div>
-        </div>))
-    }, [toks])
+        setTokElements(toks.map((rt: RegTokenType) => <RegToken regtoken={rt} {...props} />))
+    }, [props, toks])
 
     const addtoken = useCallback((e) => {
         e.preventDefault()
@@ -31,7 +28,7 @@ function RegTokens(props: GeneralProps) {
         if (token === "") {
             // setError("Token is required!")
             // throw new Error("Token is required!")
-            token = (Math.random() * 1000000).toFixed(0).padStart(6,"0")
+            token = (Math.random() * 1000000).toFixed(0).padStart(6, "0")
         }
         setError("")
         let registrations: number | undefined

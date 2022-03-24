@@ -125,7 +125,23 @@ nav li a {
     font-weight: 600;
 }
 
-.voteicon::before,.ownedicon::before {
+.regtoken_link {
+    color: greenyellow;
+}
+
+.PlayMode {
+    border: 1px dashed var(--fg-main);
+}
+
+.PlayMode .description {
+    display: block;
+}
+
+.editicon {
+    color:hsl(0, 0%, 50%);
+}
+
+/* .voteicon::before,.ownedicon::before {
     content: '[';
     color: hsl(0 0% 50%);
 }
@@ -133,7 +149,7 @@ nav li a {
 .voteicon::after,.ownedicon::after {
     content: ']';
     color: hsl(0 0% 50%);
-}
+} */
 
 .memberships,.memberslist,.gameslist {
     display: flex;
@@ -226,13 +242,14 @@ nav li.gap {
     /* border: 1px solid red; */
 }
 
-.link::after {
+/* Changed to be an fa icon instead...
+ .extlink::after {
     position: absolute;
     content: '➚';
     border: 1px solid var(--fg-main);
     font-size: 0.5rem;
     top: 0px;
-}
+} */
 
 .game .alias {
     /* border: 1px solid var(--fg-main); */

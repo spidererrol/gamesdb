@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { GameGroup, Games } from '../models/games'
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown, errorResponse, bg, getList } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, bg, getList, setDateLike } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import config from '../libs/config'
@@ -9,39 +9,12 @@ import '../libs/type-extensions'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { TODO } from './test'
 import { UserType } from '../schemas/User'
-
-// Helper functions:
-
-function fillGame(g: GameType, req: Request): GameType {
-    let gout: any = { ...g.toObject() }
-    let myvotes = g.votes.filter((v: any) => v.user._id == req.myUser._id.toString())
-    if (myvotes.length >= 1) {
-        gout.myVote = myvotes[0]
-        gout.myVote.user = undefined
-    } else {
-        gout.myVote = null
-    }
-    let myowners = g.owners.filter((o: any) => o.user._id == req.myUser._id.toString())
-    if (myowners.length >= 1) {
-        gout.myOwner = myowners[0]
-        gout.myOwner.user = undefined
-    } else {
-        gout.myOwner = null
-    }
-    let linksobj: any = {}
-    if (isKnown(g.links)) {
-        for (const [k, v] of g.links) {
-            linksobj[k] = v
-        }
-    }
-    gout.links = linksobj
-    return gout
-}
+import { fillGamePlayMode } from '../libs/fillGamePlayMode'
 
 async function legacy_getList(query: any, res: Response, req: Request): Promise<any> {
     return getList({
         listkey: "games",
-        mapeach: g => fillGame(g, req),
+        mapeach: g => fillGamePlayMode(g, req),
         query,
         res,
         req,
@@ -269,6 +242,7 @@ export async function vote(req: Request, res: Response) {
         if (isKnown(myvote)) {
             myvote.vote = newvote//Vote[newvote as keyof typeof Vote];
             myvote.when = new Date()
+            myvote.user = req.myUser
             // myvotes[0].save();
             // log_debug("Updated vote: " + myvote);
         } else {
@@ -298,7 +272,7 @@ export async function getGame(req: Request, res: Response) {
     try {
         const game = await Games.findById(req.params.id)
         if (isKnown(game)) {
-            res.json({ status: "success", game: fillGame(game, req) })
+            res.json({ status: "success", game: fillGamePlayMode(game, req) })
         } else {
             err404(res)
         }
@@ -351,24 +325,6 @@ export async function deleteGame(req: Request, res: Response) {
         res.json({ status: "success", result: result, before: before, after: after })
     } catch (err) {
         handleError(err, res)
-    }
-}
-
-function setDateLike(setter: (v: Date | null) => void, inVal?: string | Date // body: any, key: string
-) {
-    // if (typeof body[key] === "undefined")
-    //     return;
-    // const inVal = body[key];
-    if (typeof inVal === "undefined")
-        return
-    if (inVal === null) {
-        setter(null)
-    } else if (inVal instanceof Date) {
-        setter(inVal)
-    } else if (inVal == "now") {
-        setter(new Date())
-    } else {
-        setter(new Date(inVal))
     }
 }
 

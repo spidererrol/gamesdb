@@ -4,9 +4,9 @@ import { GameType } from "../libs/types/Game"
 import { GameGroupType } from "../libs/types/GameGroup"
 import { PlayModeType } from "../libs/types/PlayMode"
 import { GeneralProps } from "./props/GeneralProps"
-import OwnedIcon from "./OwnedIcon"
+import OwnedIcon from "./bits/OwnedIcon"
 import PlayMode from "./PlayMode"
-import VoteIcon from "./VoteIcon"
+import VoteIcon from "./bits/VoteIcon"
 
 interface GGProps extends GeneralProps {
     groupid: string

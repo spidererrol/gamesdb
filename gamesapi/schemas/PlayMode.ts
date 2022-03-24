@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import '../libs/schemainit'
 import { DBBase } from '../types/DBBase'
 import { GameType } from './Game'
 import { OwnerType, OwnerSchema } from './Owner'
@@ -21,4 +22,11 @@ export const PlayModeSchema = new Schema({
     description: String,
     votes: [{ type: VoteSchema, autopopulate: true }],
     owners: [{ type: OwnerSchema, autopopulate: true }],
+}, {
+    toObject: {
+        virtuals: true,
+    },
+    toJSON: {
+        virtuals: true,
+    },
 })

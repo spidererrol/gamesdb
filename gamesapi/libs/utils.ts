@@ -63,23 +63,33 @@ export function badAuth(res: express.Response) {
     res.status(400).json({ message: "Please log in." })
 }
 
-export function bindRouterPath(router: Router, method: "get" | "post" | "patch" | "delete", path: string, func: actionFunc) {
-    switch (method.toLowerCase()) {
-        case "get":
-            router.get(path, reqShim(func))
-            break
-        case "post":
-            router.post(path, reqShim(func))
-            break
-        case "patch":
-            router.patch(path, reqShim(func))
-            break
-        case "delete":
-            router.delete(path, reqShim(func))
-            break
-        default:
-            throw new Error("Out of cheese. Please reboot universe!")
+type methods = "get" | "post" | "patch" | "delete"
+type methodSet = methods[]
+type multimethods = methods | methodSet
+
+function IsMethodSet(value: any): value is methodSet {
+    if (typeof value === 'undefined') return false
+    if ((value as methodSet).includes) {
+        return true
     }
+    return false
+}
+
+export function bindRouterPath(router: Router, method: multimethods, path: string, func: actionFunc) {
+    let methods: methodSet
+    if (IsMethodSet(method)) {
+        methods = method
+    } else {
+        methods = [method]
+    }
+    if (methods.includes("get"))
+        router.get(path, reqShim(func))
+    if (methods.includes("post"))
+        router.post(path, reqShim(func))
+    if (methods.includes("patch"))
+        router.patch(path, reqShim(func))
+    if (methods.includes("delete"))
+        router.delete(path, reqShim(func))
 }
 
 export function setupParams(app: express.Router) {
@@ -294,6 +304,23 @@ export async function setGameGroupMode(group: GroupType, game: GameType, mode: G
     }
     group.save()
     return gg as GameGroupType
+}
+
+export function setDateLike(setter: (v: Date | undefined) => void, inVal?: string | Date) {
+    // if (typeof body[key] === "undefined")
+    //     return;
+    // const inVal = body[key];
+    if (typeof inVal === "undefined")
+        return
+    if (inVal === null) {
+        setter(undefined)
+    } else if (inVal instanceof Date) {
+        setter(inVal)
+    } else if (inVal == "now") {
+        setter(new Date())
+    } else {
+        setter(new Date(inVal))
+    }
 }
 
 // ### Environment ###

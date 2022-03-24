@@ -5,6 +5,6 @@ export interface VoteType extends DBBase {
     user: UserType
     when: Date
     vote: string
-    vote_id: number
+    vote_id: number | null
 }
 

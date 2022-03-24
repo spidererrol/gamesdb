@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { PlayModeProgressType, PlayModeType } from "../libs/types/PlayMode"
 import { GeneralProps } from "./props/GeneralProps"
-import OwnedIcon from "./OwnedIcon"
-import VoteIcon from "./VoteIcon"
+import OwnedIcon from "./bits/OwnedIcon"
+import VoteIcon from "./bits/VoteIcon"
 
 interface PMProps extends GeneralProps {
     playmode: PlayModeType

@@ -21,6 +21,7 @@ import GamesPage from './component/games/GamesPage'
 import ListGames from './component/games/ListGames'
 import AddGame from './component/games/AddGame'
 import EditGame from './component/games/EditGame'
+import LoginLayout from './component/LoginLayout'
 
 function dbState(): StateObj<number> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -67,7 +68,15 @@ function App() {
 
   if (auth.get === "none") {
     return (
-      <Login authTok={auth} user={user} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginLayout {...props} />}>
+            <Route index element={<Login authTok={auth} user={user} />} />
+            <Route path="regtoken=:regtoken" element={<Login authTok={auth} user={user} />} />
+            <Route path="*" element={<Login authTok={auth} user={user} />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     )
   }
 
@@ -78,6 +87,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout {...props} user={user} logoutfunc={logout} />}>
             <Route index element={<Home {...props} />} />
+            <Route path="regtoken=:regtoken" element={<Login authTok={auth} user={user} />} />
             <Route path="group/:groupid" element={<GroupPage {...props} />} />
             <Route path="groups" element={<Groups {...props} />}>
               <Route index element={<ListGroups {...props} />} />
