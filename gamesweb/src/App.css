@@ -251,6 +251,24 @@ nav li.gap {
     top: 0px;
 } */
 
+button.addAlias {
+    background: transparent;
+    border: none;
+    color: hsl(120, 100%, 50%);
+    cursor: pointer;
+}
+
+button.DelButton {
+    background: transparent;
+    border: none;
+    color: hsl(0, 100%, 50%);
+    cursor: pointer;
+}
+
+button[disabled] {
+    color:hsl(0, 0%, 50%);
+}
+
 .game .alias {
     /* border: 1px solid var(--fg-main); */
     text-align: left;
