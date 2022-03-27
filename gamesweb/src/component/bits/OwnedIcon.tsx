@@ -1,3 +1,6 @@
+import { faDownload, faPlay } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { anyElement } from "../../libs/types/helpers"
 import { isKnown } from "../../libs/utils"
 
 interface OIProps_common {
@@ -43,20 +46,20 @@ function OwnedIcon(inprops: OIProps) {
         throw new Error("Out of cheese error!")
     }
     let classes = "ownedicon owned_" + props.owned
-    let icon = "?"
+    let icon:anyElement|string = "?"
     if (props.owned === "Unowned") {
         if (!isKnown(props.maxPrice)) {
             icon = "£"
         } else if (props.maxPrice === 0) {
             icon = "free"
         } else {
-            icon = "£" + (props.maxPrice as number).toFixed(2)
+            icon = "≤£" + (props.maxPrice as number).toFixed(2)
         }
     }
     if (props.owned === "Owned")
-        icon = "O"
+        icon = <FontAwesomeIcon icon={faDownload}/>
     if (props.owned === "Installed")
-        icon = "I"
+        icon = <FontAwesomeIcon icon={faPlay}/>
     return <span className={classes} title={props.owned}>{icon}</span>
 }
 

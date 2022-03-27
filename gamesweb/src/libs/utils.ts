@@ -1,7 +1,7 @@
 // ### FUNCTIONS ###
 
 import { useState, useEffect } from "react"
-import { CloudItem } from "../component/bits/GenericCloud"
+import { CloudItem } from "./types/CloudItem"
 import { anyElement, anyElementList } from "./types/helpers"
 
 

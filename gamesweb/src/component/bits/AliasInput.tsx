@@ -11,7 +11,7 @@ interface AIProps {
 }
 
 const AliasInput = forwardRef(function(props:AIProps,ref: ForwardedRef<HTMLInputElement>) {
-    return <div key={props.i} className="alias">{props.i}<input ref={ref} defaultValue={props.value} onChange={(e) => props.onInputChange(e, props.i)} /><DelButton onClick={props.onDelClick} data={props.i} /></div>;
+    return <div key={props.i} className="alias"><input ref={ref} defaultValue={props.value} onChange={(e) => props.onInputChange(e, props.i)} /><DelButton onClick={props.onDelClick} data={props.i} /></div>;
 })
 
 export default AliasInput;

@@ -1,5 +1,4 @@
-import { faStar } from "@fortawesome/free-regular-svg-icons"
-import { faQuestion, faCheck, faBan } from "@fortawesome/free-solid-svg-icons"
+import { faStar,faQuestion, faCheck, faBan, faThumbsUp } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface VIProps {
@@ -10,7 +9,7 @@ function VoteIcon(props: VIProps) {
     let classes = "voteicon vote_" + props.vote
     let icon = faQuestion
     if (props.vote === "Accept")
-        icon = faCheck
+        icon = faThumbsUp
     if (props.vote === "Veto")
         icon = faBan
     if (props.vote === "Desire")

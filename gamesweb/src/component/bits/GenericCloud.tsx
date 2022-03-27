@@ -2,19 +2,9 @@ import React from "react"
 import { useEffect, useState } from "react"
 import { isKnown } from "../../libs/utils"
 import { GeneralProps } from "../props/GeneralProps"
+import { CloudItem } from "../../libs/types/CloudItem"
 import { IPager } from "./IPager"
 import Pager from "./Pager"
-
-/**
- * @property key Unique value for this item.
- * @property id id to pass to onClick method (defaults to key)
- * @property display content for item
- */
-export interface CloudItem {
-    key: any,
-    id?: any,
-    display: string | JSX.Element
-}
 
 interface GCProps extends GeneralProps {
     getItems: CloudItem[]

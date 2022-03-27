@@ -1,9 +1,8 @@
 //             <div><label htmlFor="login_username">Username</label><input id="login_username" ref={this.userRef} type="text" name="username" placeholder='Username' /></div>
 
 import { ForwardedRef, forwardRef } from "react"
-import { GeneralProps } from "../props/GeneralProps"
 
-interface LIProps extends GeneralProps {
+interface LIProps {
     id?: string
     name?: string
     label: string
@@ -14,6 +13,8 @@ interface LIProps extends GeneralProps {
     defaultChecked?: boolean
     min?: number
     max?: number
+    inputClass?: string
+    onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
 
 const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLInputElement>) {
@@ -29,6 +30,8 @@ const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLIn
             defaultChecked={props.defaultChecked}
             min={props.min}
             max={props.max}
+            className={props.inputClass}
+            onChange={props.onChange}
         />
     </div>
 })

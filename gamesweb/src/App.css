@@ -88,6 +88,46 @@ body {
     justify-content: center;
 }
 
+.playercount input {
+    width: 6em;
+}
+
+.voteicon + select {
+    margin-left: 2px;
+}
+
+.voteicon,.ownedicon {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.ownedicon {
+    color: hsl(240, 100%, 70%);
+}
+
+.linkurl {
+    width: 30em;
+}
+
+.linkcontainer {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px dashed var(--fg-main);
+    margin: 4px;
+    justify-content: center; /* Vertical centering (mainly for "+" button) */
+}
+
+.linkcontainer .DelButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.buyprice {
+    width: 6em;
+}
+
 .cloud .item {
     display: inline-block;
     background: var(--item-bg);
@@ -251,7 +291,7 @@ nav li.gap {
     top: 0px;
 } */
 
-button.addAlias {
+button.addAlias,.AddButton {
     background: transparent;
     border: none;
     color: hsl(120, 100%, 50%);
