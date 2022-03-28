@@ -3,7 +3,9 @@
  * @property display content for item
  */
 
+import { Key } from "react"
+
 export interface CloudItem {
-    key: any
+    key: Key
     display: string | JSX.Element
 }

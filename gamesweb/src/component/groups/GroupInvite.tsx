@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Key } from "react"
 import { useParams } from "react-router-dom"
 import { GroupType } from "../../libs/types/Group"
-import { isKnown } from "../../libs/utils"
+import { isKnown, makeCloudItems } from "../../libs/utils"
 import GenericCloud from "../bits/GenericCloud"
 import { CloudItem } from "../../libs/types/CloudItem"
 import Loading from "../bits/Loading"
@@ -10,36 +10,54 @@ import { GeneralProps } from "../props/GeneralProps"
 function GroupInvite(props: GeneralProps) {
     const params = useParams()
     const [group, setGroup] = useState<GroupType>({} as GroupType)
-    const [members, setMembers] = useState<CloudItem[]>([{
-        key: "loading",
-        display: <Loading />
-    }])
-    const [nonmembers, setNonMembers] = useState<CloudItem[]>([{
-        key: "loading",
-        display: <Loading />
-    }])
+    // const [members, setMembers] = useState<CloudItem[]>([{
+    //     key: "loading",
+    //     display: <Loading />
+    // }])
+    // const [members,setMembers] = useState<Map<Key, CloudItem>>(new Map<Key, CloudItem>())
+    const members = makeCloudItems(group.members, useCallback(m => {
+        return {
+            key: m._id,
+            display: m.displayName
+        }
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [group.members] // I need this dep, otherwise I get a recursive loop of updates (for unknown reason)
+    ))
+    const [nonmembers, setNonMembers] = useState<Map<Key, CloudItem>>(new Map<Key, CloudItem>())
     useEffect(() => {
         props.api.group.get(params.groupid as string).then(g => setGroup(g))
     }, [params.groupid, props.api.group, props.dbupdates.groups])
-    useEffect(() => {
-        let out: CloudItem[] = []
-        if (group.members !== undefined) {
-            for (const member of group.members) {
-                out.push({
-                    key: member._id,
-                    display: member.displayName
-                })
-            }
-        }
-        setMembers(() => out)
-    }, [group])
+    // useEffect(() => {
+    //     let out: CloudItem[] = []
+    //     if (group.members !== undefined) {
+    //         for (const member of group.members) {
+    //             out.push({
+    //                 key: member._id,
+    //                 display: member.displayName
+    //             })
+    //         }
+    //     }
+    //     setMembers(() => out)
+    // }, [group])
     useEffect(() => {
         if (!isKnown(group.members))
             return
-        props.api.user.getAll().then(users => setNonMembers(users.filter(
-            u => !group.members.map(m => m._id).includes(u._id)
-        ).map(u => { return { key: u._id, display: u.displayName } })))
-    }, [group, props.api.user])
+        props.api.user.getAll().then(
+            users => {
+                let out = new Map<Key, CloudItem>()
+                let nmusers = users.filter(u => !group.members.map(m => m._id).includes(u._id))
+                for (const nmu of nmusers) {
+                    let ci = {
+                        key: nmu._id,
+                        display: nmu.displayName
+                    }
+                    out.set(ci.key, ci)
+                }
+                setNonMembers(out)
+            }
+        )
+    }, [group.members, props.api.user])
 
     const invite = useCallback((event, item) => {
         event.preventDefault()

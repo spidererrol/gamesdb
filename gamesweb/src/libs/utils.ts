@@ -1,6 +1,6 @@
 // ### FUNCTIONS ###
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Key } from "react"
 import { CloudItem } from "./types/CloudItem"
 import { anyElement, anyElementList } from "./types/helpers"
 
@@ -27,14 +27,51 @@ export function makeElements<T>(indata: T[], map: (i: T) => anyElement): anyElem
     return outdata
 }
 
-export function makeCloudItems<T>(indata: T[], map: (i: T) => CloudItem): CloudItem[] {
+export function makeCloudItems<T>(indata: T[], map: (i: T) => CloudItem): Map<Key, CloudItem> {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    let [outdata, setOutData] = useState<CloudItem[]>([])
+    let [outdata, setOutData] = useState<Map<Key, CloudItem>>(new Map<Key, CloudItem>())
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-        setOutData(indata.map(map))
+        if (isKnown(indata)) {
+            let out = new Map<Key, CloudItem>()
+            for (const item of indata) {
+                const ci = map(item)
+                out.set(ci.key, ci)
+            }
+            setOutData(out)
+        }
+        // setOutData(indata.map(map))
     }, [indata, map])
     return outdata
+}
+
+export function mapmap<K, V, R>(input: Map<K, V>, mapper: (k: K, v: V) => R): R[] {
+    let ret: R[] = []
+    let itr = input.entries()
+    for (let i = 0; i < input.size; i++) {
+        let [k, v] = itr.next().value
+        ret.push(mapper(k, v))
+    }
+    return ret
+}
+
+export function mapfilter<K, V>(input: Map<K, V>, filter: (k: K, v: V) => boolean): Map<K, V> {
+    let ret = new Map<K, V>()
+    let itr = input.entries()
+    for (let i = 0; i < input.size; i++) {
+        let [k, v] = itr.next().value
+        if (filter(k, v))
+            ret.set(k, v)
+    }
+    return ret
+}
+
+export function formap<K, V>(map: Map<K, V>, func: (k: K, v: V) => void): void {
+    const itr = map.entries()
+    for (let i = 0; i < map.size; i++) {
+        let [k, v] = itr.next().value
+        func(k, v)
+    }
 }
 
 // ### Environment ###

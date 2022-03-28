@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
-import { isKnown, makeCloudItems } from "../../libs/utils"
+import { formap, isKnown, makeCloudItems, mapfilter, mapmap } from "../../libs/utils"
 import Loading from "../bits/Loading"
 import PlayMode from "./PlayMode"
 import { GeneralProps } from "../props/GeneralProps"
@@ -42,27 +42,6 @@ function dumpArray(ina: string[]): string {
     return "[" + outa.map(a => `${a}`).join(",") + "]"
 }
 
-function mapmap<K, V, R>(input: Map<K, V>, mapper: (k: K, v: V) => R): R[] {
-    let ret: R[] = []
-    let itr = input.entries()
-    for (let i = 0; i < input.size; i++) {
-        let [k, v] = itr.next().value
-        ret.push(mapper(k, v))
-    }
-    return ret
-}
-
-function mapfilter<K, V>(input: Map<K, V>, filter: (k: K, v: V) => boolean): Map<K, V> {
-    let ret = new Map<K, V>()
-    let itr = input.entries()
-    for (let i = 0; i < input.size; i++) {
-        let [k, v] = itr.next().value
-        if (filter(k, v))
-            ret.set(k, v)
-    }
-    return ret
-}
-
 function dumpRefs(ars: NRMap): string {
     // return dumpArray(ars.map(ar => ar.current?.value as string))
     return dumpArray(mapmap(ars, (k, v) => `${k}:${v.current?.value as string}`))
@@ -80,14 +59,6 @@ interface OwnershipInfo {
     isOwned: boolean | null
     isInstalled: boolean | null
     maxPrice: number | null
-}
-
-function formap<K, V>(map: Map<K, V>, func: (k: K, v: V) => void): void {
-    const itr = map.entries()
-    for (let i = 0; i < map.size; i++) {
-        let [k, v] = itr.next().value
-        func(k, v)
-    }
 }
 
 function EditGame(props: EGProps): JSX.Element {
@@ -384,7 +355,7 @@ function EditGame(props: EGProps): JSX.Element {
             </div>
         </div>
         {/* TODO:EditCloud (only add & remove items - no edit) */}
-        <GenericEditCloud getItems={tags} delItem={noop} addItem={noop} {...props} />
+        <GenericEditCloud getItems={tags} {...props} />
         {/* TODO:Edit/Del/Add playmodes */}
         {playmodes}
         <hr />

@@ -1,7 +1,8 @@
-import React from "react"
+import React, { Key } from "react"
 import { useEffect, useState } from "react"
 import { CloudItem } from "../../libs/types/CloudItem"
-import { isKnown } from "../../libs/utils"
+import { anyElement, anyElementList } from "../../libs/types/helpers"
+import { isKnown, mapmap } from "../../libs/utils"
 import { GeneralProps } from "../props/GeneralProps"
 import AddButton, { AddButtonAction } from "./AddButton"
 import DelButton from "./DelButton"
@@ -12,7 +13,7 @@ type clickCBType = (event: React.MouseEvent<HTMLElement, MouseEvent>, item: Clou
 type delCBType = (event: any, item: CloudItem) => void
 
 interface GECProps extends GeneralProps {
-    getItems: CloudItem[]
+    getItems: Map<Key,CloudItem>
     pager?: IPager
     onClick?: clickCBType
     delItem?: delCBType
@@ -32,7 +33,8 @@ function GenericEditCloud(props: GECProps) {
     let pager = <></>
     if (isKnown(props.pager))
         pager = <Pager pager={props.pager as IPager} {...props} />
-    const [items, setItems] = useState<JSX.Element[]>([])
+    const [items, setItems] = useState<anyElementList>([])
+    const [addButton, setAddButton] = useState<anyElement>(<></>)
     useEffect(() => {
         let clickCB: clickCBType = (e, i) => { }
         if (isKnown(props.onClick)) {
@@ -40,16 +42,17 @@ function GenericEditCloud(props: GECProps) {
         }
         if (isKnown(props.delItem)) {
             let delCB = props.delItem as delCBType
-            setItems(props.getItems.map(i => <div key={i.key} className="item" onClick={(e) => clickCB(e, i)}>{i.display}<DelButton onClick={delCB} data={i} /></div>))
+            setItems(mapmap(props.getItems,(k,i) => <div key={i.key} className="item" onClick={(e) => clickCB(e, i)}>{i.display}<DelButton onClick={delCB} data={i} /></div>))
         } else {
-        setItems(props.getItems.map(i => <div key={i.key} className="item" onClick={(e) => clickCB(e, i)}>{i.display}</div>))
+            setItems(mapmap(props.getItems,(k,i) => <div key={i.key} className="item" onClick={(e) => clickCB(e, i)}>{i.display}</div>))
         }
-        //TODO: Move AddButton and only add if addItem is set.
+        if (isKnown(props.addItem))
+            setAddButton(<AddButton onClick={props.addItem} />)
     }, [props, props.getItems])
 
     return <>
         {pager}
-        <div className="cloud">{items}<AddButton onClick={props.addItem} /></div>
+        <div className="cloud">{items}{addButton}</div>
     </>
 }
 
