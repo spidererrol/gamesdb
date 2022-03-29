@@ -308,21 +308,43 @@ function EditGame(props: EGProps): JSX.Element {
         EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => v.included = e.target.checked)
     }, [playmodesMap])
 
-    //TODO: ownedState, ownedPrice, description updates.
+    const epmUpdateOwnedState = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => {
+            if (!isKnown(v.myOwner))
+                v.myOwner = { isInstalled: false, isOwned: false, maxPrice: null } as OwnerType
+            v.myOwner.isInstalled = (e.target.value === "Installed")
+            v.myOwner.isOwned = (e.target.value !== "Unowned")
+        })
+    }, [playmodesMap])
+
+    const epmUpdateOwnedPrice = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => {
+            if (!isKnown(v.myOwner))
+                v.myOwner = { isInstalled: false, isOwned: false, maxPrice: null } as OwnerType
+            v.myOwner.maxPrice = Number.parseFloat(e.target.value)
+        })
+    }, [playmodesMap])
+
+    const epmUpdateDescription = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => v.description = e.target.value)
+    }, [playmodesMap])
 
     useEffect(() => {
         let newplaymodes = mapmap(playmodesMap, (_k, pm) => <EditPlayMode
             key={pm._id}
             playmode={pm}
             nameUpdate={epmUpdateName}
+            descriptionUpdate={epmUpdateDescription}
             voteUpdate={epmUpdateVote}
             includedUpdate={epmUpdateIncluded}
+            ownedStateUpdate={epmUpdateOwnedState}
+            ownedPriceUpdate={epmUpdateOwnedPrice}
             delAction={delPlaymode}
             {...props}
         />)
         newplaymodes.push(<div key="NEW" className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>)
         setPlayModes(newplaymodes)
-    }, [addPlaymode, delPlaymode, epmUpdateName, epmUpdateVote, game._id, playmodesMap, props])
+    }, [addPlaymode, delPlaymode, epmUpdateDescription, epmUpdateIncluded, epmUpdateName, epmUpdateOwnedPrice, epmUpdateOwnedState, epmUpdateVote, game._id, playmodesMap, props])
 
     useEffect(() => {
         if (isKnown(game.myVote?.vote)) {
@@ -403,15 +425,27 @@ function EditGame(props: EGProps): JSX.Element {
         setTags(newtags)
     }, [setTags, tags])
 
-    const save = useCallback(e => {
-        console.log("save!")
+    const dumpcurrent = useCallback(e => {
+        console.log("======================== save! ========================")
+        console.table([{
+            name: game.name,
+            minPlayers: game.minPlayers,
+            maxPlayers: game.maxPlayers,
+            vote: game.myVote?.vote,
+            owned: game.myOwner?.isOwned,
+            installed: game.myOwner?.isInstalled,
+            maxPrice: game.myOwner?.maxPrice,
+        }])
         formap(aliasRefs, (i, r) => {
             console.log(`A[${i}]:${r.current?.value}`)
         })
-        formap(linkRefs, (i, r) => {
-            console.log(`N[${i}]:${r.current?.name?.value}`)
-            console.log(`U[${i}]:${r.current?.url?.value}`)
-        })
+        console.table(mapmap(linkRefs, (i, r) => {
+            return {
+                index: i,
+                name: r.current?.name?.value,
+                url: r.current?.url?.value,
+            }
+        }))
         formap(tags, (tag, ci) => {
             console.log(`T:${tag}`)
         })
@@ -427,7 +461,8 @@ function EditGame(props: EGProps): JSX.Element {
                 vote: v.myVote.vote,
             }
         }))
-    }, [aliasRefs, linkRefs, playmodesMap, tags])
+        console.log("============================ END =======================")
+    }, [aliasRefs, game, linkRefs, playmodesMap, tags])
 
     // Edit boxes get stuck so don't load them until ready...
     if (!isKnown(game._id))
@@ -453,7 +488,7 @@ function EditGame(props: EGProps): JSX.Element {
         {/* TODO:Edit/Del/Add playmodes */}
         <div className="editplaymodes">{playmodes}</div>
         <hr />
-        <input type="submit" value="save" onClick={save} />
+        <input type="submit" value="save" onClick={dumpcurrent} />
         <pre>
             {nexti.current}
             |
