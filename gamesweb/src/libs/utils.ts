@@ -45,6 +45,24 @@ export function makeCloudItems<T>(indata: T[], map: (i: T) => CloudItem): Map<Ke
     return outdata
 }
 
+export function makeCloudItemsSettable<T>(indata: T[], map: (i: T) => CloudItem): [Map<Key, CloudItem>, React.Dispatch<React.SetStateAction<Map<Key, CloudItem>>>] {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    let [outdata, setOutData] = useState<Map<Key, CloudItem>>(new Map<Key, CloudItem>())
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+        if (isKnown(indata)) {
+            let out = new Map<Key, CloudItem>()
+            for (const item of indata) {
+                const ci = map(item)
+                out.set(ci.key, ci)
+            }
+            setOutData(out)
+        }
+        // setOutData(indata.map(map))
+    }, [indata, map])
+    return [outdata, setOutData]
+}
+
 export function mapmap<K, V, R>(input: Map<K, V>, mapper: (k: K, v: V) => R): R[] {
     let ret: R[] = []
     let itr = input.entries()
@@ -73,6 +91,21 @@ export function formap<K, V>(map: Map<K, V>, func: (k: K, v: V) => void): void {
         func(k, v)
     }
 }
+
+export function array2map<K, V, I>(input: I[], map: (i: I) => [k: K, v: V]): Map<K, V> {
+    const outmap = new Map<K, V>()
+    for (const i of input) {
+        const [k, v] = map(i)
+        outmap.set(k, v)
+    }
+    return outmap
+}
+
+export function cloneMap<K, V>(input: Map<K, V>) {
+    return new Map<K, V>(input)
+}
+
+export type IndexedChangeEventHandler<ElementType,IndexType> = (e:React.ChangeEvent<ElementType>,i:IndexType)=>void
 
 // ### Environment ###
 

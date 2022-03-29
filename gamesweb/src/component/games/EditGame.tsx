@@ -1,11 +1,10 @@
-import { createRef, useCallback, useEffect, useRef, useState } from "react"
+import { createRef, Key, useCallback, useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
-import { formap, isKnown, makeCloudItems, mapfilter, mapmap } from "../../libs/utils"
+import { array2map, formap, isKnown, makeCloudItemsSettable, mapfilter, mapmap } from "../../libs/utils"
 import Loading from "../bits/Loading"
-import PlayMode from "./PlayMode"
 import { GeneralProps } from "../props/GeneralProps"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons"
@@ -18,6 +17,11 @@ import { NRMap, newNRMap } from "../../libs/types/InputRef"
 import EditGameLink, { EGLRef } from "./EditGameLink"
 import AddButton from "../bits/AddButton"
 import GenericEditCloud from "../bits/GenericEditCloud"
+import { CloudItem } from "../../libs/types/CloudItem"
+import EditPlayMode from "./EditPlayMode"
+import { VoteType } from "../../libs/types/Vote"
+import { OwnerType } from "../../libs/types/Owner"
+import { v4 } from 'uuid'
 
 interface EGProps extends GeneralProps {
 }
@@ -61,6 +65,16 @@ interface OwnershipInfo {
     maxPrice: number | null
 }
 
+function EditMapItem<K, T>(getter: Map<K, T>, setter: React.Dispatch<React.SetStateAction<Map<K, T>>>, index: K, updater: (v: T) => void) {
+    const newthing = new Map<K, T>(getter)
+    const item = newthing.get(index)
+    if (item !== undefined) {
+        updater(item)
+        newthing.set(index, item)
+    }
+    setter(newthing)
+}
+
 function EditGame(props: EGProps): JSX.Element {
     const params = useParams()
 
@@ -74,11 +88,11 @@ function EditGame(props: EGProps): JSX.Element {
     const [aliasElements, setAliasElements] = useState<anyElementList>([<Loading key="loading" />])
     const [aliases, setAliases] = useState<NSMap>(newNSMap())
     const [aliasRefs, setAliasRefs] = useState<NRMap>(newNRMap())
-    const tags = makeCloudItems(game.tags, useCallback(t => { return { key: t, display: t } }, []))
+    const [tags, setTags] = makeCloudItemsSettable(game.tags, useCallback(t => { return { key: t, display: t } }, []))
     const [vote, setVote] = useState<string>("None")
     const [owned, setOwned] = useState<OwnershipInfo>({ isOwned: false, isInstalled: false, maxPrice: null })
-    // const [price, setPrice] = useState<number>(0)
-    const [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
+    // const [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
+    const [playmodesMap, setPlaymodesMap] = useState<Map<string, PlayModeType>>(new Map<string, PlayModeType>())
     const [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" />])
     const [debug, setDebug] = useState<any>([])
     const [deli, setDeli] = useState<number>()
@@ -251,12 +265,64 @@ function EditGame(props: EGProps): JSX.Element {
 
     useEffect(() => {
         if (isKnown(game._id))
-            props.api.game.playmodes(game._id).then(pms => setdbPlaymodes(pms))
+            props.api.game.playmodes(game._id).then(pms => setPlaymodesMap(array2map(pms, i => [i._id, i])))
     }, [props.api.game, game._id])
 
+    const addPlaymode = useCallback((e) => {
+        console.log("Add PM")
+        let olddb = cloneMap(playmodesMap)
+        let uid = v4()
+        olddb.set(uid, {
+            _id: uid,
+            _isnew: true,
+            name: "NEW",
+            description: "",
+            included: false,
+            myVote: {
+                vote: "None",
+                vote_id: null
+            } as VoteType,
+            myOwner: {
+                isOwned: false, isInstalled: false, maxPrice: null
+            } as OwnerType,
+        } as PlayModeType)
+        setPlaymodesMap(olddb)
+    }, [playmodesMap])
+
+    const delPlaymode = useCallback((e, pmid) => {
+        console.log("Del PM:" + pmid)
+        let opms = cloneMap(playmodesMap)
+        opms.delete(pmid)
+        setPlaymodesMap(opms)
+    }, [playmodesMap])
+
+    const epmUpdateName = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => v.name = e.target.value)
+    }, [playmodesMap])
+
+    const epmUpdateVote = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => { v.myVote.vote = e.target.value; v.myVote.vote_id = null })
+    }, [playmodesMap])
+
+    const epmUpdateIncluded = useCallback((e, pmid) => {
+        EditMapItem(playmodesMap, setPlaymodesMap, pmid, v => v.included = e.target.checked)
+    }, [playmodesMap])
+
+    //TODO: ownedState, ownedPrice, description updates.
+
     useEffect(() => {
-        setPlayModes(dbplaymodes.map(pm => <PlayMode key={pm._id} playmode={pm} gameid={game._id} {...props} />))
-    }, [dbplaymodes, game._id, props])
+        let newplaymodes = mapmap(playmodesMap, (_k, pm) => <EditPlayMode
+            key={pm._id}
+            playmode={pm}
+            nameUpdate={epmUpdateName}
+            voteUpdate={epmUpdateVote}
+            includedUpdate={epmUpdateIncluded}
+            delAction={delPlaymode}
+            {...props}
+        />)
+        newplaymodes.push(<div key="NEW" className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>)
+        setPlayModes(newplaymodes)
+    }, [addPlaymode, delPlaymode, epmUpdateName, epmUpdateVote, game._id, playmodesMap, props])
 
     useEffect(() => {
         if (isKnown(game.myVote?.vote)) {
@@ -286,10 +352,10 @@ function EditGame(props: EGProps): JSX.Element {
         setAliases(out)
     }, [game.aliases])
 
-    const noop = useCallback((e, i?) => {
-        e.preventDefault()
-        console.log("NOOP")
-    }, [])
+    // const noop = useCallback((e, i?) => {
+    //     e.preventDefault()
+    //     console.log("NOOP")
+    // }, [])
 
     const updateVote = useCallback((e) => {
         setVote(e.target.value)
@@ -320,19 +386,48 @@ function EditGame(props: EGProps): JSX.Element {
         setOwned(newowned)
     }, [owned])
 
+    const addTag = useCallback((newtag: string) => {
+        console.log("Add:" + newtag)
+        if (newtag.trim() !== "") {
+            const newtags = new Map<Key, CloudItem>(tags)
+            newtags.set(newtag, { key: newtag, display: newtag })
+            setTags(newtags)
+        }
+        // game.tags.push(newtag)
+    }, [setTags, tags])
+
+    const delTag = useCallback((e, k: CloudItem) => {
+        console.log("Del T:" + k.key)
+        const newtags = new Map<Key, CloudItem>(tags)
+        newtags.delete(k.key)
+        setTags(newtags)
+    }, [setTags, tags])
+
     const save = useCallback(e => {
         console.log("save!")
         formap(aliasRefs, (i, r) => {
             console.log(`A[${i}]:${r.current?.value}`)
         })
-        // formap(linkNameRefs,(i,r)=>{
-        //     console.log("N:" + r.current?.value)
-        // })
         formap(linkRefs, (i, r) => {
             console.log(`N[${i}]:${r.current?.name?.value}`)
             console.log(`U[${i}]:${r.current?.url?.value}`)
         })
-    }, [aliasRefs, linkRefs])
+        formap(tags, (tag, ci) => {
+            console.log(`T:${tag}`)
+        })
+        console.table(mapmap(playmodesMap, (k, v) => {
+            return {
+                _isnew: v._isnew,
+                name: v.name,
+                description: v.description,
+                included: v.included,
+                isOwned: v.myOwner.isOwned,
+                isInstalled: v.myOwner.isInstalled,
+                maxPrice: v.myOwner.maxPrice,
+                vote: v.myVote.vote,
+            }
+        }))
+    }, [aliasRefs, linkRefs, playmodesMap, tags])
 
     // Edit boxes get stuck so don't load them until ready...
     if (!isKnown(game._id))
@@ -354,10 +449,9 @@ function EditGame(props: EGProps): JSX.Element {
                 <AddButton onClick={addLink} />
             </div>
         </div>
-        {/* TODO:EditCloud (only add & remove items - no edit) */}
-        <GenericEditCloud getItems={tags} {...props} />
+        <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
         {/* TODO:Edit/Del/Add playmodes */}
-        {playmodes}
+        <div className="editplaymodes">{playmodes}</div>
         <hr />
         <input type="submit" value="save" onClick={save} />
         <pre>

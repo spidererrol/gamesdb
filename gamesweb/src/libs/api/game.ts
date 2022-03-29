@@ -39,4 +39,10 @@ export class api_game extends apibase {
         return ret
     }
 
+    async addPlaymode(gameid: string, playmode: PlayModeType) {
+        debug("add playmode")
+        let ret = await this.req("POST", `/${gameid}/playmode`, playmode)
+        return ret
+    }
+
 }

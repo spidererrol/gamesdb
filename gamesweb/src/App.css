@@ -6,6 +6,7 @@
     --fg-tag: white;
     --item-bg: hsl(214 91% 57%);
     --item-fg: black;
+    --fg-dim: hsl(0, 0%, 50%);
 }
 
 body {
@@ -57,7 +58,8 @@ body {
     }
 }
 
-.Exclude .tag, .tag.Exclude {
+.Exclude .tag,
+.tag.Exclude {
     --bg-tag: hsl(0, 100%, 30%);
 }
 
@@ -86,17 +88,19 @@ body {
 .cloud {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .playercount input {
     width: 6em;
 }
 
-.voteicon + select {
+.voteicon+select {
     margin-left: 2px;
 }
 
-.voteicon,.ownedicon {
+.voteicon,
+.ownedicon {
     margin-left: 4px;
     margin-right: 4px;
 }
@@ -115,10 +119,17 @@ body {
     position: relative;
     border: 1px dashed var(--fg-main);
     margin: 4px;
-    justify-content: center; /* Vertical centering (mainly for "+" button) */
+    justify-content: center;
+    /* Vertical centering (mainly for "+" button) */
 }
 
-.linkcontainer .DelButton {
+.PlayMode.Edit {
+    position: relative;
+    margin: 4px;
+}
+
+.linkcontainer .DelButton,
+.PlayMode.Edit .DelButton {
     position: absolute;
     top: 0;
     right: 0;
@@ -165,6 +176,13 @@ nav li a {
     font-weight: 600;
 }
 
+.VoteEdit,
+.OwnedEdit {
+    border-width: 1px;
+    border-style: dotted;
+    border-color: var(--fg-dim);
+}
+
 .regtoken_link {
     color: greenyellow;
 }
@@ -178,8 +196,9 @@ nav li a {
 }
 
 .editicon {
-    color:hsl(0, 0%, 50%);
+    color: hsl(0, 0%, 50%);
 }
+
 
 /* .voteicon::before,.ownedicon::before {
     content: '[';
@@ -191,7 +210,9 @@ nav li a {
     color: hsl(0 0% 50%);
 } */
 
-.memberships,.memberslist,.gameslist {
+.memberships,
+.memberslist,
+.gameslist {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -205,7 +226,8 @@ nav li a {
     background: hsl(120, 100%, 50%);
 }
 
-.memberslist>.member,.gameslist>.GroupGame{
+.memberslist>.member,
+.gameslist>.GroupGame {
     border: 1px solid var(--border-main);
     margin: 1px;
 }
@@ -231,7 +253,8 @@ nav li a {
     border-color: hsl(22, 100%, 50%)
 }
 
-.AddGroup, .EditGroup {
+.AddGroup,
+.EditGroup {
     display: flex;
     justify-content: left;
 }
@@ -268,10 +291,19 @@ nav li.gap {
 .links {
     display: flex;
     justify-content: left;
+    flex-wrap: wrap;
+}
+
+.addform {
+    display: flex;
+    border: 1px dashed var(--fg-main);
+    margin: 2px;
+    justify-content: center;
+    align-content: center;
 }
 
 .link a {
-    color:hsl(187, 87%, 49%);
+    color: hsl(187, 87%, 49%);
 }
 
 .link {
@@ -282,6 +314,7 @@ nav li.gap {
     /* border: 1px solid red; */
 }
 
+
 /* Changed to be an fa icon instead...
  .extlink::after {
     position: absolute;
@@ -291,7 +324,8 @@ nav li.gap {
     top: 0px;
 } */
 
-button.addAlias,.AddButton {
+button.addAlias,
+.AddButton {
     background: transparent;
     border: none;
     color: hsl(120, 100%, 50%);
@@ -306,7 +340,7 @@ button.DelButton {
 }
 
 button[disabled] {
-    color:hsl(0, 0%, 50%);
+    color: hsl(0, 0%, 50%);
 }
 
 .game .alias {
@@ -370,7 +404,7 @@ pre {
 
 .GroupGame .header {
     display: flex;
-    justify-content:left;
+    justify-content: left;
 }
 
 .playmodes .PlayMode {
@@ -378,7 +412,7 @@ pre {
     justify-content: left;
 }
 
-.PlayMode > div {
+.PlayMode>div {
     display: inline-block;
 }
 
@@ -387,15 +421,15 @@ pre {
 }
 
 .voteicon.vote_Veto {
-    color:hsl(0, 100%, 50%)
+    color: hsl(0, 100%, 50%)
 }
 
 .voteicon.vote_Desire {
-    color:hsl(60, 100%, 50%)
+    color: hsl(60, 100%, 50%)
 }
 
 .GroupGame.vote_Veto {
-    color:hsl(0, 0%, 50%);
+    color: hsl(0, 0%, 50%);
     font-style: italic;
 }
 

@@ -2,17 +2,25 @@ import { useEffect, useState } from "react"
 import { anyElement } from "../../libs/types/helpers"
 import Loading from "./Loading"
 import OwnedIcon from "./OwnedIcon"
-import VoteIcon from "./VoteIcon"
 
-type OEChangeHandler<T = Element> = (event: React.ChangeEvent<T>) => void
+export type OEChangeHandler<T = Element> = (event: React.ChangeEvent<T>) => void
 
 interface OEProps {
     isOwned: boolean | null,
     isInstalled: boolean | null,
     maxPrice: number | null,
-    selectSetter: OEChangeHandler,
-    priceSetter: OEChangeHandler,
+    selectSetter?: OEChangeHandler,
+    priceSetter?: OEChangeHandler,
 }
+
+/**
+ * 
+ * @param isOwned: boolean | null If thing is currently owned
+ * @param isInstalled: boolean | null If thing is currently installed
+ * @param maxPrice: number | null - Maximum purchase price for thing
+ * @param selectSetter: OEChangeHandler - Update installed/owned state 
+ * @param priceSetter: OEChangeHandler - Update price
+ */
 
 function OwnedEdit(props: OEProps) {
     let [ownedstate, setOwnedState] = useState<string>("Unowned")
@@ -31,7 +39,7 @@ function OwnedEdit(props: OEProps) {
         setMaxPriceEl(mpe)
     }, [props.isInstalled, props.isOwned, props.maxPrice, props.priceSetter])
 
-    return <>
+    return <span className="OwnedEdit">
         <OwnedIcon {...props} />
         <select onChange={props.selectSetter} defaultValue={ownedstate}>
             <option>Installed</option>
@@ -39,7 +47,7 @@ function OwnedEdit(props: OEProps) {
             <option>Unowned</option>
         </select>
         {maxprice_el}
-    </>
+    </span>
 }
 
 export default OwnedEdit

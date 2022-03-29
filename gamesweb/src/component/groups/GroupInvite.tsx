@@ -4,7 +4,6 @@ import { GroupType } from "../../libs/types/Group"
 import { isKnown, makeCloudItems } from "../../libs/utils"
 import GenericCloud from "../bits/GenericCloud"
 import { CloudItem } from "../../libs/types/CloudItem"
-import Loading from "../bits/Loading"
 import { GeneralProps } from "../props/GeneralProps"
 
 function GroupInvite(props: GeneralProps) {
