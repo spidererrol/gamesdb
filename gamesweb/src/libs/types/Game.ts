@@ -7,8 +7,8 @@ export interface GameType extends DBBase {
     name: string
     aliases: string[]
     tags: string[]
-    maxPlayers: number
-    minPlayers: number
+    maxPlayers: number | null
+    minPlayers: number | null
     links: { [index: string]: string } // Map in the database, but object in the returned json.
     votes: VoteType[]
     owners: OwnerType[]

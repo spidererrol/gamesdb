@@ -10,6 +10,7 @@ import { HTTPSTATUS } from '../types/httpstatus'
 import { TODO } from './test'
 import { UserType } from '../schemas/User'
 import { fillGamePlayMode } from '../libs/fillGamePlayMode'
+import { VoteType } from '../schemas/Vote'
 
 async function legacy_getList(query: any, res: Response, req: Request): Promise<any> {
     return getList({
@@ -239,7 +240,9 @@ export async function vote(req: Request, res: Response) {
                 break
             }
         }
-        if (isKnown(myvote)) {
+        if (newvote === "None") {
+            game.votes = game.votes.filter((v: VoteType) => v.user._id.toString() != req.myUser._id.toString())
+        } else if (isKnown(myvote)) {
             myvote.vote = newvote//Vote[newvote as keyof typeof Vote];
             myvote.when = new Date()
             myvote.user = req.myUser

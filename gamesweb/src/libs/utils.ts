@@ -92,6 +92,27 @@ export function formap<K, V>(map: Map<K, V>, func: (k: K, v: V) => void): void {
     }
 }
 
+export function map2object<K, V, O>(map: Map<K, V>, func: (k: K, v: V) => O): any {
+    let out: any = {}
+    const itr = map.entries()
+    for (let i = 0; i < map.size; i++) {
+        let [k, v] = itr.next().value
+        let add = func(k, v)
+        out = { ...out, ...add }
+    }
+    return out
+}
+
+export function map2array<K, V, O>(map: Map<K, V>, func: (k: K, v: V) => O): O[] {
+    let out: O[] = []
+    const itr = map.entries()
+    for (let i = 0; i < map.size; i++) {
+        let [k, v] = itr.next().value
+        out.push(func(k, v))
+    }
+    return out
+}
+
 export function array2map<K, V, I>(input: I[], map: (i: I) => [k: K, v: V]): Map<K, V> {
     const outmap = new Map<K, V>()
     for (const i of input) {
@@ -105,7 +126,7 @@ export function cloneMap<K, V>(input: Map<K, V>) {
     return new Map<K, V>(input)
 }
 
-export type IndexedChangeEventHandler<ElementType,IndexType> = (e:React.ChangeEvent<ElementType>,i:IndexType)=>void
+export type IndexedChangeEventHandler<ElementType, IndexType> = (e: React.ChangeEvent<ElementType>, i: IndexType) => void
 
 // ### Environment ###
 

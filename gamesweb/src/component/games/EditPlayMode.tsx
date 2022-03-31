@@ -1,12 +1,13 @@
 import { PlayModeType } from "../../libs/types/PlayMode"
 import { GeneralProps } from "../props/GeneralProps"
-import VoteEdit, { VEChangeHandler } from "../bits/VoteEdit"
-import OwnedEdit, { OEChangeHandler } from "../bits/OwnedEdit"
+import VoteEdit from "../bits/VoteEdit"
+import OwnedEdit from "../bits/OwnedEdit"
 import DelButton, { ButtonAction } from "../bits/DelButton"
 import { anyElement } from "../../libs/types/helpers"
 import { createRef, useCallback, useEffect, useState } from "react"
 import { IndexedChangeEventHandler, isKnown } from "../../libs/utils"
 import Loading from "../bits/Loading"
+import UnDelButton from "../bits/UnDelButton"
 
 export type PlayModeChangeEventHandler<ElementType = Element> = IndexedChangeEventHandler<ElementType, string>
 
@@ -19,6 +20,7 @@ interface EPMProps extends GeneralProps {
     descriptionUpdate?: PlayModeChangeEventHandler
     includedUpdate?: PlayModeChangeEventHandler
     delAction?: ButtonAction
+    unDelAction?: ButtonAction
 }
 
 function useIndexedCallback<T extends Element, I>(index: I, callback: IndexedChangeEventHandler<T, I> | undefined): React.ChangeEventHandler<T> | undefined {
@@ -80,7 +82,24 @@ function EditPlayMode(props: EPMProps) {
             setDelButton(<></>)
     }, [props.delAction, props.playmode._id])
 
-    return <div className="Edit PlayMode">
+    const [unDelButton, setUnDelButton] = useState<anyElement>(<></>)
+    useEffect(() => {
+        if (isKnown(props.unDelAction))
+            setUnDelButton(<UnDelButton onClick={props.unDelAction as ButtonAction} data={props.playmode._id} />)
+        else
+            setUnDelButton(<></>)
+    }, [props.playmode._id, props.unDelAction])
+
+    const [classNames, setClassNames] = useState<string>("Edit PlayMode")
+
+    useEffect(() => {
+        if (props.playmode._isdeleted)
+            setClassNames("Edit PlayMode deleted")
+        else
+            setClassNames("Edit PlayMode")
+    }, [props.playmode._isdeleted])
+
+    return <div className={classNames}>
         <div className="name"><input defaultValue={props.playmode.name} onChange={useIndexedCallback(props.playmode._id, props.nameUpdate)} /></div>
         <div className="icons">
             <VoteEdit vote={props.playmode.myVote.vote} setter={useIndexedCallback(props.playmode._id, props.voteUpdate)} />
@@ -91,6 +110,7 @@ function EditPlayMode(props: EPMProps) {
             <textarea defaultValue={props.playmode.description} onChange={useIndexedCallback(props.playmode._id, props.descriptionUpdate)} />
         </div>
         {delButton}
+        <div className="delcover"><span>DELETED</span>{unDelButton}</div>
     </div>
 }
 

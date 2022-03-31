@@ -42,9 +42,9 @@ function OwnedEdit(props: OEProps) {
     return <span className="OwnedEdit">
         <OwnedIcon {...props} />
         <select onChange={props.selectSetter} defaultValue={ownedstate}>
-            <option>Installed</option>
-            <option>Owned</option>
-            <option>Unowned</option>
+            <option selected={ownedstate === "Installed"}>Installed</option>
+            <option selected={ownedstate === "Owned"}>Owned</option>
+            <option selected={ownedstate === "Unowned"}>Unowned</option>
         </select>
         {maxprice_el}
     </span>

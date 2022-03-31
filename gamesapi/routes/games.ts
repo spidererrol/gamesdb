@@ -22,8 +22,6 @@ bindPath("post", "/", actions.addGame)
 
 bindPath("get", '/votes', actions.getVoteTypes)
 
-// ##### Keep these at the end #####
-
 bindPath("post", '/:id/aliases', actions.addAlias)
 bindPath("delete", '/:id/aliases', actions.deleteAlias)
 

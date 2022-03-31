@@ -1,204 +1,233 @@
 :root {
-    --bg-main: black;
-    --fg-main: white;
-    --border-main: hsl(0, 0%, 50%);
-    --bg-tag: green;
-    --fg-tag: white;
-    --item-bg: hsl(214 91% 57%);
-    --item-fg: black;
-    --fg-dim: hsl(0, 0%, 50%);
+  --bg-main: black;
+  --fg-main: white;
+  --border-main: hsl(0, 0%, 50%);
+  --bg-tag: green;
+  --fg-tag: white;
+  --item-bg: hsl(214 91% 57%);
+  --item-fg: black;
+  --fg-dim: hsl(0, 0%, 50%);
 }
 
 body {
-    background: var(--bg-main);
-    color: var(--fg-main);
+  background: var(--bg-main);
+  color: var(--fg-main);
 }
 
 .App {
-    text-align: center;
+  text-align: center;
 }
 
 .App-logo {
-    height: 40vmin;
-    pointer-events: none;
+  height: 40vmin;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 .smallnumber {
-    width: 4rem;
-    text-align: center;
+  width: 4rem;
+  text-align: center;
 }
 
 .App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 .App-link {
-    color: #61dafb;
+  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .Exclude .tag,
 .tag.Exclude {
-    --bg-tag: hsl(0, 100%, 30%);
+  --bg-tag: hsl(0, 100%, 30%);
 }
 
 .tag {
-    position: relative;
-    display: inline-block;
-    border: 0px;
-    background: var(--bg-tag);
-    border-radius: 10px;
-    color: var(--fg-tag);
-    margin: 4px;
-    padding: 3px;
+  position: relative;
+  display: inline-block;
+  border: 0px;
+  background: var(--bg-tag);
+  border-radius: 10px;
+  color: var(--fg-tag);
+  margin: 4px;
+  padding: 3px;
 }
 
 .tag button.deltag {
-    border: 1px solid black;
-    background: transparent;
-    position: relative;
-    top: 0px;
-    right: 0px;
-    margin: 0;
-    padding: 0;
-    border-radius: 10px;
+  border: 1px solid black;
+  background: transparent;
+  position: relative;
+  top: 0px;
+  right: 0px;
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.PlayMode.Edit.deleted {
+  position: relative;
+}
+
+.PlayMode.Edit.deleted .delcover {
+  display: flex;
+  position: absolute;
+  background: hsl(0 0% 50% / 0.9);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+
+.PlayMode .delcover span {
+  --shadow-width: 5px;
+  text-shadow: 0 0 var(--shadow-width) black, 0 0 var(--shadow-width) black,
+    0 0 var(--shadow-width) black, 0 0 var(--shadow-width) black;
+}
+
+.PlayMode.Edit .delcover {
+  display: none;
+  z-index: 1;
 }
 
 .cloud {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .playercount input {
-    width: 6em;
+  width: 6em;
 }
 
-.voteicon+select {
-    margin-left: 2px;
+.voteicon + select {
+  margin-left: 2px;
 }
 
 .voteicon,
 .ownedicon {
-    margin-left: 4px;
-    margin-right: 4px;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 
 .ownedicon {
-    color: hsl(240, 100%, 70%);
+  color: hsl(240, 100%, 70%);
 }
 
 .linkurl {
-    width: 30em;
+  width: 30em;
 }
 
 .linkcontainer {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    border: 1px dashed var(--fg-main);
-    margin: 4px;
-    justify-content: center;
-    /* Vertical centering (mainly for "+" button) */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px dashed var(--fg-main);
+  margin: 4px;
+  justify-content: center;
+  /* Vertical centering (mainly for "+" button) */
 }
 
 .PlayMode.Edit {
-    position: relative;
-    margin: 4px;
+  position: relative;
+  margin: 4px;
 }
 
 .linkcontainer .DelButton,
-.PlayMode.Edit .DelButton {
-    position: absolute;
-    top: 0;
-    right: 0;
+.PlayMode.Edit .DelButton,
+.linkcontainer .UnDelButton,
+.PlayMode.Edit .UnDelButton {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .buyprice {
-    width: 6em;
+  width: 6em;
 }
 
 .cloud .item {
-    display: inline-block;
-    background: var(--item-bg);
-    color: var(--item-fg);
-    border-radius: 10px;
-    padding: 0.25rem;
-    margin: 0.25rem;
+  display: inline-block;
+  background: var(--item-bg);
+  color: var(--item-fg);
+  border-radius: 10px;
+  padding: 0.25rem;
+  margin: 0.25rem;
 }
 
 label::after {
-    content: ':'
+  content: ":";
 }
 
 .error {
-    color: hsl(0 100% 50%);
+  color: hsl(0 100% 50%);
 }
 
 nav ul {
-    list-style-type: none;
-    margin-inline: 0;
-    padding-inline: 0;
+  list-style-type: none;
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 nav li {
-    display: inline;
-    background: var(--item-bg);
-    padding: 0.5rem;
-    margin: 1px;
-    border-radius: 10px;
+  display: inline;
+  background: var(--item-bg);
+  padding: 0.5rem;
+  margin: 1px;
+  border-radius: 10px;
 }
 
 nav li a {
-    color: black;
-    text-decoration: none;
-    font-weight: 600;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .VoteEdit,
 .OwnedEdit {
-    border-width: 1px;
-    border-style: dotted;
-    border-color: var(--fg-dim);
+  border-width: 1px;
+  border-style: dotted;
+  border-color: var(--fg-dim);
 }
 
 .regtoken_link {
-    color: greenyellow;
+  color: greenyellow;
 }
 
 .PlayMode {
-    border: 1px dashed var(--fg-main);
+  border: 1px dashed var(--fg-main);
 }
 
 .PlayMode .description {
-    display: block;
+  display: block;
 }
 
 .editicon {
-    color: hsl(0, 0%, 50%);
+  color: hsl(0, 0%, 50%);
 }
-
 
 /* .voteicon::before,.ownedicon::before {
     content: '[';
@@ -213,107 +242,106 @@ nav li a {
 .memberships,
 .memberslist,
 .gameslist {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
 }
 
-.memberships>.group.private .button {
-    background: hsl(0, 100%, 50%);
+.memberships > .group.private .button {
+  background: hsl(0, 100%, 50%);
 }
 
-.memberships>.group.public .button {
-    background: hsl(120, 100%, 50%);
+.memberships > .group.public .button {
+  background: hsl(120, 100%, 50%);
 }
 
-.memberslist>.member,
-.gameslist>.GroupGame {
-    border: 1px solid var(--border-main);
-    margin: 1px;
+.memberslist > .member,
+.gameslist > .GroupGame {
+  border: 1px solid var(--border-main);
+  margin: 1px;
 }
 
 .ListGroups {
-    display: flex;
+  display: flex;
 }
 
 .ListGroups .GroupItem {
-    border: 1px solid hsl(0, 0%, 50%);
-    margin: 1px;
+  border: 1px solid hsl(0, 0%, 50%);
+  margin: 1px;
 }
 
 .ListGroups .GroupItem.private {
-    border-color: hsl(0, 100%, 50%);
+  border-color: hsl(0, 100%, 50%);
 }
 
 .ListGroups .GroupItem.member {
-    border-color: hsl(120, 100%, 25%);
+  border-color: hsl(120, 100%, 25%);
 }
 
 .ListGroups .GroupItem.private.member {
-    border-color: hsl(22, 100%, 50%)
+  border-color: hsl(22, 100%, 50%);
 }
 
 .AddGroup,
 .EditGroup {
-    display: flex;
-    justify-content: left;
+  display: flex;
+  justify-content: left;
 }
 
 button.logout {
-    border: none;
-    background: transparent;
-    color: black;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
+  border: none;
+  background: transparent;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 nav li.gap {
-    width: 2rem;
-    background: var(--bg-main);
+  width: 2rem;
+  background: var(--bg-main);
 }
 
 .RegTokens {
-    display: flex;
-    justify-content: left;
+  display: flex;
+  justify-content: left;
 }
 
 .ListGames {
-    display: flex;
-    justify-content: left;
+  display: flex;
+  justify-content: left;
 }
 
 .game .prop {
-    text-align: left;
-    /* border: 1px solid red; */
+  text-align: left;
+  /* border: 1px solid red; */
 }
 
 .links {
-    display: flex;
-    justify-content: left;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
 }
 
 .addform {
-    display: flex;
-    border: 1px dashed var(--fg-main);
-    margin: 2px;
-    justify-content: center;
-    align-content: center;
+  display: flex;
+  border: 1px dashed var(--fg-main);
+  margin: 2px;
+  justify-content: center;
+  align-content: center;
 }
 
 .link a {
-    color: hsl(187, 87%, 49%);
+  color: hsl(187, 87%, 49%);
 }
 
 .link {
-    display: inline-block;
-    margin: 3px;
-    padding-right: 0.5rem;
-    position: relative;
-    /* border: 1px solid red; */
+  display: inline-block;
+  margin: 3px;
+  padding-right: 0.5rem;
+  position: relative;
+  /* border: 1px solid red; */
 }
-
 
 /* Changed to be an fa icon instead...
  .extlink::after {
@@ -326,113 +354,120 @@ nav li.gap {
 
 button.addAlias,
 .AddButton {
-    background: transparent;
-    border: none;
-    color: hsl(120, 100%, 50%);
-    cursor: pointer;
+  background: transparent;
+  border: none;
+  color: hsl(120, 100%, 50%);
+  cursor: pointer;
 }
 
 button.DelButton {
-    background: transparent;
-    border: none;
-    color: hsl(0, 100%, 50%);
-    cursor: pointer;
+  background: transparent;
+  border: none;
+  color: hsl(0, 100%, 50%);
+  cursor: pointer;
+}
+
+button.UnDelButton {
+  background: transparent;
+  border: none;
+  color: hsl(120, 100%, 50%);
+  cursor: pointer;
 }
 
 button[disabled] {
-    color: hsl(0, 0%, 50%);
+  color: hsl(0, 0%, 50%);
 }
 
 .game .alias {
-    /* border: 1px solid var(--fg-main); */
-    text-align: left;
+  /* border: 1px solid var(--fg-main); */
+  text-align: left;
 }
 
 .game .alias::before {
-    content: 'aka ';
+  content: "aka ";
 }
 
 .RegTokens .token {
-    border: 1px solid var(--fg-main);
-    height: 100%;
-    padding: 2px;
-    margin: 3px;
+  border: 1px solid var(--fg-main);
+  height: 100%;
+  padding: 2px;
+  margin: 3px;
 }
 
 .RegTokens .token .name {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 nav li.last {
-    margin-left: 2rem;
+  margin-left: 2rem;
 }
 
 .button {
-    min-width: 5rem;
-    min-height: 1.5rem;
-    border: 1px solid var(--border-main);
-    border-radius: 5px;
-    margin: 1px;
+  min-width: 5rem;
+  min-height: 1.5rem;
+  border: 1px solid var(--border-main);
+  border-radius: 5px;
+  margin: 1px;
 }
 
 pre {
-    text-align: left;
+  text-align: left;
 }
 
 .debug {
-    border: 1px dotted var(--border-main);
-    margin: 5px;
-    position: relative;
+  border: 1px dotted var(--border-main);
+  margin: 5px;
+  position: relative;
 }
 
 .debug::before {
-    content: 'Debug:';
-    position: relative;
-    top: -0.5rem;
-    left: 0.5rem;
-    background: var(--bg-main);
-    border: 1px dotted var(--border-main);
+  content: "Debug:";
+  position: relative;
+  top: -0.5rem;
+  left: 0.5rem;
+  background: var(--bg-main);
+  border: 1px dotted var(--border-main);
 }
 
 .GroupGame .header .name {
-    display: inline-block;
+  display: inline-block;
 }
 
-.GroupGame>.header {
-    border-bottom: 1px dashed hsl(0, 0%, 50%);
+.GroupGame > .header {
+  border-bottom: 1px dashed hsl(0, 0%, 50%);
 }
 
 .GroupGame .header {
-    display: flex;
-    justify-content: left;
+  display: flex;
+  justify-content: left;
 }
 
 .playmodes .PlayMode {
-    display: flex;
-    justify-content: left;
+  display: flex;
+  justify-content: left;
 }
 
-.PlayMode>div {
-    display: inline-block;
+.PlayMode > div {
+  display: inline-block;
 }
 
 .voteicon.vote_Accept {
-    color: hsl(120, 100%, 59%)
+  color: hsl(120, 100%, 59%);
 }
 
 .voteicon.vote_Veto {
-    color: hsl(0, 100%, 50%)
+  color: hsl(0, 100%, 50%);
 }
 
 .voteicon.vote_Desire {
-    color: hsl(60, 100%, 50%)
+  color: hsl(60, 100%, 50%);
 }
 
 .GroupGame.vote_Veto {
-    color: hsl(0, 0%, 50%);
-    font-style: italic;
+  color: hsl(0, 0%, 50%);
+  font-style: italic;
 }
 
 .GroupGame.vote_Desire {
-    border-color: gold;
+  border-color: gold;
 }
