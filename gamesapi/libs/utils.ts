@@ -34,15 +34,31 @@ export function reqShim(inNext: actionFunc): (a: any, b: any) => void {
     return (inNext as (a: any, b: any) => void)
 }
 
+function filterStack(stack: string = "(none)"): string {
+    return stack.replace(/[^\n]*\/node_modules\/[^\n]*/g, "...").replace(/(?:\.\.\.\n)*\.\.\.\n/g, "...\n")
+}
+
 export function handleError(err: any, res: express.Response): void {
     if (err instanceof Error) {
         if (config.DEBUG) {
+            console.log("Sent Error (with stack): " + err.message)
+            console.dir(filterStack(err.stack), { colors: true })
             res.status(500).json({ status: "error", message: err.message, stack: err.stack })
         } else {
+            console.log("Sent Error: " + err.message)
             res.status(500).json({ status: "error", message: err.message })
         }
     } else {
+        console.log("Sent Unknown Error (not Error object)")
         res.status(500).json({ status: "error", message: "Unknown Error" })
+    }
+    if (Error.captureStackTrace) {
+        let st: any = {}
+        Error.captureStackTrace(st)
+        console.log("Local stack trace:")
+        console.dir(filterStack(st.stack), { colors: true })
+    } else {
+        console.log("No captureStackTrace")
     }
     return
 }
@@ -94,46 +110,66 @@ export function bindRouterPath(router: Router, method: multimethods, path: strin
 
 export function setupParams(app: express.Router) {
     app.param("game", async (req, res, next, game_id) => {
-        let game = await Games.findById(game_id)
-        if (!isKnown(game)) {
-            res.status(404).json({ status: "error", message: "No such game" })
-            return
+        try {
+            let game = await Games.findById(game_id)
+            if (!isKnown(game)) {
+                res.status(404).json({ status: "error", message: "No such game" })
+                return
+            }
+            (req as express.Request).reqGame = game
+        } catch (e) {
+            handleError(e, res)
         }
-        (req as express.Request).reqGame = game
         next()
     })
     app.param("user", async (req, res, next, user_id) => {
-        let user = await Users.findById(user_id)
-        if (!isKnown(user)) {
-            res.status(404).json({ status: "error", message: "No such user" })
-            return
+        try {
+            let user = await Users.findById(user_id)
+            if (!isKnown(user)) {
+                res.status(404).json({ status: "error", message: "No such user" })
+                return
+            }
+            (req as express.Request).reqUser = user
+        } catch (e) {
+            handleError(e, res)
         }
-        (req as express.Request).reqUser = user
         next()
     })
     app.param("group", async (req, res, next, group_id) => {
-        let group = await Group.findById(group_id)
-        if (!isKnown(group)) {
-            res.status(404).json({ status: "error", message: "No such group: " + group_id })
-            return
+        try {
+            let group = await Group.findById(group_id)
+            if (!isKnown(group)) {
+                res.status(404).json({ status: "error", message: "No such group: " + group_id })
+                return
+            }
+            (req as express.Request).reqGroup = group
+        } catch (e) {
+            handleError(e, res)
         }
-        (req as express.Request).reqGroup = group
         next()
     })
     app.param("playmode", async (req, res, next, playmode_id) => {
-        let playmode = await PlayMode.findById(playmode_id)
-        if (!isKnown(playmode)) {
-            return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such playmode")
+        try {
+            let playmode = await PlayMode.findById(playmode_id)
+            if (!isKnown(playmode)) {
+                return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such playmode")
+            }
+            (req as express.Request).reqPlayMode = playmode
+        } catch (e) {
+            handleError(e, res)
         }
-        (req as express.Request).reqPlayMode = playmode
         next()
     })
     app.param("progress", async (req, res, next, progress_id) => {
-        let progress = await PlayModeProgress.findById(progress_id)
-        if (!isKnown(progress)) {
-            return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such progress")
+        try {
+            let progress = await PlayModeProgress.findById(progress_id)
+            if (!isKnown(progress)) {
+                return errorResponse(res, HTTPSTATUS.NOT_FOUND, "No such progress")
+            }
+            (req as express.Request).reqPlayModeProgress = progress
+        } catch (e) {
+            handleError(e, res)
         }
-        (req as express.Request).reqPlayModeProgress = progress
         next()
     })
 
@@ -302,7 +338,7 @@ export async function setGameGroupMode(group: GroupType, game: GameType, mode: G
     } else {
         group.games.push(game)
     }
-    group.save()
+    await group.save()
     return gg as GameGroupType
 }
 
@@ -343,6 +379,35 @@ function safeToString(thing?: has_toString): string | undefined {
     }
     return undefined
 }
+
+// ###
+export function beString(thing?: has_toString | string): string | undefined {
+    if (isStringable(thing)) {
+        return thing.toString()
+    }
+    return thing
+}
+
+interface has_id {
+    _id: has_toString | string | undefined
+}
+
+export function isHasId(value: has_id | has_toString | string | undefined): value is has_id {
+    if (typeof value === 'undefined') return false
+    if ((value as has_id).toString) {
+        return true
+    }
+    return false
+}
+
+
+export function idString(thing?: has_id | has_toString | string): string | undefined {
+    if (isHasId(thing)) {
+        return beString(thing._id)
+    }
+    return beString(thing)
+}
+// ###
 
 export namespace getEnv {
     export function Exists(key: string): boolean {

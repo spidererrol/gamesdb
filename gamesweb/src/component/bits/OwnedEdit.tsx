@@ -24,7 +24,7 @@ interface OEProps {
 
 function OwnedEdit(props: OEProps) {
     let [ownedstate, setOwnedState] = useState<string>("Unowned")
-    let [maxprice_el, setMaxPriceEl] = useState<anyElement>(<Loading />)
+    let [maxprice_el, setMaxPriceEl] = useState<anyElement>(<Loading caller="OwnedEdit/maxprice_el" />)
 
     useEffect(() => {
         let mpe = <></>

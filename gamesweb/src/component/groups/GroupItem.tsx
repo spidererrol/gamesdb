@@ -20,8 +20,8 @@ interface GIProps extends GeneralProps {
 
 function GroupItem(props: GIProps) {
     let [classes, setClasses] = useState<string>("group GroupItem")
-    let [jlButton, setJLButton] = useState<anyElement>(<Loading />)
-    let [iButton, setiButton] = useState<anyElement>(<Loading />)
+    let [jlButton, setJLButton] = useState<anyElement>(<Loading caller="GroupItem/JLButton" />)
+    let [iButton, setiButton] = useState<anyElement>(<Loading caller="GroupItem/iButton" />)
 
     let todo = useCallback((e: any) => {
         console.log("TODO!")

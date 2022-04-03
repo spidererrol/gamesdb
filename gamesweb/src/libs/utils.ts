@@ -2,7 +2,10 @@
 
 import { useState, useEffect, Key } from "react"
 import { CloudItem } from "./types/CloudItem"
+import { DBBase } from "./types/DBBase"
 import { anyElement, anyElementList } from "./types/helpers"
+import { NRMap } from "./types/InputRef"
+import { NMap } from "./types/NMap"
 
 
 export function isKnown(value?: any | null): value is any {
@@ -122,13 +125,24 @@ export function array2map<K, V, I>(input: I[], map: (i: I) => [k: K, v: V]): Map
     return outmap
 }
 
-export function cloneMap<K, V>(input: Map<K, V>) {
+export function cloneMap<K, V>(input: Map<K, V>): Map<K, V> {
     return new Map<K, V>(input)
 }
 
 export type IndexedChangeEventHandler<ElementType, IndexType> = (e: React.ChangeEvent<ElementType>, i: IndexType) => void
 
-// ### Environment ###
+export function applyMixins(derivedCtor: any, constructors: any[]) {
+    constructors.forEach((baseCtor) => {
+        Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+            Object.defineProperty(
+                derivedCtor.prototype,
+                name,
+                Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+                Object.create(null)
+            )
+        })
+    })
+}
 
 interface has_toString {
     toString(): string
@@ -147,4 +161,86 @@ export function safeToString(thing?: has_toString): string | undefined {
         return thing.toString()
     }
     return undefined
+}
+
+export function beString(thing?: has_toString | string): string | undefined {
+    if (isStringable(thing)) {
+        return thing.toString()
+    }
+    return thing
+}
+
+interface has_id {
+    _id: has_toString | string | undefined
+}
+
+export function isHasId(value: has_id | has_toString | string | undefined): value is has_id {
+    if (typeof value === 'undefined') return false
+    if ((value as has_id).toString) {
+        return true
+    }
+    return false
+}
+
+
+export function idString(thing?: has_id | has_toString | string): string | undefined {
+    if (isHasId(thing)) {
+        return beString(thing._id)
+    }
+    return beString(thing)
+}
+
+export type NSMap = NMap<string>
+
+export function newNSMap(init?: any) {
+    return new Map<number, string>(init)
+}
+export function haveBlank(refs: NRMap) {
+    return mapfilter(refs, (_k, ar) => ar.current?.value === "").size > 0
+}
+export async function array2promisechain<T>(inarray: T[], func: (i: T) => Promise<any>): Promise<void> {
+    let todo = [...inarray]
+    if (todo.length > 0) {
+        let i = todo.shift() as T
+        await func(i)
+        return array2promisechain(todo, func)
+    }
+    return
+}
+export function newdel_order(p: DBBase): number {
+    if (p._isnew && p._isdeleted) {
+        return 4 // Last but simplifies logic if I match first
+    } else if (p._isdeleted) {
+        return 1
+    } else if (p._isnew) {
+        return 2
+    } else {
+        return 3
+    }
+}
+interface DBBase_with_name extends DBBase {
+    name: string
+}
+export function cmp_pms(a: DBBase_with_name, b: DBBase_with_name): number {
+    // -ve = a is BEFORE than b, 0 = equal, +ve = a is AFTER b
+    let a1 = newdel_order(a)
+    let b1 = newdel_order(b)
+    let c1 = a1 - b1
+    if (c1 !== 0)
+        return c1
+    return a.name.localeCompare(b.name)
+}
+export interface OwnershipInfo {
+    isOwned: boolean | null
+    isInstalled: boolean | null
+    maxPrice: number | null
+}
+export function EditMapItem<K, T>(getter: Map<K, T>, setter: React.Dispatch<React.SetStateAction<Map<K, T>>>, index: K, updater: (v: T) => void) {
+    const newthing = new Map<K, T>(getter)
+    const item = newthing.get(index)
+    if (item !== undefined) {
+        updater(item)
+        newthing.set(index, item)
+    }
+    setter(newthing)
 }

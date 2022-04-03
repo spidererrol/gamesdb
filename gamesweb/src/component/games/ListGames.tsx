@@ -7,11 +7,11 @@ import DisplayGame from "./DisplayGame"
 
 function ListGames(props: GeneralProps) {
     const [data, setData] = useState<GameType[]>([])
-    const [games, setGames] = useState<anyElementList>([<Loading key="loading" />])
+    const [games, setGames] = useState<anyElementList>([<Loading key="loading" caller="ListGames/games" />])
 
     useEffect(() => {
         props.api.game.getAll().then(games => setData(games))
-    }, [props.api.game,props.dbupdates.games])
+    }, [props.api.game, props.dbupdates.games])
     useEffect(() => {
         setGames(data.map(g => <DisplayGame key={g._id} game={g} {...props} />))
     }, [data, props])

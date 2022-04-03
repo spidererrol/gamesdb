@@ -13,6 +13,10 @@ import { GeneralProps } from "../props/GeneralProps"
 import VoteIcon from "../bits/VoteIcon"
 import GameLinks from "./GameLinks"
 import PlayMode from "./PlayMode"
+import DelButton from "../bits/DelButton"
+import UnDelButton from "../bits/UnDelButton"
+import LabelInput from "../bits/LabelInput"
+import CancelButton from "../bits/CancelButton"
 
 interface DGProps extends GeneralProps {
     game: GameType
@@ -25,11 +29,14 @@ function DisplayGame(props: DGProps): JSX.Element {
     let [owned, setOwned] = useState<string>("None")
     let [price, setPrice] = useState<number>(0)
     let [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
-    let [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" />])
+    let [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" caller="DisplayGame/playmodes" />])
+    let [classNames, setClassNames] = useState<string>("game")
+    let [refresh, setRefresh] = useState<boolean>(false)
 
     useEffect(() => {
-        props.api.game.playmodes(props.game._id).then(pms => setdbPlaymodes(pms))
-    }, [props.api.game, props.game._id])
+        if (refresh)
+            props.api.game.playmodes(props.game._id).then(pms => setdbPlaymodes(pms)).then(() => setRefresh(false))
+    }, [props.api.game, props.game._id, refresh])
     useEffect(() => {
         setPlayModes(dbplaymodes.map(pm => <PlayMode key={pm._id} playmode={pm} gameid={props.game._id} {...props} />))
     }, [dbplaymodes, props])
@@ -52,8 +59,27 @@ function DisplayGame(props: DGProps): JSX.Element {
         }
     }, [props.game.myOwner])
 
-    return <fieldset className="game">
-        <legend>{props.game.name}<Link to={props.game._id + "/edit"} ><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></Link></legend>
+    const delete1 = useCallback((e) => {
+        e.preventDefault()
+        setClassNames("game deleted")
+    }, [])
+
+    const delete2 = useCallback((e) => {
+        e.preventDefault()
+        setClassNames("game") //FIXME: Actually delete, then setRefresh(true)
+    }, [])
+
+    const undelete = useCallback((e) => {
+        e.preventDefault()
+        setClassNames("game")
+    }, [])
+
+    const noop = useCallback((e) => {
+        e.preventDefault()
+    }, [])
+
+    return <fieldset className={classNames}>
+        <legend>{props.game.name}<Link to={props.game._id + "/edit"} ><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></Link><DelButton onClick={delete1} data="" /></legend>
         {aliases}
         <div className="prop playercount minPlayers">Min Players: {props.game.minPlayers ?? "unknown"}</div>
         <div className="prop playercount maxPlayers">Max Players: {props.game.maxPlayers ?? "unknown"}</div>
@@ -62,6 +88,15 @@ function DisplayGame(props: DGProps): JSX.Element {
         <GameLinks {...props} />
         <GenericCloud getItems={tags} {...props} />
         {playmodes}
+        <div className="cover">
+            <span className="with_bg">
+                {/* <LabelInput label="Really Delete?" type="checkbox" onChange={delete2} defaultChecked={false} /> */}
+                Confirm or Cancel
+                <br />
+                <DelButton onClick={delete2} data="" title="Really Delete" /><CancelButton onClick={undelete} data="" title="Cancel" />
+            </span>
+            <UnDelButton onClick={undelete} data="" />
+        </div>
     </fieldset>
 }
 

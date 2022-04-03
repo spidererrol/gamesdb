@@ -85,11 +85,11 @@ body {
   border-radius: 10px;
 }
 
-.PlayMode.Edit.deleted {
+.deleted {
   position: relative;
 }
 
-.PlayMode.Edit.deleted .delcover {
+.deleted > .cover {
   display: flex;
   position: absolute;
   background: hsl(0 0% 50% / 0.9);
@@ -102,13 +102,24 @@ body {
   justify-content: center;
 }
 
-.PlayMode .delcover span {
+.cover span {
   --shadow-width: 5px;
   text-shadow: 0 0 var(--shadow-width) black, 0 0 var(--shadow-width) black,
     0 0 var(--shadow-width) black, 0 0 var(--shadow-width) black;
 }
 
-.PlayMode.Edit .delcover {
+.PlayMode .name_icons {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.PlayMode .icons {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.PlayMode > .cover,
+.cover {
   display: none;
   z-index: 1;
 }
@@ -117,6 +128,14 @@ body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.saving .trace {
+  display: none;
+}
+
+.saving {
+  font-size: 10rem;
 }
 
 .playercount input {
@@ -159,10 +178,22 @@ body {
 .linkcontainer .DelButton,
 .PlayMode.Edit .DelButton,
 .linkcontainer .UnDelButton,
-.PlayMode.Edit .UnDelButton {
+.deleted .cover .UnDelButton {
   position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.deleted .cover .with_bg .UnDelButton {
+  position: relative;
   top: 0;
-  right: 0;
+  left: 0;
+}
+
+.with_bg {
+  background: black;
+  padding: 0.25rem;
+  border-radius: 10px;
 }
 
 .buyprice {
@@ -368,6 +399,13 @@ button.DelButton {
 }
 
 button.UnDelButton {
+  background: transparent;
+  border: none;
+  color: hsl(120, 100%, 50%);
+  cursor: pointer;
+}
+
+button.CancelButton {
   background: transparent;
   border: none;
   color: hsl(120, 100%, 50%);

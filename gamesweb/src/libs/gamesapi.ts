@@ -5,13 +5,25 @@ import { api_group } from "./api/group"
 import { api_user } from "./api/user"
 import AuthTok from "./AuthTok"
 
-export class gamesapi {
-    _authtok: AuthTok
+export class propcache {
     apicache: Map<string, apibase>
+    constructor() {
+        this.apicache = new Map<string, apibase>()
+    }
+
+    get_prop<T extends apibase>(prop: string, setter: () => T) {
+        if (!this.apicache.has(prop))
+            this.apicache.set(prop, setter())
+        return this.apicache.get(prop) as T
+    }
+}
+
+export class gamesapi extends propcache {
+    _authtok: AuthTok
 
     constructor(authtok: AuthTok) {
+        super()
         this._authtok = authtok
-        this.apicache = new Map<string, apibase>()
     }
 
     get authtok() {
@@ -21,27 +33,19 @@ export class gamesapi {
         this._authtok.set(() => newtok)
     }
 
-    get auth() {
-        if (!this.apicache.has("auth"))
-            this.apicache.set("auth", new api_auth(this.authtok))
-        return this.apicache.get("auth") as api_auth
+    get auth(): api_auth {
+        return this.get_prop("auth", () => new api_auth(this.authtok))
     }
 
-    get user() {
-        if (!this.apicache.has("user"))
-            this.apicache.set("user", new api_user(this.authtok))
-        return this.apicache.get("user") as api_user
+    get user(): api_user {
+        return this.get_prop("user", () => new api_user(this.authtok))
     }
 
-    get group() {
-        if (!this.apicache.has("group"))
-            this.apicache.set("group", new api_group(this.authtok))
-        return this.apicache.get("group") as api_group
+    get group(): api_group {
+        return this.get_prop("group", () => new api_group(this.authtok))
     }
 
-    get game() {
-        if (!this.apicache.has("game"))
-            this.apicache.set("game", new api_game(this.authtok))
-        return this.apicache.get("game") as api_game
+    get game(): api_game {
+        return this.get_prop("game", () => new api_game(this.authtok))
     }
 }

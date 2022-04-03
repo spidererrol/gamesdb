@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { GameGroup, Games } from '../models/games'
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown, errorResponse, bg, getList, setDateLike } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, bg, getList, setDateLike, idString } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import config from '../libs/config'
@@ -230,7 +230,7 @@ export async function vote(req: Request, res: Response) {
             err404(res)
             return
         }
-        let newvote: string = req.body.vote
+        let newvote: string | null = req.body.vote
         let myvote: any
         for (const vote of game.votes) {
             // log_debug(`Vote: ${vote.user._id} == ${req.myUser._id}`);
@@ -240,24 +240,24 @@ export async function vote(req: Request, res: Response) {
                 break
             }
         }
-        if (newvote === "None") {
+        if (newvote === "None" || newvote === "Unknown" || newvote === null) {
             game.votes = game.votes.filter((v: VoteType) => v.user._id.toString() != req.myUser._id.toString())
         } else if (isKnown(myvote)) {
             myvote.vote = newvote//Vote[newvote as keyof typeof Vote];
             myvote.when = new Date()
-            myvote.user = req.myUser
+            // myvote.user = req.myUser // Redundant
             // myvotes[0].save();
             // log_debug("Updated vote: " + myvote);
         } else {
             let vote = game.votes.push({
-                user: req.myUser._id,
+                user: idString(req.myUser),
                 when: new Date(),
                 vote: newvote,//Vote[newvote as keyof typeof Vote],
             })
             // log_debug("Added vote: " + vote);
             // vote.save();
         }
-        let result = game.save()
+        let result = await game.save()
         // let newgame = await Games.findById(req.params.id).populate("votes");
         res.json({
             status: "success",
@@ -337,14 +337,14 @@ export async function setOwnership(req: Request, res: Response) {
         const game = await Games.findById(req.params.id)
         const existing = game.owners.filter((owner: OwnerType) => owner.user._id.toString() == req.myUser._id.toString())
         if (existing.length > 0) {
-            log_debug(`update existing`)
+            log_debug(`update existing game ownership`)
             // Already have an entry.
             // I only update for entries which exist, however they may be null:
             setDateLike((d) => existing[0].ownedSince = d, req.body["ownedSince"])
             setDateLike((d) => existing[0].installedSince = d, req.body["installedSince"])
             if (typeof req.body.maxPrice !== "undefined") existing[0].maxPrice = req.body.maxPrice
         } else {
-            log_debug(`add new entry`)
+            log_debug(`add new game ownership entry`)
             let existing: any[] = [{
                 user: req.myUser._id
             }]

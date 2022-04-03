@@ -46,16 +46,14 @@ function useIndexedCallback<T extends Element, I>(index: I, callback: IndexedCha
  */
 function EditPlayMode(props: EPMProps) {
     const includedRef = createRef<HTMLInputElement>()
-    const [ownedEdit, setOwnedEdit] = useState(<Loading />)
+    const [ownedEdit, setOwnedEdit] = useState<anyElement>(<Loading caller="EditPlayMode/ownedEdit" />)
     const ownedStateUpdate = useIndexedCallback(props.playmode._id, props.ownedStateUpdate)
     const ownedPriceUpdate = useIndexedCallback(props.playmode._id, props.ownedPriceUpdate)
     const includedUpdate = useCallback((_e?: React.ChangeEvent<HTMLInputElement>) => {
         console.log("Update included")
         if (includedRef.current?.checked) {
-            // console.log("TRUE")
             setOwnedEdit(<>included</>)
         } else {
-            // console.log("FALSE")
             setOwnedEdit(<OwnedEdit {...props.playmode.myOwner} selectSetter={ownedStateUpdate} priceSetter={ownedPriceUpdate} />)
         }
         if (isKnown(props.includedUpdate)) {
@@ -66,13 +64,11 @@ function EditPlayMode(props: EPMProps) {
 
     useEffect(() => {
         if (props.playmode.included) {
-            // console.log("TRUE")
             setOwnedEdit(<>included</>)
         } else {
-            // console.log("FALSE")
             setOwnedEdit(<OwnedEdit {...props.playmode.myOwner} selectSetter={ownedStateUpdate} priceSetter={ownedPriceUpdate} />)
         }
-    }, [ownedPriceUpdate, ownedStateUpdate, props.playmode.included, props.playmode.myOwner])
+    }, [ownedPriceUpdate, ownedStateUpdate, props.playmode, props.playmode.included, props.playmode.myOwner])
 
     const [delButton, setDelButton] = useState<anyElement>(<></>)
     useEffect(() => {
@@ -110,7 +106,7 @@ function EditPlayMode(props: EPMProps) {
             <textarea defaultValue={props.playmode.description} onChange={useIndexedCallback(props.playmode._id, props.descriptionUpdate)} />
         </div>
         {delButton}
-        <div className="delcover"><span>DELETED</span>{unDelButton}</div>
+        <div className="cover"><span>DELETED</span>{unDelButton}</div>
     </div>
 }
 

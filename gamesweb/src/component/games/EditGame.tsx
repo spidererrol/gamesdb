@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
-import { array2map, formap, isKnown, makeCloudItemsSettable, map2array, map2object, mapfilter, mapmap } from "../../libs/utils"
+import {
+    array2map, formap, isKnown, makeCloudItemsSettable, map2object, mapmap,
+    OwnershipInfo, NSMap, newNSMap, cloneMap, haveBlank, EditMapItem
+} from "../../libs/utils"
 import Loading from "../bits/Loading"
 import { GeneralProps } from "../props/GeneralProps"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -12,7 +15,6 @@ import AliasInput from "../bits/AliasInput"
 import VoteEdit from "../bits/VoteEdit"
 import OwnedEdit from "../bits/OwnedEdit"
 import { NLMap, newNLMap, ILink } from "../../libs/types/ILink"
-import { NMap } from "../../libs/types/NMap"
 import { NRMap, newNRMap } from "../../libs/types/InputRef"
 import EditGameLink, { EGLRef } from "./EditGameLink"
 import AddButton from "../bits/AddButton"
@@ -22,185 +24,9 @@ import EditPlayMode from "./EditPlayMode"
 import { VoteType } from "../../libs/types/Vote"
 import { OwnerType } from "../../libs/types/Owner"
 import { v4 } from 'uuid'
-import { gamesapi } from "../../libs/gamesapi"
-import { VoteNames } from "../../libs/api/game"
+import { requestGame, do_save } from "../../libs/AddEditGameHelpers"
 
 interface EGProps extends GeneralProps {
-}
-
-type NSMap = NMap<string>
-
-function newNSMap(init?: any) {
-    return new Map<number, string>(init)
-}
-
-// type NEMap = NMap<anyElement>
-
-// function newNEMap(init?: any) {
-//     return new Map<number, string>(init)
-// }
-
-// function dumpArray(ina: string[]): string {
-//     let outa: string[] = []
-//     for (const ar of ina) {
-//         outa.push(ar)
-//     }
-//     return "[" + outa.map(a => `${a}`).join(",") + "]"
-// }
-
-// function dumpRefs(ars: NRMap): string {
-//     // return dumpArray(ars.map(ar => ar.current?.value as string))
-//     return dumpArray(mapmap(ars, (k, v) => `${k}:${v.current?.value as string}`))
-// }
-
-function cloneMap<K, V>(input: Map<K, V>): Map<K, V> {
-    return new Map<K, V>(input)
-}
-
-function haveBlank(refs: NRMap) {
-    return mapfilter(refs, (_k, ar) => ar.current?.value === "").size > 0
-}
-
-/*
-     const dumpcurrent = useCallback(e => {
-        console.log("======================== save! ========================")
-        console.table([{
-            name: game.name,
-            minPlayers: game.minPlayers,
-            maxPlayers: game.maxPlayers,
-            vote: vote,
-            owned: owned.isOwned,
-            installed: owned.isInstalled,
-            maxPrice: owned.maxPrice,
-        }])
-        formap(aliasRefs, (i, r) => {
-            console.log(`A[${i}]:${r.current?.value}`)
-        })
-        console.table(mapmap(linkRefs, (i, r) => {
-            return {
-                // index: i,
-                name: r.current?.name?.value,
-                url: r.current?.url?.value,
-            }
-        }))
-        formap(tags, (tag, ci) => {
-            console.log(`T:${tag}`)
-        })
-        console.table(mapmap(playmodesMap, (k, v) => {
-            return {
-                _isnew: v._isnew,
-                name: v.name,
-                description: v.description,
-                included: v.included,
-                isOwned: v.myOwner.isOwned,
-                isInstalled: v.myOwner.isInstalled,
-                maxPrice: v.myOwner.maxPrice,
-                vote: v.myVote.vote,
-            }
-        }))
-        console.log("============================ END =======================")
-    }, [aliasRefs, game, linkRefs, owned, playmodesMap, tags, vote])
-*/
-
-function array2promisechain<T>(inarray: T[], func: (i: T) => Promise<any>, final?: () => void): void {
-    let todo = [...inarray]
-    if (todo.length > 0) {
-        let i = todo.shift() as T
-        func(i).then(() => array2promisechain(todo, func))
-    } else {
-        if (final !== undefined)
-            final()
-    }
-}
-
-function save_extras(api: gamesapi, game: GameType, vote: VoteNames, owned: OwnershipInfo, playmodesMap: Map<string, PlayModeType>) {
-    // TODO!: Finish this.
-    let own: any = { ...owned }
-    if (own.isOwned === game.myOwner?.isOwned)
-        delete own["isOwned"]
-    if (own.isInstalled === game.myOwner?.isInstalled)
-        delete own["isInstalled"]
-    if (own.maxPrice === game.myOwner?.maxPrice)
-        delete own["maxPrice"]
-    api.game.vote(game._id, vote).then(() => api.game.ownership(game._id, own).then(() => 0))
-}
-
-function tidyGame(usegame: any) {
-    delete usegame["myOwner"]
-    delete usegame["myVote"]
-    delete usegame["votes"]
-    delete usegame["owners"]
-    delete usegame["added"]
-    delete usegame["__v"]
-    delete usegame["id"]
-    delete usegame["_isnew"]
-}
-
-type InputRef = React.RefObject<HTMLInputElement>
-
-function do_save(
-    api: gamesapi,
-    game: GameType,
-    aliasRefs: NRMap<HTMLInputElement>,
-    linkRefs: NRMap<EGLRef>,
-    tags: Map<Key, CloudItem>,
-    playmodesMap: Map<string, PlayModeType>,
-    refName: InputRef,
-    refMinPlayers: InputRef,
-    refMaxPlayers: InputRef,
-    vote: string,
-    owned: OwnershipInfo
-) {
-    let usegame: GameType = { ...game }
-
-    // delete usegame["myOwner"]
-    // delete usegame["myVote"]
-    // delete usegame["votes"]
-    // delete usegame["owners"]
-    // delete usegame["added"]
-    // delete usegame["__v"]
-    // delete usegame["id"]
-    // delete usegame["_isnew"]
-    tidyGame(usegame)
-
-    usegame.name = refName.current?.value ?? ""
-    if ((refMinPlayers.current?.value ?? "").trim() === "")
-        usegame.minPlayers = null
-    else
-        usegame.minPlayers = Number.parseFloat(refMinPlayers.current?.value ?? "1")
-    if ((refMaxPlayers.current?.value ?? "").trim() === "")
-        usegame.maxPlayers = null
-    else
-        usegame.maxPlayers = Number.parseFloat(refMaxPlayers.current?.value as string)
-
-    usegame.aliases = map2array(aliasRefs, (_k, ref) => ref.current?.value).filter(a => a !== undefined).sort() as string[]
-    usegame.tags = map2array(tags, (_k, ci) => ci.key as string).sort()
-    usegame.links = map2object(linkRefs, (_k, ref) => {
-        let obj: any = {}
-        let key = ref.current?.name?.value ?? ""
-        obj[key] = ref.current?.url?.value ?? "about:blank"
-        return obj
-    })
-    if (game._isnew)
-        api.game.add(usegame).then(newgame => save_extras(api, newgame, vote as VoteNames, owned, playmodesMap))
-    else
-        api.game.update(usegame).then(() => save_extras(api, usegame, vote as VoteNames, owned, playmodesMap))
-}
-
-interface OwnershipInfo {
-    isOwned: boolean | null
-    isInstalled: boolean | null
-    maxPrice: number | null
-}
-
-function EditMapItem<K, T>(getter: Map<K, T>, setter: React.Dispatch<React.SetStateAction<Map<K, T>>>, index: K, updater: (v: T) => void) {
-    const newthing = new Map<K, T>(getter)
-    const item = newthing.get(index)
-    if (item !== undefined) {
-        updater(item)
-        newthing.set(index, item)
-    }
-    setter(newthing)
 }
 
 function EditGame(props: EGProps): JSX.Element {
@@ -213,7 +39,7 @@ function EditGame(props: EGProps): JSX.Element {
     } as unknown as GameType)
 
     // const aliasElements = makeElements(game.aliases, useCallback(a => <div key={a} className="alias"><input defaultValue={a} /></div>, []))
-    const [aliasElements, setAliasElements] = useState<anyElementList>([<Loading key="loading" />])
+    const [aliasElements, setAliasElements] = useState<anyElementList>([<Loading key="loading" caller="EditGame/Aliases" />])
     const [aliases, setAliases] = useState<NSMap>(newNSMap())
     const [aliasRefs, setAliasRefs] = useState<NRMap>(newNRMap())
     const [tags, setTags] = makeCloudItemsSettable(game.tags, useCallback(t => { return { key: t, display: t } }, []))
@@ -221,7 +47,7 @@ function EditGame(props: EGProps): JSX.Element {
     const [owned, setOwned] = useState<OwnershipInfo>({ isOwned: false, isInstalled: false, maxPrice: null })
     // const [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
     const [playmodesMap, setPlaymodesMap] = useState<Map<string, PlayModeType>>(new Map<string, PlayModeType>())
-    const [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" />])
+    const [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" caller="EditGame/Playmodes" />])
     // const [debug, setDebug] = useState<any>([])
     const [deli, setDeli] = useState<number>()
     // const [lastdeli, setLastDeli] = useState<number>()
@@ -337,7 +163,7 @@ function EditGame(props: EGProps): JSX.Element {
         }
         setAliasRefs(ars)
         setAliasElements(els)
-        // setAddDisabled(haveBlank(ars)) //FIXME: If I turn this on, it enables the add button (I think because all refs are undefined)
+        // setAddDisabled(haveBlank(ars)) //NOTE: If I turn this line on, it enables the add button (I think because all refs are undefined?)
         setAddDisabled(blank)
     }, [aliases, delAlias, updateAlias])
 
@@ -388,7 +214,8 @@ function EditGame(props: EGProps): JSX.Element {
     }, [aliasRefs, aliases])
 
     useEffect(() => {
-        props.api.game.get(params.gameid as string).then(g => setGame(g))
+        if (params.gameid !== undefined)
+            requestGame(props.api.game, params.gameid, setGame)
     }, [params.gameid, props.api.game])
 
     useEffect(() => {
@@ -484,7 +311,7 @@ function EditGame(props: EGProps): JSX.Element {
             unDelAction={unDelPlaymode}
             {...props}
         />)
-        newplaymodes.push(<div key="NEW" className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>)
+        // newplaymodes.push(<div key="NEW" className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>)
         setPlayModes(newplaymodes)
     }, [addPlaymode, delPlaymode, epmUpdateDescription, epmUpdateIncluded, epmUpdateName, epmUpdateOwnedPrice, epmUpdateOwnedState, epmUpdateVote, game._id, playmodesMap, props, unDelPlaymode])
 
@@ -569,8 +396,16 @@ function EditGame(props: EGProps): JSX.Element {
 
     const save = useCallback((e) => {
         console.log("Saving")
-        do_save(props.api, game, aliasRefs, linkRefs, tags, playmodesMap, refName, refMinPlayers, refMaxPlayers, vote, owned)
-    }, [aliasRefs, game, linkRefs, owned, playmodesMap, props.api, refMaxPlayers, refMinPlayers, refName, tags, vote])
+        setGame({
+            saving: true,
+            name: "Saving...",
+            aliases: [],
+            tags: [],
+        } as unknown as GameType)
+        do_save(props.api, game, aliasRefs, linkRefs, tags, playmodesMap, refName, refMinPlayers, refMaxPlayers, vote, owned).then(
+            () => requestGame(props.api.game, params.gameid as string, setGame)
+        )
+    }, [aliasRefs, game, linkRefs, owned, params.gameid, playmodesMap, props.api, refMaxPlayers, refMinPlayers, refName, tags, vote])
 
     const dumpcurrent = useCallback(e => {
         console.log("======================== save! ========================")
@@ -611,8 +446,10 @@ function EditGame(props: EGProps): JSX.Element {
     }, [aliasRefs, game, linkRefs, owned, playmodesMap, tags, vote])
 
     // Edit boxes get stuck so don't load them until ready...
+    if (isKnown(game) && (game as any).saving)
+        return <Loading caller="EditGame/saving" Loading="Saving" className="saving" />
     if (!isKnown(game._id))
-        return <Loading />
+        return <Loading caller="EditGame/!isKnown" />
 
     return <fieldset className="game">
         <legend>
@@ -631,7 +468,10 @@ function EditGame(props: EGProps): JSX.Element {
             </div>
         </div>
         <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
-        <div className="editplaymodes">{playmodes}</div>
+        <div className="editplaymodes">
+            {playmodes}
+            <div className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>
+        </div>
         <hr />
         <input type="submit" value="save" onClick={save} /><button hidden={!props.myuser.get.isAdmin} onClick={dumpcurrent}>debug</button>
     </fieldset>

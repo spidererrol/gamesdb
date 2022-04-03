@@ -8,8 +8,8 @@ import Loading from "./bits/Loading"
 function GroupPage(props: GeneralProps) {
     let params = useParams()
     let [group, setGroup] = useState<GroupType>({ name: "pending" } as GroupType)
-    let [members, setMembers] = useState<any[]>([<Loading key="loading" />])
-    let [games, setGames] = useState<any[]>([<Loading key="loading" />])
+    let [members, setMembers] = useState<any[]>([<Loading key="loading" caller="GroupPage/members" />])
+    let [games, setGames] = useState<any[]>([<Loading key="loading" caller="GroupPage/games" />])
     useEffect(() => {
         if (params.groupid !== undefined)
             props.api.group.get(params.groupid).then((g) => setGroup(() => g)).catch((reason) => setGroup(() => { return { name: "Error: " + reason } as GroupType }))

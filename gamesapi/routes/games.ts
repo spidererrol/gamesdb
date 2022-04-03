@@ -42,6 +42,7 @@ bindPath(['patch','post'],"/:game/playmode/:playmode/vote",playmode.vote)
 bindPath(['patch','post'],"/:game/playmode/:playmode/owned",playmode.setOwnership)
 bindPath("get", "/:game/playmode/:playmode", playmode.get)
 bindPath("patch", "/:game/playmode/:playmode", playmode.update)
+bindPath("delete","/:game/playmode/:playmode", playmode.deletePlaymode)
 
 bindPath("post", "/:game/playmode", playmode.add)
 

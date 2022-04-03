@@ -7,15 +7,12 @@
 		// Update 'VARIANT' to pick a Node version: 16, 14, 12.
 		// Append -bullseye or -buster to pin to an OS version.
 		// Use -bullseye variants on local on arm64/Apple Silicon.
-		"args": { 
+		"args": {
 			"VARIANT": "16"
 		}
 	},
-
 	// Set *default* container specific settings.json values on container create.
 	"settings": {},
-
-
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"dbaeumer.vscode-eslint",
@@ -24,9 +21,10 @@
 		"yzhang.markdown-all-in-one",
 		"TabNine.tabnine-vscode",
 		"Gruntfuggly.todo-tree",
-		"burkeholland.simple-react-snippets"
+		"burkeholland.simple-react-snippets",
+		"ChakrounAnas.turbo-console-log",
+		"esbenp.prettier-vscode"
 	],
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	"portsAttributes": {
@@ -46,10 +44,8 @@
 			"requireLocalPort": true, // This doesn't seem to work for TabNine. You will need to change to :5556 in the browser when it cannot connect during authenticating.
 		}
 	},
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
-
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node",
 	"features": {

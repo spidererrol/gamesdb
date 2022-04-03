@@ -8,7 +8,7 @@ import RegToken from "./RegToken"
 
 function RegTokens(props: GeneralProps) {
     const [toks, setToks] = useState<RegTokenType[]>([])
-    const [tok_elements, setTokElements] = useState<anyElementList>([<Loading key="loading" />])
+    const [tok_elements, setTokElements] = useState<anyElementList>([<Loading key="loading" caller="RegToken/tok_elements" />])
     const [error, setError] = useState<string>("")
 
     const token_ref = createRef<HTMLInputElement>()

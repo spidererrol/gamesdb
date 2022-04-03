@@ -13,54 +13,6 @@ import { Owned } from '../types/Owned'
 
 // Actions:
 
-/* From game:
-export async function vote(req: Request, res: Response) {
-    log_debug(`Voting for ${req.params.id}`)
-    try {
-        const game = await Games.findById(req.params.id).populate("votes")
-        if (!isKnown(game)) {
-            err404(res)
-            return
-        }
-        let newvote: string = req.body.vote
-        let myvote: any
-        for (const vote of game.votes) {
-            // log_debug(`Vote: ${vote.user._id} == ${req.myUser._id}`);
-            if (vote.user._id.toString() == req.myUser._id.toString()) {
-                // log_debug("Hit existing vote");
-                myvote = vote
-                break
-            }
-        }
-        if (isKnown(myvote)) {
-            myvote.vote = newvote//Vote[newvote as keyof typeof Vote];
-            myvote.when = new Date()
-            // myvotes[0].save();
-            // log_debug("Updated vote: " + myvote);
-        } else {
-            let vote = game.votes.push({
-                user: req.myUser._id,
-                when: new Date(),
-                vote: newvote,//Vote[newvote as keyof typeof Vote],
-            })
-            // log_debug("Added vote: " + vote);
-            // vote.save();
-        }
-        let result = game.save()
-        // let newgame = await Games.findById(req.params.id).populate("votes");
-        res.json({
-            status: "success",
-            game: game,
-            result: result,
-            //    after: newgame
-        })
-    } catch (err) {
-        handleError(err, res)
-    }
-}
-
-*/
-
 function setOwned(ownstate: OwnerType, newstate: Owned): void {
     switch (newstate) {
         case Owned.Installed:

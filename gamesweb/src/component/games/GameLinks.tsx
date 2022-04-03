@@ -10,7 +10,7 @@ interface GLProps extends GeneralProps {
 }
 
 function GameLinks(props: GLProps) {
-    let [links, setLinks] = useState<anyElementList>([<Loading key="loading" />])
+    let [links, setLinks] = useState<anyElementList>([<Loading key="loading" caller="GameLinks/links" />])
     useEffect(() => {
         if (props.game.links !== undefined) {
             let out: anyElementList = []

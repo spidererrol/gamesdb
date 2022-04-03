@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { isKnown } from './utils'
+import { isKnown, idString } from './utils'
 import { GameType } from "../schemas/Game"
 import { PlayModeType } from '../schemas/PlayMode'
 
@@ -8,7 +8,7 @@ export function fillGamePlayMode<T extends GameType | PlayModeType>(g: T, req: R
     let gout: any = { ...g.toObject() }
     // console.log("Thing is " + g.name)
     // console.dir(g.votes.map(v=>v.toObject()))
-    let myvotes = g.votes.filter((v: any) => v.user._id == req.myUser._id.toString())
+    let myvotes = g.votes.filter((v: any) => idString(v.user) == idString(req.myUser))
     if (myvotes.length >= 1) {
         gout.myVote = myvotes[0]
         gout.myVote.user = undefined
@@ -18,7 +18,7 @@ export function fillGamePlayMode<T extends GameType | PlayModeType>(g: T, req: R
             vote_id: null,
         }
     }
-    let myowners = g.owners.filter((o: any) => o.user._id == req.myUser._id.toString())
+    let myowners = g.owners.filter((o: any) => idString(o.user) == idString(req.myUser))
     if (myowners.length >= 1) {
         gout.myOwner = myowners[0]
         gout.myOwner.user = undefined

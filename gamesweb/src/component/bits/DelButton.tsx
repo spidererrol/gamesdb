@@ -6,10 +6,11 @@ export type ButtonAction = (e: React.MouseEvent<HTMLButtonElement>, data: any) =
 interface DBProps {
     onClick: ButtonAction
     data: any
+    title?: string
 }
 
 function DelButton(props: DBProps) {
-    return <button className="DelButton" onClick={(e) => props.onClick(e, props.data)}><FontAwesomeIcon icon={faTrashCan} /></button>
+    return <button className="DelButton" onClick={(e) => props.onClick(e, props.data)} title={props.title}><FontAwesomeIcon icon={faTrashCan} /></button>
 }
 
 export default DelButton

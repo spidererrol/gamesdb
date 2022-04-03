@@ -13,7 +13,7 @@ export interface OwnerType extends DBBase {
 }
 
 export const OwnerSchema = new Schema({
-    user: { type: 'ObjectId', ref: 'User', autopopulate: true },
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true, required: true },
     ownedSince: Date,
     installedSince: Date,
     maxPrice: Number,

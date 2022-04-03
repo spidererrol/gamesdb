@@ -12,7 +12,7 @@ interface PMProps extends GeneralProps {
 }
 
 function PlayMode(props: PMProps) {
-    const [owned, setOwned] = useState<anyElement>(<Loading />)
+    const [owned, setOwned] = useState<anyElement>(<Loading caller="PlayMode/owned" />)
     useEffect(() => {
         if (props.playmode.included)
             setOwned(<div className="owned_included">inc</div>)
@@ -20,10 +20,12 @@ function PlayMode(props: PMProps) {
             setOwned(<OwnedIcon {...props.playmode.myOwner} />)
     }, [props.playmode.included, props.playmode.myOwner])
     return <div className="PlayMode">
-        <div className="name">{props.playmode.name}</div>
-        <div className="icons">
-            <VoteIcon vote={props.playmode.myVote.vote} />
-            {owned}
+        <div className="name_icons">
+            <div className="name">{props.playmode.name}</div>
+            <div className="icons">
+                <VoteIcon vote={props.playmode.myVote.vote} />
+                {owned}
+            </div>
         </div>
         <div className="description">
             {props.playmode.description}

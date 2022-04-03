@@ -13,7 +13,7 @@ export interface VoteType extends DBBase {
 }
 
 export const VoteSchema = new Schema({
-    user: { type: 'ObjectId', ref: 'User', autopopulate: true },
+    user: { type: 'ObjectId', ref: 'User', autopopulate: true, required: true },
     when: { type: 'Date', default: Date.now },
     vote_id: { type: Number },
 }, {
@@ -36,12 +36,12 @@ VoteSchema.virtual('vote')
         // log_debug(`Set vote = ${v} on ${thisthis}`);
         if (typeof v === 'number') {
             if (!isKnown(Vote[v]))
-                throw new Error("Invalid vote!");
+                throw new Error("Invalid vote (number): " + v);
             (this).vote_id = v
         } else {
             let vote_id = Vote[v as keyof typeof Vote] as number
             if (!isKnown(vote_id))
-                throw new Error("Invalid vote!");
+                throw new Error("Invalid vote:" + v);
             (this).vote_id = vote_id
         }
         // log_debug(`==${(this).vote_id}`)

@@ -6,7 +6,14 @@ let debug = require("debug")("api_game")
 
 export type VoteNames = "Desire" | "Accept" | "Vote" | "None"
 
+export type SimpleOwnershipType = {
+    isOwned?: boolean
+    isInstalled?: boolean
+    maxPrice?: number | null
+}
+
 export class api_game extends apibase {
+
     static url(subpath: string): string {
         return apibase.url("coop/" + subpath)
     }
@@ -41,7 +48,7 @@ export class api_game extends apibase {
         return ret
     }
 
-    async ownership(gameid: string, { isOwned, isInstalled, maxPrice }: { isOwned?: boolean; isInstalled?: boolean; maxPrice?: number | null }) {
+    async ownership(gameid: string, { isOwned, isInstalled, maxPrice }: SimpleOwnershipType) {
         debug("ownership")
         let setobj: any = {}
         if (isOwned !== undefined)
@@ -54,10 +61,43 @@ export class api_game extends apibase {
         return ret
     }
 
+    //bindPath(['patch','post'],"/:game/playmode/:playmode/vote",playmode.vote)
+    //bindPath(['patch','post'],"/:game/playmode/:playmode/owned",playmode.setOwnership)
+    async playmodeVote(gameid: string, playmodeid: string, vote: VoteNames): Promise<any> {
+        debug("playmode vote")
+        let ret = await this.req("POST", `/${gameid}/playmode/${playmodeid}/vote`, { vote })
+        return ret
+    }
+
+    async playmodeOwnership(gameid: string, playmodeid: string, { isOwned, isInstalled, maxPrice }: SimpleOwnershipType): Promise<any> {
+        debug("playmode Ownership")
+        let setobj: any = {}
+        if (isOwned !== undefined)
+            setobj.ownedSince = isOwned ? "now" : null
+        if (isInstalled !== undefined)
+            setobj.installedSince = isInstalled ? "now" : null
+        if (maxPrice !== undefined)
+            setobj.maxPrice = maxPrice
+        let ret = await this.req("PATCH", `/${gameid}/playmode/${playmodeid}/owned`, setobj)
+        return ret
+    }
+
     async addPlaymode(gameid: string, playmode: PlayModeType) {
         debug("add playmode")
         let ret = await this.req("POST", `/${gameid}/playmode`, playmode)
         return ret
+    }
+
+    async delPlaymode(gameid: string, playmodeid: string) {
+        debug("del playmode")
+        let ret = await this.req("DELETE", `/${gameid}/playmode/${playmodeid}`)
+        return ret
+    }
+
+    async updatePlaymode(gameid: string, playmode: PlayModeType) {
+        debug("update playmode")
+        let ret = await this.req("PATCH", `/${gameid}/playmode/${playmode._id}`, playmode)
+        return ret.after
     }
 
     async update(game: GameType, gameid?: string) {
