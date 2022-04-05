@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { GroupType } from "../libs/types/Group"
-import { GeneralProps } from "./props/GeneralProps"
-import GroupGame from "./GroupGame"
-import Loading from "./bits/Loading"
+import { Link, useParams } from "react-router-dom"
+import { GroupType } from "../../libs/types/Group"
+import { GeneralProps } from "../props/GeneralProps"
+import GroupGame from "../GroupGame"
+import Loading from "../bits/Loading"
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function GroupPage(props: GeneralProps) {
     let params = useParams()
@@ -32,13 +34,16 @@ function GroupPage(props: GeneralProps) {
         }
         setGames(() => out)
     }, [group.games, params.groupid, props])
-    return (<>
-        <h1>{group.name}</h1>
+
+    //http://localhost:3000/groups/624c6952105d34b41c3cbf54/edit
+
+    return (<div className="ViewGroup">
+        <h1>{group.name}<Link className="edit_icon" to={`/groups/${group._id}/edit`}><FontAwesomeIcon icon={faPenToSquare} /></Link></h1>
         <p>{group.private ? "private" : "public"}</p>
         <br />
         <div className="memberslist"><div className="label">Members:</div>{members}</div>
         <div className="label">Games:</div><div className="gameslist">{games}</div>
-    </>)
+    </div>)
 }
 
 

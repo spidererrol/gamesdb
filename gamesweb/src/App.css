@@ -7,6 +7,7 @@
   --item-bg: hsl(214 91% 57%);
   --item-fg: black;
   --fg-dim: hsl(0, 0%, 50%);
+  --edit-color: hsl(0, 0%, 50%);
 }
 
 body {
@@ -257,7 +258,7 @@ nav li a {
 }
 
 .editicon {
-  color: hsl(0, 0%, 50%);
+  color: var(--edit-color);
 }
 
 /* .voteicon::before,.ownedicon::before {
@@ -284,6 +285,17 @@ nav li a {
 
 .memberships > .group.public .button {
   background: hsl(120, 100%, 50%);
+}
+
+.ViewGroup .edit_icon {
+  font-size: 1rem;
+  vertical-align: top;
+  color: var(--edit-color);
+}
+
+.memberships > .group .button {
+  padding-top: 0.2rem;
+  padding-inline: 0.1rem;
 }
 
 .memberslist > .member,
