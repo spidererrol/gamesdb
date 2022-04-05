@@ -10,13 +10,11 @@ import GroupEditButton from "../bits/GroupEditButton"
 import GroupDelButton from "../bits/GroupDelButton"
 import { Link } from "react-router-dom"
 import TagCloud from "../bits/TagCloud"
+import GroupViewButton from "../bits/GroupViewButton"
 
 interface GIProps extends GeneralProps {
     group: GroupType
 }
-
-//TODO: Make Join, Invite & Leave buttons do something
-//TODO: Notify that a db change has/might have happened upstream (at least per-table, possibly also per-object?)
 
 function GroupItem(props: GIProps) {
     let [classes, setClasses] = useState<string>("group GroupItem")
@@ -64,6 +62,7 @@ function GroupItem(props: GIProps) {
             {jlButton}
             {iButton}
             <Link to={`/groups/${props.group._id}/edit`}><GroupEditButton onClick={noop} {...props} /></Link>
+            <Link to={`/group/${props.group._id}`}><GroupViewButton onClick={noop} {...props} /></Link>
         </div>
     </div>
 }

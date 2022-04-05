@@ -1,6 +1,6 @@
-//             <div><label htmlFor="login_username">Username</label><input id="login_username" ref={this.userRef} type="text" name="username" placeholder='Username' /></div>
-
-import { ForwardedRef, forwardRef } from "react"
+import { ForwardedRef, forwardRef, useEffect, useState } from "react"
+import { anyElement } from "../../libs/types/helpers"
+import ClearButton, { ButtonAction } from "./ClearButton"
 
 interface LIProps {
     id?: string
@@ -15,10 +15,19 @@ interface LIProps {
     max?: number
     inputClass?: string
     onChange?: React.ChangeEventHandler<HTMLInputElement>
+    onClear?: ButtonAction
+    cleardata?: any
 }
 
 const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLInputElement>) {
-    return <div>
+    const [getButton, setButton] = useState<anyElement>(<></>)
+
+    useEffect(() => {
+        if (props.onClear !== undefined)
+            setButton(<ClearButton onClick={props.onClear} data={props.cleardata} />)
+    }, [props.cleardata, props.onClear])
+
+    return <div className="LabelInput">
         <label htmlFor={props.id ?? props.name}>{props.label}</label>
         <input
             id={props.id ?? props.name}
@@ -33,6 +42,7 @@ const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLIn
             className={props.inputClass}
             onChange={props.onChange}
         />
+        {getButton}
     </div>
 })
 

@@ -33,7 +33,7 @@ function GroupGame(props: GGProps) {
     return (
         <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state].join(" ")}>
             <div className="header">
-                <Link to={game._id === undefined?"":"/game/" + game._id.toString()} className="name">{game.name}</Link>
+                <Link to={game._id === undefined?"":"/games/" + game._id.toString() + "/edit"} className="name">{game.name}</Link>
                 <VoteIcon vote={gamegroup.voteState.vote} />
                 <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
             </div>

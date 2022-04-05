@@ -451,7 +451,7 @@ function EditGame(props: EGProps): JSX.Element {
     if (!isKnown(game._id))
         return <Loading caller="EditGame/!isKnown" />
 
-    return <fieldset className="game">
+    return <fieldset className="game EditGame">
         <legend>
             <input type="text" ref={refName} defaultValue={game.name} />
         </legend>
@@ -460,14 +460,15 @@ function EditGame(props: EGProps): JSX.Element {
         <div className="prop playercount minPlayers">Min Players: <input type="number" min={0} max={100} ref={refMinPlayers} defaultValue={game.minPlayers ?? ""} placeholder="unknown" /></div>
         <div className="prop playercount maxPlayers">Max Players: <input type="number" min={0} max={100} ref={refMaxPlayers} defaultValue={game.maxPlayers ?? ""} placeholder="unknown" /></div>
         <div className="prop vote">Vote: <VoteEdit vote={vote} setter={updateVote} /></div>
-        <div className="prop owner">Owned: <OwnedEdit {...owned} selectSetter={updateOwnedState} priceSetter={updatePrice} /></div>
+        <div className="prop owner">Status: <OwnedEdit {...owned} selectSetter={updateOwnedState} priceSetter={updatePrice} /></div>
         <div className="links">
+            Links:
             {linkElements}
             <div className="linkcontainer">
                 <AddButton onClick={addLink} />
             </div>
         </div>
-        <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
+        Tags: <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
         <div className="editplaymodes">
             {playmodes}
             <div className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>

@@ -8,16 +8,17 @@ import { CloudItem } from "./types/CloudItem"
 import { gamesapi } from "./gamesapi"
 import { api_game, SimpleOwnershipType, VoteNames } from "./api/game"
 
-async function save_playmode_bits(api: gamesapi, gameid: string, playmode: PlayModeType): Promise<void> {
-    await api.game.playmodeVote(gameid, playmode._id, playmode.myVote.vote as VoteNames)
-    await api.game.playmodeOwnership(gameid, playmode._id, playmode.myOwner as SimpleOwnershipType)
+async function save_playmode_bits(api: gamesapi, gameid: string, playmode: PlayModeType, playmodeid?: string): Promise<void> {
+    let pmid = playmodeid ?? playmode._id
+    await api.game.playmodeVote(gameid, pmid, playmode.myVote.vote as VoteNames)
+    await api.game.playmodeOwnership(gameid, pmid, playmode.myOwner as SimpleOwnershipType)
     return
 }
 function save_playmode(api: gamesapi, gameid: string, playmode: PlayModeType): Promise<void> {
     if (playmode._isnew && !playmode._isdeleted) {
         // New playmode
         delete (playmode as any)["_id"] // This will be a random uuid.
-        return api.game.addPlaymode(gameid, playmode).then(() => save_playmode_bits(api, gameid, playmode))
+        return api.game.addPlaymode(gameid, playmode).then((ret) => save_playmode_bits(api, gameid, playmode, ret.playmode._id))
     } else if (playmode._isdeleted && !playmode._isnew) {
         // Delete playmode
         return api.game.delPlaymode(gameid, playmode._id)

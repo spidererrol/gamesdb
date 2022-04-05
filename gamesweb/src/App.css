@@ -294,6 +294,7 @@ nav li a {
 
 .ListGroups {
   display: flex;
+  flex-direction: column;
 }
 
 .ListGroups .GroupItem {
@@ -338,7 +339,8 @@ nav li.gap {
   justify-content: left;
 }
 
-.ListGames {
+.ListGames .game_list,
+.ListGroups .group_list {
   display: flex;
   justify-content: left;
 }
@@ -410,6 +412,21 @@ button.CancelButton {
   border: none;
   color: hsl(120, 100%, 50%);
   cursor: pointer;
+}
+
+button.ClearButton {
+  background: transparent;
+  border: none;
+  color: hsl(0, 0%, 0%);
+  cursor: pointer;
+}
+
+.LabelInput input {
+  padding-right: 25px;
+}
+
+.LabelInput input + .ClearButton {
+  margin-left: -25px;
 }
 
 button[disabled] {

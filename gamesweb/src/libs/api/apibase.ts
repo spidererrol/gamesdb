@@ -32,8 +32,13 @@ export class apibase {
             reqobj.headers["Content-Type"] = "application/json"
             reqobj.body = JSON.stringify(sendData)
         }
-        // let url = this.url(path)
-        console.log("URL: " + url)
+        console.log("🚀 ~ file: apibase.ts ~ line 37 ~ apibase ~ req ~ url", url)
+        let match = url.match(/(\/NEW\/|\/undefined\/)/)
+        if (match !== null) {
+            console.error(`Request contains ${match[0]} - assuming invalid`)
+            // return { status: "error", message: "Invalid 'NEW' in request" }
+            throw new Error(`Invalid ${match[0]} in request`)
+        }
         let req = await fetch(url, reqobj)
         if (req.ok) {
             console.log("ok")

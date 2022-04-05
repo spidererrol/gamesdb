@@ -104,9 +104,14 @@ GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     } else {
         qterm = new RegExp(term, 'i')
     }
+    let query = this.where({
+        $or: [
+            { "name": { $regex: qterm } },
+            { "description": { $regex: qterm } }
+        ]
+    })
     if (isKnown(user)) {
-        return this.where({
-            "name": { $regex: qterm },
+        return query.and({
             $or: [
                 {
                     "private": false,
@@ -117,8 +122,6 @@ GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
             ],
         })
     } else {
-        return this.where({
-            "name": { $regex: qterm },
-        })
+        return query
     }
 }

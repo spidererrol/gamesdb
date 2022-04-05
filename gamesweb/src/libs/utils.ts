@@ -176,7 +176,7 @@ interface has_id {
 
 export function isHasId(value: has_id | has_toString | string | undefined): value is has_id {
     if (typeof value === 'undefined') return false
-    if ((value as has_id).toString) {
+    if ((value as has_id)._id) {
         return true
     }
     return false

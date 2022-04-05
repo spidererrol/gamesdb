@@ -36,6 +36,12 @@ export class api_group extends apibase {
         return ret.groups
     }
 
+    async search(term: string): Promise<GroupType[]> {
+        debug("search groups")
+        let ret = await this.req("GET", `/search/${term}`)
+        return ret.groups
+    }
+
     async create(newgroup: any) {
         debug("create group")
         let ret = await this.req("POST", "/create", newgroup)

@@ -231,9 +231,9 @@ function AddGame(props: AGProps): JSX.Element {
     }, [])
 
     useEffect(() => {
-        if (isKnown(game._id))
+        if (isKnown(game._id) && !game._isnew)
             props.api.game.playmodes(game._id).then(pms => setPlaymodesMap(array2map(pms, i => [i._id, i])))
-    }, [props.api.game, game._id])
+    }, [props.api.game, game._id, game._isnew])
 
     const addPlaymode = useCallback((e) => {
         console.log("Add PM")
@@ -415,7 +415,7 @@ function AddGame(props: AGProps): JSX.Element {
             tags: [],
         } as unknown as GameType)
         do_save(props.api, game, aliasRefs, linkRefs, tags, playmodesMap, refName, refMinPlayers, refMaxPlayers, vote, owned).then(
-            (gameid) => setNavElement(<Navigate to={`/games/${gameid}/edit`}/>)
+            (gameid) => setNavElement(<Navigate to={`/games/${gameid}/edit`} />)
         )
     }, [aliasRefs, game, linkRefs, owned, playmodesMap, props.api, refMaxPlayers, refMinPlayers, refName, tags, vote])
 
@@ -477,12 +477,13 @@ function AddGame(props: AGProps): JSX.Element {
         <div className="prop vote">Vote: <VoteEdit vote={vote} setter={updateVote} /></div>
         <div className="prop owner">Owned: <OwnedEdit {...owned} selectSetter={updateOwnedState} priceSetter={updatePrice} /></div>
         <div className="links">
+            Links:
             {linkElements}
             <div className="linkcontainer">
                 <AddButton onClick={addLink} />
             </div>
         </div>
-        <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
+        Tags: <GenericEditCloud getItems={tags} addItem={addTag} delItem={delTag} {...props} />
         <div className="editplaymodes">
             {playmodes}
             <div className="Edit PlayMode"><AddButton onClick={addPlaymode} /></div>

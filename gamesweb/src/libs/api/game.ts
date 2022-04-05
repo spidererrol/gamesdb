@@ -1,5 +1,6 @@
 import { GameType } from "../types/Game"
 import { PlayModeType } from "../types/PlayMode"
+import { idString } from "../utils"
 import { apibase } from "./apibase"
 let debug = require("debug")("api_game")
 
@@ -37,6 +38,12 @@ export class api_game extends apibase {
     async getAll(): Promise<GameType[]> {
         debug("get all games")
         let ret = await this.req("GET", '/')
+        return ret.games
+    }
+
+    async search(term: string): Promise<GameType[]> {
+        debug("game search " + term)
+        let ret = await this.req("GET",`/search/${term}`)
         return ret.games
     }
 
@@ -112,6 +119,12 @@ export class api_game extends apibase {
             tags: game.tags,
         }
         let ret = await this.req("PATCH", `/${gameid}`, gameupdate)
+        return ret
+    }
+
+    async del(game_or_id: string | GameType) {
+        let gameid = idString(game_or_id) as string
+        let ret = await this.req("DELETE", `/${gameid}`)
         return ret
     }
 
