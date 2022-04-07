@@ -17,7 +17,6 @@ class Home extends React.Component<GeneralProps, HomeState> {
         return (
             <div className="home">
                 <GroupSelector {...this.props} />
-                <button onClick={(e) => this.logout()}>Logout</button>
             </div>
         )
     }
