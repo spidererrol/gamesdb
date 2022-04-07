@@ -5,6 +5,7 @@ WORKDIR /workdir/
 RUN npm i -g npm
 RUN npm i
 WORKDIR /workdir/gamesweb/
+RUN npm i
 RUN npm run build
 WORKDIR /workdir/
 
@@ -14,6 +15,6 @@ COPY --from=build /workdir/gamesweb/build/ /web/gamesweb/build/
 COPY /.env.production /web/.env
 WORKDIR /web/
 RUN npm i -g npm
-RUN npm i
+RUN npm i --production
 EXPOSE 3000
 CMD npx nodemon gamesapi/server.ts
