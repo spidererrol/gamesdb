@@ -23,7 +23,8 @@
 		"Gruntfuggly.todo-tree",
 		"burkeholland.simple-react-snippets",
 		"ChakrounAnas.turbo-console-log",
-		"esbenp.prettier-vscode"
+		"esbenp.prettier-vscode",
+		"ms-azuretools.vscode-docker"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
