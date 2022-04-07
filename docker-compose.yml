@@ -1,0 +1,17 @@
+networks:
+  gamesdb:
+volumns:
+  gamesdb:
+services:
+  mongodb:
+    image: mongo
+    networks:
+      gamesdb:
+    volumes:
+      - gamesdb:/data/db/:rw
+  gamesdb:
+    image: etna.spidererrol.co.uk:5050/tim-personal/coop-games
+    networks:
+      gamesdb:
+    ports:
+      - "3000"
