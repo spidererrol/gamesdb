@@ -5,7 +5,7 @@ import { DBBase } from '../types/DBBase'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { Owned } from '../types/Owned'
 import { PlayModeProgressValues } from '../types/PlayModeProgressValues'
-import { Vote } from '../types/Vote'
+import { BestVote, Vote } from '../types/Vote'
 import { GameType } from './Game'
 import { GameGroupType } from './GameGroup'
 import { GroupType } from './Group'
@@ -42,20 +42,20 @@ PlayModeProgressSchema.methods.voteState = async function (this: PlayModeProgres
     let ug_members = await UserGroup.find({ group: this.group })
     let member_ids = ug_members.map(ug => ug.user._id.toString())
     let votes = this.playmode.votes.filter(v => member_ids.includes(v.user._id.toString()))
-    let outvote: Vote | null = null
-    for (const vote of votes) {
-        if (vote.vote_id == Vote.Veto) {
-            outvote = Vote.Veto
-            break // No need to go further - this superceeds all others.
-        }
-        if (vote.vote_id == Vote.Desire) { // Veto would have already quit so must be Desire or Accept.
-            outvote = Vote.Desire
-        }
-        if (outvote != Vote.Desire && vote.vote_id == Vote.Accept) {
-            outvote = Vote.Accept
-        }
-    }
-    if (outvote == null) {
+    let outvote = BestVote(votes.map(v => v.vote_id))
+    // for (const vote of votes) {
+    //     if (vote.vote_id == Vote.Veto) {
+    //         outvote = Vote.Veto
+    //         break // No need to go further - this superceeds all others.
+    //     }
+    //     if (vote.vote_id == Vote.Desire) { // Veto would have already quit so must be Desire or Accept.
+    //         outvote = Vote.Desire
+    //     }
+    //     if (outvote != Vote.Desire && vote.vote_id == Vote.Accept) {
+    //         outvote = Vote.Accept
+    //     }
+    // }
+    if (outvote === undefined) {
         return {
             count: votes.length,
             vote_id: null,
@@ -82,7 +82,7 @@ PlayModeProgressSchema.methods.ownedState = async function (this: PlayModeProgre
             }
         }
         let os = await gg.ownedState()
-        os = {...os}
+        os = { ...os }
         os.maxPrice = 0.0
         return os
     }

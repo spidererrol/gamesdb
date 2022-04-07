@@ -77,6 +77,11 @@ class Login extends React.Component<Props, State> {
         this.actualLogin("tim", "timtest")
     }
 
+    async testLogin2(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        this.actualLogin("nottim", "timtest")
+    }
+
     
     render() {
         return (
@@ -95,6 +100,9 @@ class Login extends React.Component<Props, State> {
                     <legend>Dev Login</legend>
                     <form onSubmit={async (e) => await this.testLogin(e)}>
                         <input type="submit" value="Test Login" />
+                    </form>
+                    <form onSubmit={async (e) => await this.testLogin2(e)}>
+                        <input type="submit" value="Test Login 2" />
                     </form>
                 </fieldset>
             </>

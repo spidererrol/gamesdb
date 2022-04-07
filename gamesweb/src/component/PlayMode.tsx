@@ -16,8 +16,8 @@ function PlayMode(props: PMProps) {
             state: "Loading...",
             maxPrice: 0.0,
         },
-        voteState:{
-            vote:"Loading...",
+        voteState: {
+            vote: "Loading...",
         }
     } as PlayModeProgressType)
     useEffect(() => {
@@ -25,9 +25,13 @@ function PlayMode(props: PMProps) {
     }, [props.api.group, props.groupid, props.playmode._id])
     return <div className="PlayMode">
         <div className="name">{props.playmode.name}</div>
-        <div className="icons">
+        <div className="icons effective">
             <VoteIcon vote={progress.voteState.vote} />
-            <OwnedIcon owned={progress.ownedState.state} maxPrice={progress.ownedState.maxPrice} />
+            <OwnedIcon owned={progress.ownedState.state} maxPrice={progress.ownedState.maxPrice} included={props.playmode.included} />
+        </div>
+        <div className="icons user">
+            <VoteIcon vote={props.playmode.myVote.vote} />
+            <OwnedIcon isOwned={props.playmode.myOwner.isOwned} isInstalled={props.playmode.myOwner.isInstalled} maxPrice={props.playmode.myOwner.maxPrice} included={props.playmode.included} />
         </div>
     </div>
 }

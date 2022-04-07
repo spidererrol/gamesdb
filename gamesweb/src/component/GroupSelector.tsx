@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { GroupType } from "../libs/types/Group"
 import { GeneralProps } from "./props/GeneralProps"
 
@@ -28,9 +28,9 @@ class GroupSelector extends React.Component<GroupSelectorProps, GroupSelectorSta
                 else
                     classes += " public"
                 grouprender.push(<div className={classes} key={group._id.toString()}>
-                    <Link to={group_path}>
+                    <NavLink to={group_path}>
                         <div className="button">{group.name}</div>
-                    </Link>
+                    </NavLink>
                 </div>)
             }
             this.setState({ memberships: grouprender })
@@ -43,14 +43,14 @@ class GroupSelector extends React.Component<GroupSelectorProps, GroupSelectorSta
                 <div className="legend">Groups: </div>
                 {this.state.memberships}
                 <div className="group new">
-                    <Link to="/groups/add">
+                    <NavLink to="/groups/add">
                         <div className="button" title="Create a new Group">Add</div>
-                    </Link>
+                    </NavLink>
                 </div>
                 <div className="group new">
-                    <Link to="/groups/join">
+                    <NavLink to="/groups/join">
                         <div className="button" title="Join a public Group">Join</div>
-                    </Link>
+                    </NavLink>
                 </div>
             </div>
         )

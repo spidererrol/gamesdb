@@ -8,6 +8,7 @@ import { createRef, useCallback, useEffect, useState } from "react"
 import { IndexedChangeEventHandler, isKnown } from "../../libs/utils"
 import Loading from "../bits/Loading"
 import UnDelButton from "../bits/UnDelButton"
+import { useIndexedCallback } from "../../libs/useIndexedCallback"
 
 export type PlayModeChangeEventHandler<ElementType = Element> = IndexedChangeEventHandler<ElementType, string>
 
@@ -21,16 +22,6 @@ interface EPMProps extends GeneralProps {
     includedUpdate?: PlayModeChangeEventHandler
     delAction?: ButtonAction
     unDelAction?: ButtonAction
-}
-
-function useIndexedCallback<T extends Element, I>(index: I, callback: IndexedChangeEventHandler<T, I> | undefined): React.ChangeEventHandler<T> | undefined {
-    if (callback === undefined)
-        return undefined
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useCallback(
-        (e: React.ChangeEvent<T>) => callback(e, index),
-        [callback, index]
-    )
 }
 
 /**

@@ -1,7 +1,7 @@
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useCallback, useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
@@ -16,6 +16,7 @@ import PlayMode from "./PlayMode"
 import DelButton from "../bits/DelButton"
 import UnDelButton from "../bits/UnDelButton"
 import CancelButton from "../bits/CancelButton"
+import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
 
 interface DGProps extends GeneralProps {
     game: GameType
@@ -77,7 +78,14 @@ function DisplayGame(props: DGProps): JSX.Element {
     // }, [])
 
     return <fieldset className={classNames}>
-        <legend>{props.game.name}<Link to={props.game._id + "/edit"} ><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></Link><DelButton onClick={delete1} data="" /></legend>
+        <legend>{props.game.name}<NavLink to={props.game._id + "/edit"} ><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></NavLink>
+            <div className="editvote">
+                <NavLink to={props.game._id === undefined ? "" : "/games/" + props.game._id.toString() + "/vote"} className="editvote">
+                    <FontAwesomeIcon icon={faCheckToSlot} /><FontAwesomeIcon icon={faWallet} />
+                </NavLink>
+            </div>
+            <DelButton onClick={delete1} data="" />
+        </legend>
         {aliases}
         <div className="prop playercount minPlayers">Min Players: {props.game.minPlayers ?? "unknown"}</div>
         <div className="prop playercount maxPlayers">Max Players: {props.game.maxPlayers ?? "unknown"}</div>

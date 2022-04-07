@@ -5,7 +5,7 @@ import { UserGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
 import { GameGroupMode, GameGroupModeStrings } from '../types/GameGroupMode'
 import { Owned } from '../types/Owned'
-import { Vote } from '../types/Vote'
+import { BestVote, Vote } from '../types/Vote'
 import { GameType } from './Game'
 import { GroupType } from './Group'
 import { PlayModeProgressSchema, PlayModeProgressType } from './PlayModeProgress'
@@ -17,12 +17,12 @@ export interface GameGroupType extends DBBase {
     mode_id: GameGroupMode,
     mode: GameGroupModeStrings,
     playmodes: PlayModeProgressType[],
-    voteState: { 
+    voteState: {
         count: number,
         vote_id: Vote,
         vote: string,
     },
-    ownedState: { 
+    ownedState: {
         count: number,
         state_id: Owned,
         state: string,
@@ -71,18 +71,27 @@ GameGroupSchema.methods.voteState = async function (this: GameGroupType) {
     let groupusers = groupusers_raw.map((gu: UserGroupType) => gu.user._id.toString())
     let votes = this.game.votes.filter(v => groupusers.includes(v.user._id.toString()))
     let count = votes.length
-    let vote: Vote
-    if (votes.filter(v => v.vote_id == Vote.Veto).length > 0) {
-        vote = Vote.Veto
-    } else if (votes.filter(v => v.vote_id == Vote.Desire).length > 0) {
-        vote = Vote.Desire
+    let vote = BestVote(votes.map(v => v.vote_id as Vote))
+    // if (votes.filter(v => v.vote_id == Vote.Veto).length > 0) {
+    //     vote = Vote.Veto
+    // } else if (votes.filter(v => v.vote_id == Vote.Desire).length > 0) {
+    //     vote = Vote.Desire
+    // } else {
+    //     vote = Vote.Accept
+    // }
+    let out: any
+    if (vote === undefined) {
+        out = {
+            count: count,
+            vote_id: null,
+            vote: "Unknown",
+        }
     } else {
-        vote = Vote.Accept
-    }
-    let out = {
-        count: count,
-        vote_id: vote,
-        vote: Vote[vote],
+        out = {
+            count: count,
+            vote_id: vote,
+            vote: Vote[vote],
+        }
     }
     // log_debug(out)
     return out
@@ -97,8 +106,10 @@ GameGroupSchema.methods.ownedState = async function (this: GameGroupType) {
     let minPrice: number | null = null
     if (owners.length >= 1 && owners.filter(o => !o.isOwned).length >= 1) {
         minPrice = owners.filter(o => !o.isOwned).reduce((a, b) => {
-            if (a.maxPrice <= 0)
+            if (a.maxPrice <= 0 || !isKnown(a.maxPrice))
                 return b
+            if (b.maxPrice <= 0 || !isKnown(b.maxPrice))
+                return a
             if (a.maxPrice < b.maxPrice)
                 return a
             return b

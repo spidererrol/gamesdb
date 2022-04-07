@@ -8,7 +8,7 @@ import GroupLeaveButton from "../bits/GroupLeaveButton"
 import GroupJoinButton from "../bits/GroupJoinButton"
 import GroupEditButton from "../bits/GroupEditButton"
 import GroupDelButton from "../bits/GroupDelButton"
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import TagCloud from "../bits/TagCloud"
 import GroupViewButton from "../bits/GroupViewButton"
 
@@ -44,7 +44,7 @@ function GroupItem(props: GIProps) {
         let isPrivate = props.group.private
         let isMember = (props.group as any).isMember
         setClasses("group GroupItem" + (isPrivate ? " private" : "") + (isMember ? " member" : ""))
-        setiButton(<Link to={`/groups/${props.group._id}/invite`}><GroupInviteButton onClick={noop} disabled={!(isMember && isPrivate)} {...props} /></Link>)
+        setiButton(<NavLink to={`/groups/${props.group._id}/invite`}><GroupInviteButton onClick={noop} disabled={!(isMember && isPrivate)} {...props} /></NavLink>)
         if (isMember) {
             setJLButton(<GroupLeaveButton onClick={leave} {...props} />)
         } else if (isPrivate) {
@@ -61,8 +61,8 @@ function GroupItem(props: GIProps) {
         <div className="buttons">
             {jlButton}
             {iButton}
-            <Link to={`/groups/${props.group._id}/edit`}><GroupEditButton onClick={noop} {...props} /></Link>
-            <Link to={`/group/${props.group._id}`}><GroupViewButton onClick={noop} {...props} /></Link>
+            <NavLink to={`/groups/${props.group._id}/edit`}><GroupEditButton onClick={noop} {...props} /></NavLink>
+            <NavLink to={`/group/${props.group._id}`}><GroupViewButton onClick={noop} {...props} /></NavLink>
         </div>
     </div>
 }

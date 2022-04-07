@@ -3,16 +3,105 @@
   --fg-main: white;
   --border-main: hsl(0, 0%, 50%);
   --bg-tag: green;
+  --bg-tag-exclude: hsl(0, 100%, 30%);
   --fg-tag: white;
   --item-bg: hsl(214 91% 57%);
   --item-fg: black;
   --fg-dim: hsl(0, 0%, 50%);
   --edit-color: hsl(0, 0%, 50%);
+  --fg-ext-link-color: hsl(187, 87%, 49%);
+  --bg-deleted: hsl(0 0% 50% / 0.9);
+  --fg-owned-icon: hsl(240, 100%, 70%);
+  --fg-error-color: hsl(0 100% 50%);
+  --bg-private-group-button: hsl(0, 100%, 50%);
+  --bg-public-group-button: hsl(120, 100%, 50%);
+  --fg-private-group-button: white;
+  --fg-public-group-button: black;
+  --bdr-group-public-nonmember: hsl(0, 0%, 50%);
+  --bdr-group-private-nonmember: hsl(0, 100%, 50%);
+  --bdr-group-public-member: hsl(120, 100%, 25%);
+  --bdr-group-private-member: hsl(22, 100%, 50%);
+  --fg-active-page: blue;
+  --fg-add-button: hsl(120, 100%, 50%);
+  --fg-del-button: hsl(0, 100%, 50%);
+  --fg-undel-button: hsl(120, 100%, 50%);
+  --fg-cancel-button: hsl(120, 100%, 50%);
+  --fg-clear-button: hsl(0, 0%, 0%);
+  --fg-disabled-button: var(--fg-dim);
+  --bdr-header-seperator: var(--fg-dim);
+  --fg-vote-accept: hsl(120, 100%, 59%);
+  --fg-vote-veto:  hsl(0, 100%, 50%);
+  --fg-vote-desire: hsl(60, 100%, 50%);
+  --fg-vote-dislike:  hsl(0 50% 40%);
+  --fg-group-vote-veto:  hsl(0, 0%, 50%);
+  --bdr-group-vote-desire: gold;
+  --fg-updated-mark: hsl(120 100% 50%);
+  --fg-updating-mark: hsl(0 100% 50%);
 }
 
 body {
   background: var(--bg-main);
   color: var(--fg-main);
+}
+
+a {
+  color: inherit;
+}
+
+a.active {
+  color: var(--fg-active-page);
+}
+
+div.editvote {
+  display: flex;
+  flex-direction: row-reverse;
+  color: var(--edit-color);
+  padding: 1px;
+}
+
+.DisplayGame .editvote {
+  display: inline-flex;
+}
+
+@keyframes fadeOut {
+  0% {opacity: 1;}
+  100% {opacity: 0;}
+} 
+
+@keyframes pulse {
+  0% {opacity: 1;}
+  50% {opacity: 0.5;}
+  100% {opacity: 1;}
+} 
+
+.UpdateMark {
+  display: inline;
+  margin: 0.25rem;
+}
+
+.UpdateMark.None {
+  /* display: none; */
+  opacity: 0;
+}
+
+.UpdateMark.Updated {
+  color: var(--fg-updated-mark);
+}
+
+.UpdateMark.Updating {
+  color: var(--fg-updating-mark);
+}
+
+.fadeOut {
+  animation-fill-mode: both;
+  animation-duration: 5s;
+  animation-name: fadeOut;
+}
+
+.pulse {
+  animation-name: pulse;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
 }
 
 .App {
@@ -61,7 +150,7 @@ body {
 
 .Exclude .tag,
 .tag.Exclude {
-  --bg-tag: hsl(0, 100%, 30%);
+  --bg-tag: var(--bg-tag-exclude);
 }
 
 .tag {
@@ -93,7 +182,7 @@ body {
 .deleted > .cover {
   display: flex;
   position: absolute;
-  background: hsl(0 0% 50% / 0.9);
+  background: var(--bg-deleted);
   top: 0;
   bottom: 0;
   left: 0;
@@ -154,7 +243,7 @@ body {
 }
 
 .ownedicon {
-  color: hsl(240, 100%, 70%);
+  color: var(--fg-owned-icon);
 }
 
 .linkurl {
@@ -215,7 +304,7 @@ label::after {
 }
 
 .error {
-  color: hsl(0 100% 50%);
+  color: var(--fg-error-color);
 }
 
 nav ul {
@@ -257,18 +346,24 @@ nav li a {
   display: block;
 }
 
+.PlayMode.PlayModeVotes .description {
+  display: none;
+}
+
 .editicon {
   color: var(--edit-color);
 }
 
-/* .voteicon::before,.ownedicon::before {
-    content: '[';
-    color: hsl(0 0% 50%);
+/* .voteicon::before,
+.ownedicon::before {
+  content: "[";
+  color: var(--fg-dim);
 }
 
-.voteicon::after,.ownedicon::after {
-    content: ']';
-    color: hsl(0 0% 50%);
+.voteicon::after,
+.ownedicon::after {
+  content: "]";
+  color: var(--fg-dim);
 } */
 
 .memberships,
@@ -280,11 +375,13 @@ nav li a {
 }
 
 .memberships > .group.private .button {
-  background: hsl(0, 100%, 50%);
+  background: var(--bg-private-group-button);
+  color: var(--fg-private-group-button);
 }
 
 .memberships > .group.public .button {
-  background: hsl(120, 100%, 50%);
+  background: var(--bg-public-group-button);
+  color: var(--fg-public-group-button);
 }
 
 .ViewGroup .edit_icon {
@@ -310,20 +407,20 @@ nav li a {
 }
 
 .ListGroups .GroupItem {
-  border: 1px solid hsl(0, 0%, 50%);
+  border: 1px solid var(--bdr-group-public-nonmember);
   margin: 1px;
 }
 
 .ListGroups .GroupItem.private {
-  border-color: hsl(0, 100%, 50%);
+  border-color: var(--bdr-group-private-nonmember);
 }
 
 .ListGroups .GroupItem.member {
-  border-color: hsl(120, 100%, 25%);
+  border-color: var(--bdr-group-public-member);
 }
 
 .ListGroups .GroupItem.private.member {
-  border-color: hsl(22, 100%, 50%);
+  border-color: var(--bdr-group-private-member);
 }
 
 .AddGroup,
@@ -377,7 +474,7 @@ nav li.gap {
 }
 
 .link a {
-  color: hsl(187, 87%, 49%);
+  color: var(--fg-ext-link-color);
 }
 
 .link {
@@ -401,35 +498,35 @@ button.addAlias,
 .AddButton {
   background: transparent;
   border: none;
-  color: hsl(120, 100%, 50%);
+  color: var(--fg-add-button);
   cursor: pointer;
 }
 
 button.DelButton {
   background: transparent;
   border: none;
-  color: hsl(0, 100%, 50%);
+  color: var(--fg-del-button);
   cursor: pointer;
 }
 
 button.UnDelButton {
   background: transparent;
   border: none;
-  color: hsl(120, 100%, 50%);
+  color: var(--fg-undel-button);
   cursor: pointer;
 }
 
 button.CancelButton {
   background: transparent;
   border: none;
-  color: hsl(120, 100%, 50%);
+  color: var(--fg-cancel-button);
   cursor: pointer;
 }
 
 button.ClearButton {
   background: transparent;
   border: none;
-  color: hsl(0, 0%, 0%);
+  color: var(--fg-clear-button);
   cursor: pointer;
 }
 
@@ -442,7 +539,7 @@ button.ClearButton {
 }
 
 button[disabled] {
-  color: hsl(0, 0%, 50%);
+  color: var(--fg-disabled-button);
 }
 
 .game .alias {
@@ -501,7 +598,8 @@ pre {
 }
 
 .GroupGame > .header {
-  border-bottom: 1px dashed hsl(0, 0%, 50%);
+  border-bottom: 1px dashed;
+  border-bottom-color: var(--bdr-header-seperator);
 }
 
 .GroupGame .header {
@@ -518,23 +616,35 @@ pre {
   display: inline-block;
 }
 
+.icons.user::before {
+  content: "[";
+}
+
+.icons.user::after {
+  content: "]";
+}
+
 .voteicon.vote_Accept {
-  color: hsl(120, 100%, 59%);
+  color: var(--fg-vote-accept);
 }
 
 .voteicon.vote_Veto {
-  color: hsl(0, 100%, 50%);
+  color:var(--fg-vote-veto);
 }
 
 .voteicon.vote_Desire {
-  color: hsl(60, 100%, 50%);
+  color: var(--fg-vote-desire);
+}
+
+.voteicon.vote_Dislike {
+  color:var(--fg-vote-dislike);
 }
 
 .GroupGame.vote_Veto {
-  color: hsl(0, 0%, 50%);
+  color:var(--fg-group-vote-veto);
   font-style: italic;
 }
 
 .GroupGame.vote_Desire {
-  border-color: gold;
+  border-color: var(--bdr-group-vote-desire);
 }

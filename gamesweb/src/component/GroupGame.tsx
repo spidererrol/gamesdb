@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { GameType } from "../libs/types/Game"
 import { GameGroupType } from "../libs/types/GameGroup"
 import { PlayModeType } from "../libs/types/PlayMode"
@@ -7,6 +7,8 @@ import { GeneralProps } from "./props/GeneralProps"
 import OwnedIcon from "./bits/OwnedIcon"
 import PlayMode from "./PlayMode"
 import VoteIcon from "./bits/VoteIcon"
+import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface GGProps extends GeneralProps {
     groupid: string
@@ -32,10 +34,21 @@ function GroupGame(props: GGProps) {
     }, [dbplaymodes, props])
     return (
         <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state].join(" ")}>
+            <div className="editvote">
+                <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/vote"} className="editvote">
+                    <FontAwesomeIcon icon={faCheckToSlot} /><FontAwesomeIcon icon={faWallet} />
+                </NavLink>
+            </div>
             <div className="header">
-                <Link to={game._id === undefined?"":"/games/" + game._id.toString() + "/edit"} className="name">{game.name}</Link>
-                <VoteIcon vote={gamegroup.voteState.vote} />
-                <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
+                <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/edit"} className="name">{game.name}</NavLink>
+                <div className="icons effective">
+                    <VoteIcon vote={gamegroup.voteState.vote} />
+                    <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
+                </div>
+                <div className="icons user">
+                    <VoteIcon vote={game.myVote?.vote ?? "Unknown"} />
+                    <OwnedIcon isOwned={game.myOwner?.isOwned ?? null} isInstalled={game.myOwner?.isInstalled ?? null} maxPrice={game.myOwner?.maxPrice ?? null} />
+                </div>
             </div>
             <div className="playmodes">{playmodes}</div>
         </div>

@@ -7,6 +7,11 @@ interface TCProps extends GeneralProps {
     excludeTags: string[]
 }
 
+/**
+ * 
+ * @param includeTags string[] 
+ * @param excludeTags string[]
+ */
 function TagCloud(props: TCProps) {
     const [tagelements, setTagElemenets] = useState<anyElementList>([])
 

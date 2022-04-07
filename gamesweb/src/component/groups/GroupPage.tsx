@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { NavLink, useParams } from "react-router-dom"
 import { GroupType } from "../../libs/types/Group"
 import { GeneralProps } from "../props/GeneralProps"
 import GroupGame from "../GroupGame"
@@ -38,7 +38,7 @@ function GroupPage(props: GeneralProps) {
     //http://localhost:3000/groups/624c6952105d34b41c3cbf54/edit
 
     return (<div className="ViewGroup">
-        <h1>{group.name}<Link className="edit_icon" to={`/groups/${group._id}/edit`}><FontAwesomeIcon icon={faPenToSquare} /></Link></h1>
+        <h1>{group.name}<NavLink className="edit_icon" to={`/groups/${group._id}/edit`}><FontAwesomeIcon icon={faPenToSquare} /></NavLink></h1>
         <p>{group.private ? "private" : "public"}</p>
         <br />
         <div className="memberslist"><div className="label">Members:</div>{members}</div>

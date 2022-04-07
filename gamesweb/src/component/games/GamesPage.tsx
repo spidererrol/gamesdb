@@ -1,12 +1,12 @@
-import { Link, Outlet } from "react-router-dom"
+import { NavLink, Outlet } from "react-router-dom"
 import { GeneralProps } from "../props/GeneralProps"
 
 function GamesPage(props: GeneralProps) {
     return <>
             <nav>
             <ul>
-                <li><Link to=".">List</Link></li>
-                <li><Link to="add">Add</Link></li>
+                <li><NavLink end={true} to=".">List</NavLink></li>
+                <li><NavLink to="add">Add</NavLink></li>
             </ul>
         </nav>
 

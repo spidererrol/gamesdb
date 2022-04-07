@@ -1,11 +1,11 @@
-import { faDownload, faPlay } from "@fortawesome/free-solid-svg-icons"
+import { faDownload, faPlay, faQuestion } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { anyElement } from "../../libs/types/helpers"
 import { isKnown } from "../../libs/utils"
 
 interface OIProps_common {
     maxPrice: number | null,
-
+    included?: boolean,
 }
 
 interface OIProps_owned extends OIProps_common {
@@ -36,7 +36,9 @@ function OwnedIcon(inprops: OIProps) {
     if (isOIProps_owned(inprops)) {
         props = inprops
     } else if (isOIProps_parts(inprops)) {
-        if (inprops.isInstalled)
+        if (inprops.isInstalled === null && inprops.isOwned === null)
+            props = { ...inprops, owned: "Unknown" }
+        else if (inprops.isInstalled)
             props = { ...inprops, owned: "Installed" }
         else if (inprops.isOwned)
             props = { ...inprops, owned: "Owned" }
@@ -46,8 +48,10 @@ function OwnedIcon(inprops: OIProps) {
         throw new Error("Out of cheese error!")
     }
     let classes = "ownedicon owned_" + props.owned
-    let icon:anyElement|string = "?"
-    if (props.owned === "Unowned") {
+    let icon: anyElement | string = "?"
+    if (props.included === true) {
+        icon = "inc"
+    } else if (props.owned === "Unowned") {
         if (!isKnown(props.maxPrice)) {
             icon = "£"
         } else if (props.maxPrice === 0) {
@@ -56,10 +60,12 @@ function OwnedIcon(inprops: OIProps) {
             icon = "≤£" + (props.maxPrice as number).toFixed(2)
         }
     }
+    if (props.owned === "Unknown")
+        icon = <FontAwesomeIcon icon={faQuestion} />
     if (props.owned === "Owned")
-        icon = <FontAwesomeIcon icon={faDownload}/>
+        icon = <FontAwesomeIcon icon={faDownload} />
     if (props.owned === "Installed")
-        icon = <FontAwesomeIcon icon={faPlay}/>
+        icon = <FontAwesomeIcon icon={faPlay} />
     return <span className={classes} title={props.owned}>{icon}</span>
 }
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, Outlet } from "react-router-dom"
+import { NavLink, Outlet } from "react-router-dom"
 import { GeneralProps } from "./props/GeneralProps"
 
 interface LayoutProps extends GeneralProps {
@@ -10,16 +10,16 @@ interface LayoutProps extends GeneralProps {
 function Layout(props: LayoutProps) {
   let admin = <></>
   if (props.myuser.get.isAdmin)
-    admin = <li><Link to="/admin">Admin</Link></li>
+    admin = <li><NavLink to="/admin">Admin</NavLink></li>
   return (
     <div className="Layout">
       <header>
         <p>Welcome {props.user.get.displayName}</p>
         <nav>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/groups">Groups</Link></li>
-            <li><Link to="/games">Games</Link></li>
+            <li><NavLink to="/">Home</NavLink></li>
+            <li><NavLink to="/groups">Groups</NavLink></li>
+            <li><NavLink to="/games">Games</NavLink></li>
             <li className="gap"></li>
             {admin}
             <li>

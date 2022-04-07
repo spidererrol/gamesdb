@@ -22,6 +22,7 @@ import ListGames from './component/games/ListGames'
 import AddGame from './component/games/AddGame'
 import EditGame from './component/games/EditGame'
 import LoginLayout from './component/LoginLayout'
+import GameVotes from './component/games/GameVotes'
 
 function dbState(): StateObj<number> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -99,6 +100,7 @@ function App() {
             <Route path="games" element={<GamesPage {...props} />}>
               <Route index element={<ListGames {...props} />} {...props} />
               <Route path=":gameid/edit" element={<EditGame {...props} />} />
+              <Route path=":gameid/vote" element={<GameVotes {...props} />} />
               <Route path="add" element={<AddGame {...props} />} />
             </Route>
             <Route path="admin" element={<Admin {...props} />}>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { anyElement } from "../../libs/types/helpers"
 import Loading from "./Loading"
 import OwnedIcon from "./OwnedIcon"
+import UpdateMark, { UpdateState } from "./UpdateMark"
 
 export type OEChangeHandler<T = Element> = (event: React.ChangeEvent<T>) => void
 
@@ -9,8 +10,10 @@ interface OEProps {
     isOwned: boolean | null,
     isInstalled: boolean | null,
     maxPrice: number | null,
-    selectSetter?: OEChangeHandler,
-    priceSetter?: OEChangeHandler,
+    selectSetter?: OEChangeHandler<HTMLSelectElement>,
+    priceSetter?: OEChangeHandler<HTMLInputElement>,
+    ownedUpdate?: UpdateState,
+    priceUpdate?: UpdateState,
 }
 
 /**
@@ -20,6 +23,8 @@ interface OEProps {
  * @param maxPrice: number | null - Maximum purchase price for thing
  * @param selectSetter: OEChangeHandler - Update installed/owned state 
  * @param priceSetter: OEChangeHandler - Update price
+ * @param ownedUpdate
+ * @param priceUpdate
  */
 
 function OwnedEdit(props: OEProps) {
@@ -34,10 +39,10 @@ function OwnedEdit(props: OEProps) {
             setOwnedState("Owned")
         else {
             setOwnedState("Unowned")
-            mpe = <>£<input onChange={props.priceSetter} className="buyprice" type="number" step={0.01} min={0} defaultValue={props.maxPrice ?? ""} placeholder="Unset" /></>
+            mpe = <>£<input onChange={props.priceSetter} className="buyprice" type="number" step={0.01} min={0} defaultValue={props.maxPrice ?? ""} placeholder="Unset" /><UpdateMark state={props.priceUpdate} /></>
         }
         setMaxPriceEl(mpe)
-    }, [props.isInstalled, props.isOwned, props.maxPrice, props.priceSetter])
+    }, [props.isInstalled, props.isOwned, props.maxPrice, props.priceSetter, props.priceUpdate])
 
     return <span className="OwnedEdit">
         <OwnedIcon {...props} />
@@ -45,7 +50,7 @@ function OwnedEdit(props: OEProps) {
             <option selected={ownedstate === "Installed"}>Installed</option>
             <option selected={ownedstate === "Owned"}>Owned</option>
             <option selected={ownedstate === "Unowned"}>Unowned</option>
-        </select>
+        </select><UpdateMark state={props.ownedUpdate} />
         {maxprice_el}
     </span>
 }
