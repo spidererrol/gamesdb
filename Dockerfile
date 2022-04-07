@@ -8,7 +8,6 @@ WORKDIR /workdir/gamesweb/
 RUN npm run build
 WORKDIR /workdir/
 
-# FROM node
 FROM node
 COPY / /web/
 COPY --from=build /workdir/gamesweb/build/ /web/gamesweb/build/
@@ -17,4 +16,4 @@ WORKDIR /web/
 RUN npm i -g npm
 RUN npm i
 EXPOSE 3000
-CMD npm run nodemon gamesapi/server.ts
+CMD npx nodemon gamesapi/server.ts
