@@ -1,6 +1,6 @@
 networks:
   gamesdb:
-volumns:
+volumes:
   gamesdb:
 services:
   mongodb:
