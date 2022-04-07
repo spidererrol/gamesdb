@@ -14,4 +14,4 @@ services:
     networks:
       gamesdb:
     ports:
-      - "3000"
+      - "3080:3000"
