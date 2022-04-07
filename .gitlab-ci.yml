@@ -1,0 +1,4 @@
+include:
+  - project: 'build/ci-build-helpers'
+    ref: release
+    file: 'ci-docker.yml'
