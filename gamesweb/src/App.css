@@ -37,6 +37,7 @@
   --bdr-group-vote-desire: gold;
   --fg-updated-mark: hsl(120 100% 50%);
   --fg-updating-mark: hsl(0 100% 50%);
+  --fg-progress-icon: hsl(300, 100%, 50%);
 }
 
 body {
@@ -50,6 +51,11 @@ a {
 
 a.active {
   color: var(--fg-active-page);
+}
+
+.progress_icon {
+  color: var(--fg-progress-icon);
+  margin-inline: 2px;
 }
 
 div.editvote {
@@ -73,6 +79,25 @@ div.editvote {
   50% {opacity: 0.5;}
   100% {opacity: 1;}
 } 
+
+.results {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.search_result.disabled {
+  font-style: italic;
+  background: hsl(240, 30%, 30%);
+}
+
+.search_result {
+  display: inline;
+  background: blue;
+  padding: 0.25rem;
+  margin: 0.25rem;
+  border-radius: 10px;
+}
 
 .UpdateMark {
   display: inline;
@@ -162,6 +187,10 @@ div.editvote {
   color: var(--fg-tag);
   margin: 4px;
   padding: 3px;
+}
+
+.game_search {
+  margin: 0.25rem;
 }
 
 .tag button.deltag {
@@ -502,7 +531,7 @@ button.addAlias,
   cursor: pointer;
 }
 
-button.DelButton {
+button.DelButton,button.RemoveButton {
   background: transparent;
   border: none;
   color: var(--fg-del-button);

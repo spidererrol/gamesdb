@@ -26,5 +26,6 @@ declare module "express" {
 declare module "mongoose" {
     interface Query<ResultType, DocType, THelpers, RawDocType> {
         nameish(term: any, arg?: any): Query<ResultType, DocType, THelpers, RawDocType>,
+        find_conflict(term: RegExp | string): Query<ResultType, DocType, THelpers, RawDocType>,
     }
 }

@@ -11,6 +11,7 @@ import { TODO } from './test'
 import { UserType } from '../schemas/User'
 import { fillGamePlayMode } from '../libs/fillGamePlayMode'
 import { VoteType } from '../schemas/Vote'
+import { recalcGame } from './gamegroup'
 
 async function legacy_getList(query: any, res: Response, req: Request): Promise<any> {
     return getList({
@@ -106,6 +107,7 @@ export async function addGame(req: Request, res: Response) {
             maxPlayers: maxPlayers,
             added: { who: req.myUser },
         })
+        await recalcGame(newgame)
         res.json({ status: "success", game: newgame })
     } catch (err) {
         handleError(err, res)
@@ -197,6 +199,7 @@ export async function addTag(req: Request, res: Response) {
             game.tags.push(addtag)
         }
         let result = await game.save()
+        recalcGame(game)
         res.json({ status: "success", game: game })
     } catch (err) {
         handleError(err, res)
@@ -216,6 +219,7 @@ export async function deleteTag(req: Request, res: Response) {
         log_debug(req.body)
         game.tags = game.tags.filter((tag: string) => !req.body.includes(tag))
         let result = await game.save()
+        recalcGame(game)
         res.json({ status: "success", game: game })
     } catch (err) {
         handleError(err, res)
@@ -297,6 +301,7 @@ export async function updateGame(req: Request, res: Response) {
             "$set": req.body
         })
         const after = await Games.findById(req.params.id)
+        recalcGame(after)
         res.json({ status: "success", result: result, before: game, after: after })
     } catch (err) {
         handleError(err, res)

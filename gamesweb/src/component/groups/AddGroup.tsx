@@ -20,7 +20,7 @@ function AddGroup(props: GeneralProps) {
     const [includeTags, setIncludeTags] = useState<string[]>([])
     const [excludeTags, setExcludeTags] = useState<string[]>([])
 
-    const [result, setResults] = useState<string>("")
+    const [result, setResult] = useState<string>("")
 
 
     /*
@@ -57,8 +57,10 @@ function AddGroup(props: GeneralProps) {
         }
         filters.includeTags = includeTags
         filters.excludeTags = excludeTags
-        setResults(JSON.stringify(await props.api.group.create(setobj), undefined, 2))
-        // setResults(JSON.stringify(setobj, undefined, 2))
+        props.api.group.create(setobj).then(
+            ret => setResult(JSON.stringify(ret, undefined, 2)),
+            (err: Error) => setResult(JSON.stringify({ error: err.message }, undefined, 2))
+        )
     }, [excludeTags, group_description_ref, group_name_ref, group_private_ref, includeTags, maxPlayer_max, maxPlayer_min, minPlayer_max, minPlayer_min, props.api.group])
 
     return <div className="AddGroup"><fieldset>

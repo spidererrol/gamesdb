@@ -244,3 +244,23 @@ export function EditMapItem<K, T>(getter: Map<K, T>, setter: React.Dispatch<Reac
     }
     setter(newthing)
 }
+
+export function safeEffect<T = void>(isMounted: boolean, set: () => T): T | void {
+    if (isMounted)
+        return set()
+}
+
+export function safeState<T>(isMounted: boolean, set: React.Dispatch<React.SetStateAction<T>>, value: React.SetStateAction<T>): void {
+    safeEffect(isMounted, () => set(value))
+}
+
+export type FinishedCallback = () => void
+
+export type DataUpdateCallback<Ev extends React.SyntheticEvent, Dt> = (e: Ev, data: Dt, finished: FinishedCallback) => void
+
+export type ChangeUpdateCallback<El extends Element, Dt> = DataUpdateCallback<React.ChangeEvent<El>, Dt>
+export type SelectChangeUpdateCallback<Dt> = ChangeUpdateCallback<HTMLSelectElement, Dt>
+export type InputChangeUpdateCallback<Dt> = ChangeUpdateCallback<HTMLInputElement, Dt>
+
+export type ClickUpdateCallback<El extends Element, Dt> = DataUpdateCallback<React.MouseEvent<El>, Dt>
+export type ButtonClickUpdateCallback<Dt> = ClickUpdateCallback<HTMLButtonElement, Dt>

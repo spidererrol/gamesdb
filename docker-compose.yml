@@ -15,3 +15,9 @@ services:
       gamesdb:
     ports:
       - "3080:3000"
+  mongo-express:
+    image: mongo-express
+    networks:
+      gamesdb:
+    ports:
+      - "8080:8081"

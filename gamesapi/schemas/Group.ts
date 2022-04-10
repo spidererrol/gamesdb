@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose'
 import '../libs/schemainit'
-import { inRange, intersect, isKnown, isKnown_type } from '../libs/utils'
+import { inRange, intersect, isKnown, isKnown_type, quotemeta } from '../libs/utils'
 import { GameGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
 import { GameGroupMode } from '../types/GameGroupMode'
@@ -26,7 +26,7 @@ export interface GroupType extends DBBase {
 
     isMember(user: UserType): boolean,
     includesGame(game: GameType): boolean,
-    gameMatches(game: GameType): boolean,
+    gameMatches(game: GameType): Promise<boolean>,
 }
 
 export const GroupSchema = new Schema({
@@ -76,33 +76,39 @@ GroupSchema.methods.isMember = function (this: GroupType, user: UserType): boole
 GroupSchema.methods.includesGame = function (this: GroupType, game: GameType): boolean {
     return this.games.map((g: GameType) => g._id.toString()).includes(game._id.toString())
 }
+function why(state: boolean, message: string): boolean {
+    console.log("gameMatches:" + message + " => " + state)
+    return state
+}
 GroupSchema.methods.gameMatches = async function (this: GroupType, game: GameType): Promise<boolean> {
     let gg = await GameGroup.findOne({
         game: game,
         group: this
     })
     if (isKnown_type<GameGroupType>(gg)) {
+        console.log("🚀 ~ file: Group.ts ~ line 89 ~ gg.mode_id", gg.mode_id, GameGroupMode[gg.mode_id])
         if (gg.mode_id == GameGroupMode.Exclude)
-            return false
+            return why(false, "already excluded")
         if (gg.mode_id == GameGroupMode.Include)
-            return true
+            return why(true, "already included")
     }
     if (isKnown(this.filters.excludeTags) && intersect(this.filters.excludeTags, game.tags))
-        return false
+        return why(false, "exclude by tag")
     if (!inRange(this.filters.minPlayers, game.minPlayers))
-        return false
+        return why(false, "exclude by minPlayers")
     if (!inRange(this.filters.maxPlayers, game.maxPlayers))
-        return false
-    if (isKnown(this.filters.includeTags) && intersect(this.filters.includeTags, game.tags))
-        return false
-    return true
+        return why(false, "exclude by maxPlayers")
+    if (isKnown(this.filters.includeTags))
+        return why(intersect(this.filters.includeTags, game.tags), "includeTags")
+    // return why(false, "include by tag")
+    return why(false, "default")
 }
 GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     let qterm: RegExp
     if (term instanceof RegExp) {
         qterm = term
     } else {
-        qterm = new RegExp(term, 'i')
+        qterm = new RegExp(quotemeta(term), 'i')
     }
     let query = this.where({
         $or: [
@@ -124,4 +130,15 @@ GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     } else {
         return query
     }
+}
+GroupSchema.query.find_conflict = function (term: RegExp | string) {
+    let qterm: RegExp
+    if (term instanceof RegExp) {
+        qterm = term
+    } else {
+        qterm = new RegExp(quotemeta(term), 'i')
+    }
+    return this.where({
+        "name": { $regex: qterm }
+    })
 }

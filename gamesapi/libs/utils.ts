@@ -400,13 +400,19 @@ export function isHasId(value: has_id | has_toString | string | undefined): valu
     return false
 }
 
-
 export function idString(thing?: has_id | has_toString | string): string | undefined {
     if (isHasId(thing)) {
         return beString(thing._id)
     }
     return beString(thing)
 }
+
+export function quotemeta(str: string) {
+    return str.replace(/(\W)/g, '\\$1')
+}
+
+
+
 // ###
 
 export namespace getEnv {

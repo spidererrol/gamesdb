@@ -9,10 +9,14 @@ import PlayMode from "./PlayMode"
 import VoteIcon from "./bits/VoteIcon"
 import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { ButtonAction } from "./bits/ClearButton"
+import RemoveButton from "./bits/RemoveButton"
+import { safeState } from "../libs/utils"
 
 interface GGProps extends GeneralProps {
     groupid: string
     gameid: string
+    clickRemove: ButtonAction
 }
 
 function GroupGame(props: GGProps) {
@@ -21,20 +25,25 @@ function GroupGame(props: GGProps) {
     const [gamegroup, setGameGroup] = useState<GameGroupType>({ voteState: { vote: "Loading..." }, ownedState: { state: "Loading..." } } as GameGroupType)
     const [playmodes, setPlayModes] = useState<any[]>([<div key="loading" className="loading">Loading...</div>])
     useEffect(() => {
-        props.api.game.playmodes(props.gameid).then((p) => setdbPlaymodes(p))
-        props.api.game.get(props.gameid).then((g) => setGame(g))
-        props.api.group.gamegroup(props.groupid, props.gameid).then((g) => setGameGroup(g))
+        let isMounted = true
+        props.api.game.playmodes(props.gameid).then(p => safeState(isMounted, setdbPlaymodes, p))
+        props.api.game.get(props.gameid).then(g => safeState(isMounted, setGame, g))
+        props.api.group.gamegroup(props.groupid, props.gameid).then(g => safeState(isMounted, setGameGroup, g))
+        return () => { isMounted = false }
     }, [props])
     useEffect(() => {
         let out: any[] = []
         for (const playmode of dbplaymodes) {
-            out.push(<PlayMode playmode={playmode} {...props} />)
+            out.push(<PlayMode key={playmode._id} playmode={playmode} {...props} />)
         }
         setPlayModes(out)
     }, [dbplaymodes, props])
+
     return (
         <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state].join(" ")}>
             <div className="editvote">
+                {/* Note these items are in reverse order! */}
+                <RemoveButton data={props.gameid} onClick={props.clickRemove} />
                 <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/vote"} className="editvote">
                     <FontAwesomeIcon icon={faCheckToSlot} /><FontAwesomeIcon icon={faWallet} />
                 </NavLink>

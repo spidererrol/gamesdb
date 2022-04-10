@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { requestGame } from "../../libs/AddEditGameHelpers"
-import { VoteNames } from "../../libs/api/game"
+import { SimpleOwnershipType, VoteNames } from "../../libs/api/game"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
-import { isKnown, makeCloudItems, newNSMap, NSMap, OwnershipInfo } from "../../libs/utils"
+import { FinishedCallback, isKnown, makeCloudItems, newNSMap, NSMap, OwnershipInfo } from "../../libs/utils"
 import GenericCloud from "../bits/GenericCloud"
 import Loading from "../bits/Loading"
 import OwnedEdit from "../bits/OwnedEdit"
@@ -16,6 +16,13 @@ import GameLinks from "./GameLinks"
 import PlayModeVotes from "./PlayModeVotes"
 
 interface GVProps extends GeneralProps { }
+
+function ownership2obj(value: string): SimpleOwnershipType {
+    return {
+        isOwned: value !== "Unowned",
+        isInstalled: value === "Installed",
+    }
+}
 
 function GameVotes(props: GVProps) {
     const params = useParams()
@@ -33,9 +40,9 @@ function GameVotes(props: GVProps) {
     const [dbplaymodes, setdbPlaymodes] = useState<PlayModeType[]>([])
     const [playmodes, setPlayModes] = useState<anyElementList>([<Loading key="loading" caller="EditGame/Playmodes" />])
     const [getUpdatePlaymodes, setUpdatePlaymodes] = useState<boolean>(true)
-    const [getVoteState,setVoteState] = useState<UpdateState>(UpdateState.None)
-    const [getOwnedState,setOwnedState] = useState<UpdateState>(UpdateState.None)
-    const [getPriceState,setPriceState] = useState<UpdateState>(UpdateState.None)
+    const [getVoteState, setVoteState] = useState<UpdateState>(UpdateState.None)
+    const [getOwnedState, setOwnedState] = useState<UpdateState>(UpdateState.None)
+    const [getPriceState, setPriceState] = useState<UpdateState>(UpdateState.None)
     // const [getVoteUpdated, setVoteUpdated] = useState<anyElement>(<></>)
     // const [getOwnedUpdated, setOwnedUpdated] = useState<anyElement>(<></>) // Can't easily seperate out the parts
 
@@ -96,12 +103,6 @@ function GameVotes(props: GVProps) {
         }
     }, [game])
 
-    const noop = useCallback((e) => {
-        if (e.preventDefault)
-            e.preventDefault()
-    }, [])
-
-    //FIXME: implement update hooks
     const updateVote = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         e.preventDefault()
         setVoteState(UpdateState.Updating)
@@ -110,10 +111,7 @@ function GameVotes(props: GVProps) {
     const updateOwnedState = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         e.preventDefault()
         setOwnedState(UpdateState.Updating)
-        props.api.game.ownership(game._id, {
-            isOwned: e.target.value !== "Unowned",
-            isInstalled: e.target.value === "Installed",
-        }).then(() => props.dbupdate("games")).then(() => setOwnedState(UpdateState.Updated))
+        props.api.game.ownership(game._id, ownership2obj(e.target.value)).then(() => props.dbupdate("games")).then(() => setOwnedState(UpdateState.Updated))
     }, [game._id, props])
     const updatePrice = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setPriceState(UpdateState.Updating)
@@ -121,9 +119,20 @@ function GameVotes(props: GVProps) {
             maxPrice: Number.parseFloat(e.target.value)
         }).then(() => props.dbupdate("games")).then(() => setPriceState(UpdateState.Updated))
     }, [game._id, props])
-    const updatePMVote = noop
-    const updatePMOwnedState = noop
-    const updatePMOwnedPrice = noop
+    const updatePMVote = useCallback((e: React.ChangeEvent<HTMLSelectElement>, playmode_id: string, finished: FinishedCallback) => {
+        e.preventDefault()
+        props.api.game.playmodeVote(game._id, playmode_id, e.target.value as VoteNames).then(() => setUpdatePlaymodes(true)).then(finished)
+    }, [game._id, props.api.game])
+    const updatePMOwnedState = useCallback((e: React.ChangeEvent<HTMLSelectElement>, playmode_id: string, finished: FinishedCallback) => {
+        e.preventDefault()
+        props.api.game.playmodeOwnership(game._id, playmode_id, ownership2obj(e.target.value)).then(() => setUpdatePlaymodes(true)).then(finished)
+    }, [game._id, props.api.game])
+    const updatePMOwnedPrice = useCallback((e: React.ChangeEvent<HTMLInputElement>, playmode_id: string, finished: FinishedCallback) => {
+        e.preventDefault()
+        props.api.game.playmodeOwnership(game._id, playmode_id, {
+            maxPrice: Number.parseFloat(e.target.value)
+        }).then(() => setUpdatePlaymodes(true)).then(finished)
+    }, [game._id, props.api.game])
 
     useEffect(() => {
         setPlayModes(dbplaymodes.map(pm => <PlayModeVotes key={pm._id} playmode={pm} ownedStateUpdate={updatePMOwnedState} ownedPriceUpdate={updatePMOwnedPrice} voteUpdate={updatePMVote} />))

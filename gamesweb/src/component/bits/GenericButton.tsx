@@ -10,12 +10,22 @@ interface GenericButtonPropsContent extends GenericButtonPropsBase {
     content: anyElement | string,
 }
 interface GenericButtonPropsChildren extends GenericButtonPropsBase {
-    children: anyElementList|anyElement,
+    children: anyElementList | anyElement,
     content?: undefined
 }
 
 type GenericButtonProps = GenericButtonPropsContent | GenericButtonPropsChildren
 
+/**
+ * Either content or children must be specified but not both.
+ * 
+ * @param classes (optional) list of html classes
+ * @param disabled (optional) is button disabled
+ * @param onClick (optional) click event callback
+ * @param maintype main className for button
+ * @param content content of button
+ * @param children content of button
+ */
 function GenericButton(inprops: GenericButtonProps) {
     let props: GenericButtonProps = { ...inprops }
     if (!isKnown(props.classes))

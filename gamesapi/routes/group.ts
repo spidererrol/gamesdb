@@ -25,10 +25,11 @@ bindPath('get', '/:group/join', actions.join) // Join current user into public g
 
 bindPath('get', '/:group/leave', actions.leave) // Remove current user from group
 
+bindPath('get', '/:group/recalc', actions.recalc) // Recalculate which games belong in the group
+
 bindPath('get', '/:group/progress/:playmode', pmp_actions.getProgress)
 bindPath('post', '/:group/progress/:playmode', pmp_actions.setProgress)
 bindPath('patch', '/:group/progress/:playmode', pmp_actions.setProgress)
-bindPath('get', '/:group/progress', actions.TODO) //TODO: get all progresses?
 
 bindPath('get', '/:group/invite/:user', actions.invite) // Invite :user into private :group
 

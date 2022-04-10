@@ -37,6 +37,9 @@ function App() {
   const dbregtokens = dbState()
   const dbgames = dbState()
 
+  // These are common props needed by many things.
+  // I think I could do them with Context but I don't know if I would need a Context per or if I
+  // could lump them into an object in one Context.
   let props: GeneralProps = {
     api: new gamesapi(auth),
     myuser: user,
@@ -56,11 +59,14 @@ function App() {
         case "games":
           dbgames.set(dbgames.get + 1)
           break
+        default:
+          console.error("Unexpected dbupdate type", id)
+          return
       }
+      console.log("dbupdate", id)
       return
     }
   }
-  //TODO: Convert props to useContext?
 
   const logout = useCallback(async function () {
     await props.api.auth.logout()

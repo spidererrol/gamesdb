@@ -80,8 +80,8 @@ export async function create(req: Request, res: Response) {
             res.status(406).json({ status: "error", message: "name is required" })
             return
         }
-        let existing = await Group.findOne().nameish(req.body.name)
-        //.findOne({ name: req.body.name })
+        let existing = await Group.findOne().find_conflict(req.body.name)
+        // Don't use namish as that also matches partial description!
         if (isKnown(existing)) {
             res.status(409).json({ status: "error", message: "Group already exists", group: existing })
             return
@@ -93,6 +93,9 @@ export async function create(req: Request, res: Response) {
         }
         group.members.push(req.myUser)
         let dbGroup = await group.save()
+        if (isKnown_type<GroupType>(dbGroup) && isKnown(req.body.filters)) {
+            recalcGroup(dbGroup)
+        }
         let join = new UserGroup({
             user: req.myUser,
             group: dbGroup
@@ -115,6 +118,16 @@ export async function update(req: Request, res: Response) {
             recalcGroup(after)
         }
         res.json({ status: "success", result: result, before: req.reqGroup, after: after })
+    } catch (error) {
+        handleError(error, res)
+    }
+}
+
+export async function recalc(req: Request, res: Response) {
+    log_debug(`recalc group (${req.params.group})`)
+    try {
+        await recalcGroup(req.reqGroup, true)
+        res.json({ status: "success" })
     } catch (error) {
         handleError(error, res)
     }
@@ -198,7 +211,8 @@ export async function del(req: Request, res: Response) {
     log_debug("Delete group")
     try {
         let result = await Group.findByIdAndDelete(req.reqGroup._id)
-        return result
+        console.log("🚀 ~ file: group.ts ~ line 201 ~ del ~ result", result)
+        res.json({ status: "success", result: result })
     } catch (error) {
         handleError(error, res)
     }
@@ -257,6 +271,7 @@ export async function includeGame(req: Request, res: Response) {
             return errorResponse(res, HTTPSTATUS.CONFLICT, "Game is already included")
 
         let gg: GameGroupType = await setGameGroupMode(req.reqGroup, req.reqGame, GameGroupMode.Include)
+        recalcGroup(req.reqGroup)
         res.json({ status: "success", result: gg })
     } catch (error) {
         handleError(error, res)
@@ -272,6 +287,7 @@ export async function excludeGame(req: Request, res: Response) {
             return errorResponse(res, HTTPSTATUS.CONFLICT, "Game is not included")
 
         let gg: GameGroupType = await setGameGroupMode(req.reqGroup, req.reqGame, GameGroupMode.Exclude)
+        recalcGroup(req.reqGroup)
         res.json({ status: "success", result: gg })
     } catch (error) {
         handleError(error, res)

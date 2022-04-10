@@ -141,7 +141,7 @@ async function process_vote(req: Request, res: Response) {
             break
         }
     }
-    if (newvote === null || newvote === "Unknown") {
+    if (newvote === null || newvote === "Unknown" || newvote === "None") {
         // No vote
         if (isKnown(myvote)) {
             // Delete old vote

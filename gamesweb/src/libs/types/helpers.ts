@@ -1,4 +1,3 @@
 
-//TODO: Find what type(s) are appropriate for this:
-export type anyElement = JSX.Element
+export type anyElement = JSX.Element|string
 export type anyElementList = anyElement[]

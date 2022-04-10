@@ -1,5 +1,6 @@
 import { apibase } from "./apibase"
 import { GroupType } from "../types/Group"
+import { PlayModeProgressValues } from "../types/PlayModeProgressValues"
 let debug = require("debug")("api_group")
 
 
@@ -30,6 +31,14 @@ export class api_group extends apibase {
         return ret.progress
     }
 
+    async setProgress(groupid: string, playmodeid: string, progress: PlayModeProgressValues) {
+        // bindPath('patch', '/:group/progress/:playmode', pmp_actions.setProgress)
+        debug("set progress")
+        return this.req("PATCH", `/${groupid}/progress/${playmodeid}`, {
+            progress: progress
+        })
+    }
+
     async getAvailable(): Promise<GroupType[]> {
         debug("get groups")
         let ret = await this.req("GET", "/available")
@@ -44,8 +53,8 @@ export class api_group extends apibase {
 
     async create(newgroup: any) {
         debug("create group")
-        let ret = await this.req("POST", "/create", newgroup)
-        return ret
+        return this.req("POST", "/create", newgroup)
+        // return ret
     }
 
     async update(groupid: string, newgroup: any) {
@@ -57,6 +66,7 @@ export class api_group extends apibase {
     async del(groupid: string) {
         debug("delete group")
         let ret = await this.req("DELETE", `/${groupid}`)
+        console.log("🚀 ~ file: group.ts ~ line 60 ~ api_group ~ del ~ ret", ret)
         return ret
     }
 
@@ -72,6 +82,12 @@ export class api_group extends apibase {
         return ret
     }
 
+    async recalc(groupid: string) {
+        debug("recalc group")
+        let ret = await this.req("GET", `/${groupid}/recalc`)
+        return ret
+    }
+
     async invite(groupid: string, userid: string) {
         debug("invite")
         let ret = await this.req("GET", `/${groupid}/invite/${userid}`)
@@ -83,4 +99,29 @@ export class api_group extends apibase {
         let ret = await this.req("GET", `/${groupid}/expel/${userid}`)
         return ret
     }
+
+    /**
+     * Add (include) game to group
+     * @param groupid 
+     * @param gameid 
+     * @returns 
+     */
+    async add(groupid: string, gameid: string) {
+        debug("add game")
+        let ret = await this.req("GET", `/${groupid}/add/${gameid}`)
+        return ret
+    }
+
+    /**
+     * Remove (exclude) game from group
+     * @param groupid 
+     * @param gameid 
+     * @returns 
+     */
+    async remove(groupid: string, gameid: string) {
+        debug("remove game")
+        let ret = await this.req("GET", `/${groupid}/remove/${gameid}`)
+        return ret
+    }
+
 }

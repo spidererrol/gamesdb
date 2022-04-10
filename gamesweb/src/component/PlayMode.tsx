@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { PlayModeProgressType, PlayModeType } from "../libs/types/PlayMode"
 import { GeneralProps } from "./props/GeneralProps"
 import OwnedIcon from "./bits/OwnedIcon"
 import VoteIcon from "./bits/VoteIcon"
+import { safeState } from "../libs/utils"
+import { PlayModeProgressValues } from "../libs/types/PlayModeProgressValues"
+import PlayModeProgress from "./bits/PlayModeProgress"
 
 interface PMProps extends GeneralProps {
     playmode: PlayModeType
@@ -11,6 +14,7 @@ interface PMProps extends GeneralProps {
 }
 
 function PlayMode(props: PMProps) {
+    const [getUpdateProgress, setUpdateProgress] = useState<boolean>(true)
     const [progress, setProgress] = useState<PlayModeProgressType>({
         ownedState: {
             state: "Loading...",
@@ -18,12 +22,20 @@ function PlayMode(props: PMProps) {
         },
         voteState: {
             vote: "Loading...",
-        }
+        },
+        progress: PlayModeProgressValues.Unplayed,
     } as PlayModeProgressType)
     useEffect(() => {
-        props.api.group.getProgress(props.groupid, props.playmode._id.toString()).then(p => setProgress(p))
-    }, [props.api.group, props.groupid, props.playmode._id])
+        let isMounted = true
+        if (getUpdateProgress)
+            props.api.group.getProgress(props.groupid, props.playmode._id.toString()).then(p => safeState(isMounted, setProgress, p)).then(() => safeState<boolean>(isMounted, setUpdateProgress, false))
+        return () => { isMounted = false }
+    }, [props.api.group, props.groupid, props.playmode._id, getUpdateProgress])
+    const progressUpdated = useCallback(() => {
+        setUpdateProgress(true)
+    }, [])
     return <div className="PlayMode">
+        <PlayModeProgress progress={progress} afterUpdate={progressUpdated} {...props} />
         <div className="name">{props.playmode.name}</div>
         <div className="icons effective">
             <VoteIcon vote={progress.voteState.vote} />

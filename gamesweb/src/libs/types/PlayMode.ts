@@ -1,4 +1,4 @@
-import { PlayModeProgressType } from "../../../../gamesapi/schemas/PlayModeProgress"
+import { PlayModeProgressType } from "./PlayModeProgressType"
 import { DBBase } from "./DBBase"
 import { GameType } from "./Game"
 import { OwnerType } from "./Owner"

@@ -11,6 +11,9 @@ import GroupDelButton from "../bits/GroupDelButton"
 import { NavLink } from "react-router-dom"
 import TagCloud from "../bits/TagCloud"
 import GroupViewButton from "../bits/GroupViewButton"
+import GenericButton from "../bits/GenericButton"
+import { faRotate } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface GIProps extends GeneralProps {
     group: GroupType
@@ -21,12 +24,13 @@ function GroupItem(props: GIProps) {
     let [jlButton, setJLButton] = useState<anyElement>(<Loading caller="GroupItem/JLButton" />)
     let [iButton, setiButton] = useState<anyElement>(<Loading caller="GroupItem/iButton" />)
 
-    let todo = useCallback((e: any) => {
-        console.log("TODO!")
-        return
-    }, [])
+    let del = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        props.api.group.del(props.group._id).then(() => props.dbupdate("groups"), reason => console.error(`delete failed with ${reason}`))
+        props.dbupdate("groups") // This is needed because the delete method doesn't seem to complete nor error somehow?
+    }, [props])
 
-    let noop = useCallback(e => 1, [])
+    let noop = useCallback(e => 1, []) // These buttons are actually links so don't need to react.
 
     let join = useCallback(async e => {
         e.preventDefault()
@@ -51,9 +55,18 @@ function GroupItem(props: GIProps) {
             setJLButton(<GroupJoinButton onClick={join} disabled {...props} />)
         } else {
             setJLButton(<GroupJoinButton onClick={join} {...props} />)
-            setiButton(<GroupDelButton onClick={todo} {...props} />)
+            setiButton(<GroupDelButton onClick={del} {...props} />)
         }
-    }, [join, leave, todo, props, props.group, props.group.private, noop])
+    }, [join, leave, del, props, props.group, props.group.private, noop])
+
+    const [getRecalcRunning, setRecalcRunning] = useState<boolean>(false)
+
+    const recalc = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        setRecalcRunning(true)
+        props.api.group.recalc(props.group._id).then(() => setRecalcRunning(false))
+    }, [props.api.group, props.group._id])
+
     return <div className={classes}>
         <div className="header">{props.group.name}</div>
         <p>{props.group.description}</p>
@@ -63,6 +76,9 @@ function GroupItem(props: GIProps) {
             {iButton}
             <NavLink to={`/groups/${props.group._id}/edit`}><GroupEditButton onClick={noop} {...props} /></NavLink>
             <NavLink to={`/group/${props.group._id}`}><GroupViewButton onClick={noop} {...props} /></NavLink>
+            <GenericButton disabled={getRecalcRunning} maintype="RecalcButton" onClick={recalc} {...props}>
+                <FontAwesomeIcon icon={faRotate} />
+            </GenericButton>
         </div>
     </div>
 }

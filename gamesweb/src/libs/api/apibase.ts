@@ -32,7 +32,8 @@ export class apibase {
             reqobj.headers["Content-Type"] = "application/json"
             reqobj.body = JSON.stringify(sendData)
         }
-        console.log("🚀 ~ file: apibase.ts ~ line 37 ~ apibase ~ req ~ url", url)
+        console.log("🚀 ~ file: apibase.ts ~ line 35 ~ apibase ~ req ~ method", method)
+        console.log("🚀 ~ file: apibase.ts ~ line 36 ~ apibase ~ req ~ url", url)
         let match = url.match(/(\/NEW\/|\/undefined\/)/)
         if (match !== null) {
             console.error(`Request contains ${match[0]} - assuming invalid`)
@@ -46,27 +47,34 @@ export class apibase {
             console.log("Content-Type: " + ct)
             try {
                 if (ct === null) {
+                    console.log("ct is null")
                     return null
                 }
                 if (ct.includes("json")) {
                     console.log("is json")
                     return req.json()
                 } else {
+                    console.error("ct is not json!")
                     throw new Error("Not JSON: " + await req.text())
                 }
             } catch (error: any) {
+                console.error("Error decoding request" + error.message)
                 throw new Error("Decoding failed: " + error.message)
             }
         } else {
+            console.error("Request failed")
             const ct = req.headers.get("Content-Type")
             if (ct === null) {
+                console.log("ct is null")
                 return null
             }
             if (ct.includes("json")) {
                 console.log("is json")
                 let data: any = await req.json()
+                console.log("🚀 ~ file: apibase.ts ~ line 75 ~ apibase ~ req ~ data.message", data.message)
                 throw new Error(data.message)
             } else {
+                console.error("ct is not json!")
                 throw new Error("Not JSON: " + await req.text())
             }
         }
