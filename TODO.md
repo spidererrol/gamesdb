@@ -3,4 +3,4 @@
 - [X] Manual add/remove of games from groups
 - [X] Add progress to groups.
 - [ ] SSL
-- [ ] Add mongo-express to docker-compose.yml?
+- [X] Add mongo-express to docker-compose.yml?
