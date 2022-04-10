@@ -15,6 +15,8 @@ services:
       gamesdb:
     ports:
       - "3080:3000"
+    depends_on:
+      - mongodb
   mongo-express:
     image: mongo-express
     networks:
@@ -23,3 +25,5 @@ services:
       - "8080:8081"
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - mongodb
