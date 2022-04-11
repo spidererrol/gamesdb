@@ -56,7 +56,7 @@ function GroupPage(props: GeneralProps) {
     useEffect(() => {
         let out: any[] = []
         if (group.games !== undefined) {
-            for (const game of group.games) {
+            for (const game of group.games.sort((a, b) => a.name.localeCompare(b.name))) {
                 out.push(<GroupGame key={idString(game)} gameid={idString(game) as string} groupid={idString(group) as string} clickRemove={removeGame} {...props} />)
             }
         }
