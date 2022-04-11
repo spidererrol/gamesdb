@@ -18,19 +18,30 @@ export interface EGLRef {
     get url(): HTMLInputElement | null
 }
 
-function autoName(url: string, nameRef: React.RefObject<HTMLInputElement>): void {
+function nameMap(url: string): string | null {
+    if (url.startsWith("https://store.steampowered.com/")) {
+        return "Steam"
+    } else if (url.startsWith("https://www.co-optimus.com/")) {
+        return "Co-Optimus"
+    } else if (url.startsWith("https://www.gog.com/")) {
+        return "GOG.com"
+    } else if (url.startsWith("https://isthereanydeal.com/")) {
+        return "IsThereAnyDeal"
+    }
+    return null
+}
+
+function autoName(url: string, nameRef: React.RefObject<HTMLInputElement>): boolean {
     if (nameRef.current === null)
-        return
+        return false
     if (nameRef.current.value !== "")
-        return
-    if (url.startsWith("https://store.steampowered.com/"))
-        nameRef.current.value = "Steam"
-    else if (url.startsWith("https://www.co-optimus.com/"))
-        nameRef.current.value = "Co-Optimus"
-    else if (url.startsWith("https://www.gog.com/"))
-        nameRef.current.value = "GOG.com"
-    else if (url.startsWith("https://isthereanydeal.com/"))
-        nameRef.current.value = "IsThereAnyDeal"
+        return false
+    const newname = nameMap(url)
+    if (newname !== null) {
+        nameRef.current.value = newname
+        return true
+    }
+    return false
 }
 
 const EditGameLink = forwardRef((props: EGLProps, ref: Ref<EGLRef>) => {
@@ -42,7 +53,14 @@ const EditGameLink = forwardRef((props: EGLProps, ref: Ref<EGLRef>) => {
     }, [props])
 
     const updateUrl = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        autoName(e.target.value, nameRef)
+        if (autoName(e.target.value, nameRef)) {
+            props.updateAction({
+                target: {
+                    name: "name",
+                    value: nameRef.current?.value as string
+                }
+            } as React.ChangeEvent<HTMLInputElement>, props.uid)
+        }
         props.updateAction(e, props.uid)
     }, [nameRef, props])
 
