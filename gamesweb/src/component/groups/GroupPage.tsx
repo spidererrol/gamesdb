@@ -95,7 +95,8 @@ function GroupPage(props: GeneralProps) {
 
     return (<div className="ViewGroup GroupPage">
         <h1>{group.name}<NavLink className="edit_icon" to={`/groups/${group._id}/edit`}><FontAwesomeIcon icon={faPenToSquare} /></NavLink></h1>
-        <p>{group.private ? "private" : "public"}</p>
+        <p className="public_private">{group.private ? "private" : "public"}</p>
+        <p className="description">{group.description}</p>
         <br />
         <div className="memberslist"><div className="label">Members:</div>{members}</div>
         <fieldset>
