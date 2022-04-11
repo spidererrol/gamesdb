@@ -7,7 +7,7 @@ interface ELProps {
 }
 
 function ExtLink(props: ELProps) {
-    return <div className="link"><a className="extlink" href={props.href}>{props.display}<FontAwesomeIcon icon={faArrowUpRightFromSquare} size="xs" /></a></div>
+    return <div className="link"><a target="_blank" className="extlink" href={props.href} rel="noreferrer">{props.display}<FontAwesomeIcon icon={faArrowUpRightFromSquare} size="xs" /></a></div>
 }
 
 export default ExtLink
