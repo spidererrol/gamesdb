@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { ButtonAction } from "./bits/ClearButton"
 import RemoveButton from "./bits/RemoveButton"
 import { safeState } from "../libs/utils"
+import GameLinks from "./games/GameLinks"
 
 interface GGProps extends GeneralProps {
     groupid: string
@@ -68,6 +69,7 @@ function GroupGame(props: GGProps) {
                     <OwnedIcon isOwned={game.myOwner?.isOwned ?? null} isInstalled={game.myOwner?.isInstalled ?? null} maxPrice={game.myOwner?.maxPrice ?? null} />
                 </div>
             </div>
+            <GameLinks game={game} {...props} />
             <div className="playmodes">{playmodes}</div>
         </div>
     )
