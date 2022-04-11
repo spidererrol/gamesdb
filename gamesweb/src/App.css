@@ -409,7 +409,7 @@ nav li a {
 .memberslist,
 .gameslist {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
@@ -491,6 +491,7 @@ nav li.gap {
 .ListGroups .group_list {
   display: flex;
   justify-content: left;
+  flex-wrap: wrap;
 }
 
 .game .prop {
