@@ -5,20 +5,22 @@ import VoteIcon from "../bits/VoteIcon"
 import { useEffect, useState } from "react"
 import { anyElement } from "../../libs/types/helpers"
 import Loading from "../bits/Loading"
+import { GameType } from "../../libs/types/Game"
+import { OwnerType } from "../../libs/types/Owner"
 
 interface PMProps extends GeneralProps {
     playmode: PlayModeType
-    gameid: string
+    game: GameType
 }
 
 function PlayMode(props: PMProps) {
     const [owned, setOwned] = useState<anyElement>(<Loading caller="PlayMode/owned" />)
     useEffect(() => {
         if (props.playmode.included)
-            setOwned(<div className="owned_included">inc</div>)
+            setOwned(<div className="owned_included"><OwnedIcon {...props.game.myOwner as OwnerType} />(inc)</div>)
         else
             setOwned(<OwnedIcon {...props.playmode.myOwner} />)
-    }, [props.playmode.included, props.playmode.myOwner])
+    }, [props.game.myOwner, props.playmode.included, props.playmode.myOwner])
     return <div className="PlayMode">
         <div className="name_icons">
             <div className="name">{props.playmode.name}</div>

@@ -37,7 +37,7 @@ function DisplayGame(props: DGProps): JSX.Element {
         props.api.game.playmodes(props.game._id).then(pms => setdbPlaymodes(pms))
     }, [props.api.game, props.game._id])
     useEffect(() => {
-        setPlayModes(dbplaymodes.map(pm => <PlayMode key={pm._id} playmode={pm} gameid={props.game._id} {...props} />))
+        setPlayModes(dbplaymodes.map(pm => <PlayMode key={pm._id} playmode={pm} {...props} />))
     }, [dbplaymodes, props])
 
     useEffect(() => {
