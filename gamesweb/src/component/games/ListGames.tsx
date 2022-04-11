@@ -16,7 +16,7 @@ function ListGames(props: GeneralProps) {
     }, [props])
 
     useEffect(() => {
-        props.api.game.getAll().then(games => setData(games))
+        props.api.game.getAll().then(games => setData(games.sort((a, b) => a.name.localeCompare(b.name))))
     }, [props.api.game, props.dbupdates.games])
 
     useEffect(() => {

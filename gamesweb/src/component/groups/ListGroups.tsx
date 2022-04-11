@@ -19,7 +19,7 @@ function ListGroups(props: GeneralProps) {
     }, [getGroupData, props])
 
     useEffect(() => {
-        props.api.group.getAvailable().then(groups => setGroupData(groups))
+        props.api.group.getAvailable().then(groups => setGroupData(groups.sort((a, b) => a.name.localeCompare(b.name))))
     }, [props, props.dbupdates.groups])
 
     const search = useCallback((e: React.ChangeEvent<HTMLInputElement> | { target: HTMLInputElement, preventDefault: Function }) => {
@@ -35,7 +35,7 @@ function ListGroups(props: GeneralProps) {
     const clear = useCallback((e) => {
         if (refSearch.current !== null) {
             refSearch.current.value = "" // Doesn't trigger onChange!
-            search({ target: refSearch.current,preventDefault: ()=>null })
+            search({ target: refSearch.current, preventDefault: () => null })
         }
     }, [refSearch, search])
 
