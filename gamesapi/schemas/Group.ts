@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose'
 import '../libs/schemainit'
-import { inRange, intersect, isKnown, isKnown_type, quotemeta } from '../libs/utils'
+import { gameMatcher, inRange, intersect, isKnown, isKnown_type, quotemeta } from '../libs/utils'
 import { GameGroup } from '../models/games'
 import { DBBase } from '../types/DBBase'
 import { GameGroupMode } from '../types/GameGroupMode'
@@ -92,16 +92,17 @@ GroupSchema.methods.gameMatches = async function (this: GroupType, game: GameTyp
         if (gg.mode_id == GameGroupMode.Include)
             return why(true, "already included")
     }
-    if (isKnown(this.filters.excludeTags) && intersect(this.filters.excludeTags, game.tags))
-        return why(false, "exclude by tag")
-    if (!inRange(this.filters.minPlayers, game.minPlayers))
-        return why(false, "exclude by minPlayers")
-    if (!inRange(this.filters.maxPlayers, game.maxPlayers))
-        return why(false, "exclude by maxPlayers")
-    if (isKnown(this.filters.includeTags))
-        return why(intersect(this.filters.includeTags, game.tags), "includeTags")
-    // return why(false, "include by tag")
-    return why(false, "default")
+    return gameMatcher(this,game).logret()
+    // if (isKnown(this.filters.excludeTags) && intersect(this.filters.excludeTags, game.tags))
+    //     return why(false, "exclude by tag")
+    // if (!inRange(this.filters.minPlayers, game.minPlayers))
+    //     return why(false, "exclude by minPlayers")
+    // if (!inRange(this.filters.maxPlayers, game.maxPlayers))
+    //     return why(false, "exclude by maxPlayers")
+    // if (isKnown(this.filters.includeTags) && this.filters.includeTags.length > 0)
+    //     return why(intersect(this.filters.includeTags, game.tags), "includeTags")
+    // // return why(false, "include by tag")
+    // return why(true, "default")
 }
 GroupSchema.query.nameish = function (term: RegExp | string, user?: UserType) {
     let qterm: RegExp

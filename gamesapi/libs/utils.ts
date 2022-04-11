@@ -310,6 +310,7 @@ export function inRange(inRange?: RangeFilterType, against?: number): boolean {
         return false
     return true
 }
+
 export function intersect(arra: string[], arrb: string[]): boolean {
     for (const a of arra) {
         for (const b of arrb) {
@@ -318,6 +319,93 @@ export function intersect(arra: string[], arrb: string[]): boolean {
         }
     }
     return false
+}
+
+enum Match {
+    Unknown,
+    Hit,
+    Miss
+}
+
+function testTags(filter?: string[], tags?: string[]): Match {
+    if (filter === undefined || filter.length <= 0)
+        return Match.Unknown
+    if (tags === undefined || tags.length <= 0)
+        return Match.Unknown
+    for (const a of filter) {
+        for (const b of tags) {
+            if (a == b)
+                return Match.Hit
+        }
+    }
+    return Match.Miss
+}
+
+function testRange(inRange?: RangeFilterType, against?: number): Match {
+    if (!isKnown(against))
+        return Match.Unknown
+    if (!isKnown(inRange))
+        return Match.Unknown
+    let range: RangeFilterType = inRange as RangeFilterType
+    if (!isKnown_type<number>(range.above) && !isKnown_type<number>(range.below))
+        return Match.Unknown
+    if (isKnown_type<number>(range.above) && isKnown_type<number>(against) && range.above > against)
+        return Match.Miss
+    if (isKnown_type<number>(range.below) && isKnown_type<number>(against) && range.below > against)
+        return Match.Miss
+    return Match.Hit
+}
+
+export class retwhy<T> {
+    ret: T
+    why: string
+    constructor(ret:T,why: string) {
+        this.ret = ret
+        this.why = why
+    }
+    logret():T {
+        console.log(this.why)
+        return this.ret
+    }
+}
+
+class MatchStore {
+    match: Match
+    why: string
+    constructor() {
+        this.match = Match.Unknown
+        this.why = "unknown"
+    }
+    safeMatch(item: Match, why: string): void {
+        if (this.match === Match.Unknown) {
+            this.match = item
+            this.why = why
+        }
+        if (item === Match.Miss) {
+            this.match = item
+            this.why = why
+        }
+    }
+    final(): boolean {
+        return this.match === Match.Miss
+    }
+    retwhy(): retwhy<boolean> {
+        return new retwhy(this.match == Match.Hit,this.why)
+    }
+}
+
+export function gameMatcher(group: GroupType, game: GameType): retwhy<boolean> {
+    const matchStore = new MatchStore()
+
+    const excludeTags: Match = testTags(group.filters.excludeTags, game.tags)
+    if (excludeTags === Match.Hit) return new retwhy(false,"exclude by tag")
+    matchStore.safeMatch(testRange(group.filters.minPlayers, game.minPlayers),"by minPlayers")
+    if (matchStore.final()) return matchStore.retwhy()
+    matchStore.safeMatch(testRange(group.filters.maxPlayers, game.maxPlayers),"by maxPlayers")
+    if (matchStore.final()) return matchStore.retwhy()
+    matchStore.safeMatch(testTags(group.filters.includeTags, game.tags),"by includeTags")
+    if (matchStore.final()) return matchStore.retwhy()
+    return matchStore.retwhy()
 }
 
 export async function setGameGroupMode(group: GroupType, game: GameType, mode: GameGroupMode): Promise<GameGroupType> {
