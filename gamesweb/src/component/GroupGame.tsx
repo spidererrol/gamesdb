@@ -24,6 +24,7 @@ function GroupGame(props: GGProps) {
     const [game, setGame] = useState<GameType>({ name: "Loading..." } as GameType)
     const [gamegroup, setGameGroup] = useState<GameGroupType>({ voteState: { vote: "Loading..." }, ownedState: { state: "Loading..." } } as GameGroupType)
     const [playmodes, setPlayModes] = useState<any[]>([<div key="loading" className="loading">Loading...</div>])
+    const [getPlaying, setPlaying] = useState<boolean>(false)
     useEffect(() => {
         let isMounted = true
         props.api.game.playmodes(props.gameid).then(p => safeState(isMounted, setdbPlaymodes, p))
@@ -38,9 +39,17 @@ function GroupGame(props: GGProps) {
         }
         setPlayModes(out)
     }, [dbplaymodes, props])
-
+    useEffect(() => {
+        setPlaying(false)
+        dbplaymodes.forEach(pm => {
+            props.api.group.getProgress(props.groupid, pm._id).then(pr => {
+                if (pr.progress === "Playing")
+                    setPlaying(true)
+            })
+        })
+    }, [dbplaymodes, props.api.group, props.groupid])
     return (
-        <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state].join(" ")}>
+        <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getPlaying ? "Playing" : ""].join(" ")}>
             <div className="editvote">
                 {/* Note these items are in reverse order! */}
                 <RemoveButton data={props.gameid} onClick={props.clickRemove} />

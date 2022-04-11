@@ -1,6 +1,7 @@
 import { apibase } from "./apibase"
 import { GroupType } from "../types/Group"
 import { PlayModeProgressValues } from "../types/PlayModeProgressValues"
+import { PlayModeProgressType } from "../types/PlayMode"
 let debug = require("debug")("api_group")
 
 
@@ -25,7 +26,7 @@ export class api_group extends apibase {
         return ret.gamegroup
     }
 
-    async getProgress(groupid: string, playmodeid: string) {
+    async getProgress(groupid: string, playmodeid: string): Promise<PlayModeProgressType> {
         debug("get progress")
         let ret = await this.req("GET", `/${groupid}/progress/${playmodeid}`)
         return ret.progress

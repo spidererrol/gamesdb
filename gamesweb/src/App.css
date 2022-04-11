@@ -30,10 +30,10 @@
   --fg-disabled-button: var(--fg-dim);
   --bdr-header-seperator: var(--fg-dim);
   --fg-vote-accept: hsl(120, 100%, 59%);
-  --fg-vote-veto:  hsl(0, 100%, 50%);
+  --fg-vote-veto: hsl(0, 100%, 50%);
   --fg-vote-desire: hsl(60, 100%, 50%);
-  --fg-vote-dislike:  hsl(0 50% 40%);
-  --fg-group-vote-veto:  hsl(0, 0%, 50%);
+  --fg-vote-dislike: hsl(0 50% 40%);
+  --fg-group-vote-veto: hsl(0, 0%, 50%);
   --bdr-group-vote-desire: gold;
   --fg-updated-mark: hsl(120 100% 50%);
   --fg-updating-mark: hsl(0 100% 50%);
@@ -70,15 +70,25 @@ div.editvote {
 }
 
 @keyframes fadeOut {
-  0% {opacity: 1;}
-  100% {opacity: 0;}
-} 
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 
 @keyframes pulse {
-  0% {opacity: 1;}
-  50% {opacity: 0.5;}
-  100% {opacity: 1;}
-} 
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 .results {
   margin-top: 0.5rem;
@@ -531,7 +541,8 @@ button.addAlias,
   cursor: pointer;
 }
 
-button.DelButton,button.RemoveButton {
+button.DelButton,
+button.RemoveButton {
   background: transparent;
   border: none;
   color: var(--fg-del-button);
@@ -636,6 +647,10 @@ pre {
   justify-content: left;
 }
 
+.GroupGame.Playing {
+  outline: 1px solid var(--fg-progress-icon);
+}
+
 .playmodes .PlayMode {
   display: flex;
   justify-content: left;
@@ -658,7 +673,7 @@ pre {
 }
 
 .voteicon.vote_Veto {
-  color:var(--fg-vote-veto);
+  color: var(--fg-vote-veto);
 }
 
 .voteicon.vote_Desire {
@@ -666,11 +681,11 @@ pre {
 }
 
 .voteicon.vote_Dislike {
-  color:var(--fg-vote-dislike);
+  color: var(--fg-vote-dislike);
 }
 
 .GroupGame.vote_Veto {
-  color:var(--fg-group-vote-veto);
+  color: var(--fg-group-vote-veto);
   font-style: italic;
 }
 
