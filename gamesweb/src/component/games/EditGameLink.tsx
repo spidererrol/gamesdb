@@ -18,13 +18,33 @@ export interface EGLRef {
     get url(): HTMLInputElement | null
 }
 
+function autoName(url: string, nameRef: React.RefObject<HTMLInputElement>): void {
+    if (nameRef.current === null)
+        return
+    if (nameRef.current.value !== "")
+        return
+    if (url.startsWith("https://store.steampowered.com/"))
+        nameRef.current.value = "Steam"
+    else if (url.startsWith("https://www.co-optimus.com/"))
+        nameRef.current.value = "Co-Optimus"
+    else if (url.startsWith("https://www.gog.com/"))
+        nameRef.current.value = "GOG.com"
+    else if (url.startsWith("https://isthereanydeal.com/"))
+        nameRef.current.value = "IsThereAnyDeal"
+}
+
 const EditGameLink = forwardRef((props: EGLProps, ref: Ref<EGLRef>) => {
     const nameRef = createRef<HTMLInputElement>()
     const urlRef = createRef<HTMLInputElement>()
 
-    const updateAction = useCallback((e)=>{
-        props.updateAction(e, props.uid);
-    },[props])
+    const updateName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        props.updateAction(e, props.uid)
+    }, [props])
+
+    const updateUrl = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        autoName(e.target.value, nameRef)
+        props.updateAction(e, props.uid)
+    }, [nameRef, props])
 
     useImperativeHandle(ref, () => ({
         get name() {
@@ -37,8 +57,8 @@ const EditGameLink = forwardRef((props: EGLProps, ref: Ref<EGLRef>) => {
 
     return <div className="linkcontainer">
         <ExtLink href={props.url} display={props.name} />
-        <LabelInput ref={nameRef} type="text" label="Name" name="name" value={props.name} onChange={updateAction} />
-        <LabelInput ref={urlRef} type="text" label="URL" name="url" value={props.url} inputClass="linkurl" onChange={updateAction} />
+        <LabelInput ref={nameRef} type="text" label="Name" name="name" value={props.name} onChange={updateName} placeholder="New" />
+        <LabelInput ref={urlRef} type="text" label="URL" name="url" value={props.url} inputClass="linkurl" onChange={updateUrl} placeholder="https://" />
         <DelButton onClick={props.delAction} data={props.uid} />
     </div>
 

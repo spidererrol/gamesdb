@@ -86,7 +86,7 @@ function EditGame(props: EGProps): JSX.Element {
             if (i >= nexti)
                 nexti = i + 1
         })
-        newlinks.set(nexti, { name: "New", url: "https://" })
+        newlinks.set(nexti, { name: "", url: "" })
         setLinks(newlinks)
     }, [links])
 
