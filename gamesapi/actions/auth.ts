@@ -142,6 +142,7 @@ async function realUpdate(req: Request, res: Response) {
                 res.status(HTTPSTATUS.INTERNAL_ERROR).json({ status: "error", message: "Unable to retrieve shadow" })
             }
             shadow.crypt = pw.crypt(user.loginName, req.body.secret)
+            await shadow.save()
         }
         if (isKnown(req.body.displayName)) {
             user.displayName = req.body.displayName
