@@ -25,6 +25,26 @@ export async function login(req: Request, res: Response) {
     }
 }
 
+export async function debugLogin(req: Request, res: Response) {
+    console.warn("** DEBUG LOGIN REQUESTED **")
+    if (!config.DEBUG) return
+    console.warn("** DEBUG LOGIN ENABLED **")
+    try {
+        const shadow: ShadowType = await Shadow.findOne({ loginName: req.body.username.toLowerCase() }).exec()
+        if (isKnown(shadow)
+            // && pw.check(shadow.loginName, req.body.secret, shadow.crypt)
+        ) {
+            log_debug("Auth Success")
+            auth.setUser(req, res, shadow.user, { status: "success", user: shadow.user })
+        } else {
+            log_debug("Auth Failure")
+            res.status(400).json({ status: "failure", message: "Invalid username or password" })
+        }
+    } catch (err) {
+        handleError(err, res)
+    }
+}
+
 export async function addRegToken(req: Request, res: Response) {
     if (!req.myUser.isAdmin) {
         res.status(HTTPSTATUS.FORBIDDEN).json({

@@ -5,6 +5,8 @@ import AuthTok from '../libs/AuthTok'
 import { InputRefObject } from '../libs/types/InputRefObject'
 import { anyElement } from '../libs/types/helpers'
 import Register from './Register'
+import DebugLogin from './DebugLogin'
+import { devMode } from '../libs/utils'
 
 interface Props {
     authTok: AuthTok
@@ -15,6 +17,7 @@ interface State {
     loginError: string
     registerError: string
     registerSuccess: anyElement
+    debugLogin: anyElement
 }
 
 class Login extends React.Component<Props, State> {
@@ -29,6 +32,7 @@ class Login extends React.Component<Props, State> {
             loginError: "",
             registerError: "",
             registerSuccess: <></>,
+            debugLogin: devMode()?<DebugLogin {...this.props}/>:<></>,
         }
     }
 
@@ -85,6 +89,7 @@ class Login extends React.Component<Props, State> {
                     </form>
                 </fieldset>
                 <Register />
+                {this.state.debugLogin}
             </>
         )
     }

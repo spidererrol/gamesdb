@@ -254,6 +254,10 @@ export function safeState<T>(isMounted: boolean, set: React.Dispatch<React.SetSt
     safeEffect(isMounted, () => set(value))
 }
 
+export function devMode(): boolean {
+    return process.env["NODE_ENV"] === "development"
+}
+
 export type FinishedCallback = () => void
 
 export type DataUpdateCallback<Ev extends React.SyntheticEvent, Dt> = (e: Ev, data: Dt, finished: FinishedCallback) => void
