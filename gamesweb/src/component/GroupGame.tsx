@@ -13,6 +13,7 @@ import { ButtonAction } from "./bits/ClearButton"
 import RemoveButton from "./bits/RemoveButton"
 import { safeState } from "../libs/utils"
 import GameLinks from "./games/GameLinks"
+import GameVoteButton from "./bits/GameVoteButton"
 
 interface GGProps extends GeneralProps {
     groupid: string
@@ -54,9 +55,7 @@ function GroupGame(props: GGProps) {
             <div className="editvote">
                 {/* Note these items are in reverse order! */}
                 <RemoveButton data={props.gameid} onClick={props.clickRemove} />
-                <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/vote"} className="editvote">
-                    <FontAwesomeIcon icon={faCheckToSlot} /><FontAwesomeIcon icon={faWallet} />
-                </NavLink>
+                <GameVoteButton game={game} {...props} />
             </div>
             <div className="header">
                 <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/edit"} className="name">{game.name}</NavLink>

@@ -75,7 +75,7 @@ const EditGameLink = forwardRef((props: EGLProps, ref: Ref<EGLRef>) => {
 
     return <div className="linkcontainer">
         <ExtLink href={props.url} display={props.name} />
-        <LabelInput ref={nameRef} type="text" label="Name" name="name" value={props.name} onChange={updateName} placeholder="New" />
+        <LabelInput ref={nameRef} type="text" label="Name" name="name" value={props.name} onChange={updateName} placeholder="New" inputTitle="[MUST BE UNIQUE] Add an ! at the end to force text display or use a url for an icon" />
         <LabelInput ref={urlRef} type="text" label="URL" name="url" value={props.url} inputClass="linkurl" onChange={updateUrl} placeholder="https://" />
         <DelButton onClick={props.delAction} data={props.uid} />
     </div>

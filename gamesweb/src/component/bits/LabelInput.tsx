@@ -17,6 +17,7 @@ interface LIProps {
     onChange?: React.ChangeEventHandler<HTMLInputElement>
     onClear?: ButtonAction
     cleardata?: any
+    inputTitle?: string
 }
 
 const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLInputElement>) {
@@ -41,6 +42,7 @@ const LabelInput = forwardRef(function (props: LIProps, ref: ForwardedRef<HTMLIn
             max={props.max}
             className={props.inputClass}
             onChange={props.onChange}
+            title={props.inputTitle}
         />
         {getButton}
     </div>

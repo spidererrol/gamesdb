@@ -17,6 +17,7 @@ import DelButton from "../bits/DelButton"
 import UnDelButton from "../bits/UnDelButton"
 import CancelButton from "../bits/CancelButton"
 import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
+import GameVoteButton from "../bits/GameVoteButton"
 
 interface DGProps extends GeneralProps {
     game: GameType
@@ -78,13 +79,12 @@ function DisplayGame(props: DGProps): JSX.Element {
     // }, [])
 
     return <fieldset className={classNames}>
-        <legend>{props.game.name}<NavLink to={props.game._id + "/edit"} ><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></NavLink>
+        <legend>{props.game.name}<NavLink className="edit_button" to={props.game._id + "/edit"} title="Edit Game"><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></NavLink>
             <div className="editvote">
-                <NavLink to={props.game._id === undefined ? "" : "/games/" + props.game._id.toString() + "/vote"} className="editvote">
-                    <FontAwesomeIcon icon={faCheckToSlot} /><FontAwesomeIcon icon={faWallet} />
-                </NavLink>
+                {/* Note these items are in reverse order! */}
+                <DelButton onClick={delete1} data="" />
+                <GameVoteButton {...props} />
             </div>
-            <DelButton onClick={delete1} data="" />
         </legend>
         {aliases}
         <div className="prop playercount minPlayers">Min Players: {props.game.minPlayers ?? "unknown"}</div>

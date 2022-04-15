@@ -9,7 +9,7 @@
   --item-fg: black;
   --fg-dim: hsl(0, 0%, 50%);
   --edit-color: hsl(0, 0%, 50%);
-  --fg-ext-link-color: hsl(187, 87%, 49%);
+  --fg-ext-link-color: hsl(204, 87%, 49%);
   --bg-deleted: hsl(0 0% 50% / 0.9);
   --fg-owned-icon: hsl(240, 100%, 70%);
   --fg-error-color: hsl(0 100% 50%);
@@ -38,6 +38,7 @@
   --fg-updated-mark: hsl(120 100% 50%);
   --fg-updating-mark: hsl(0 100% 50%);
   --fg-progress-icon: hsl(300, 100%, 50%);
+  --fg-voting: hsl(120 80% 30%);
 }
 
 body {
@@ -58,11 +59,34 @@ a.active {
   margin-inline: 2px;
 }
 
+img.extlink_icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+img.extlink_icon + .extlink_mark {
+  display: none; /* Totally turn off the mark for icons */
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  z-index: 1;
+}
+
 div.editvote {
   display: flex;
   flex-direction: row-reverse;
   color: var(--edit-color);
   padding: 1px;
+}
+
+a.GameVoteButton {
+  color: var(--fg-voting);
+  margin-inline: 2px;
+}
+
+.edit_button {
+  margin-inline: 2px;
 }
 
 .DisplayGame .editvote {

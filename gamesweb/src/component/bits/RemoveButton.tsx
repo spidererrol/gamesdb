@@ -6,6 +6,7 @@ export type RemoveButtonAction = (e: React.MouseEvent<HTMLButtonElement>) => voi
 
 interface RBProps_base {
     type?: "button" | "submit" | "reset"
+    title?: string
 }
 
 interface RBProps_basic extends RBProps_base {
@@ -32,8 +33,8 @@ function isDataProps(props: RBProps): props is RBProps_data {
  */
 function RemoveButton(props: RBProps) {
     if (isDataProps(props))
-        return <button type={props.type} className="RemoveButton" onClick={(e)=>props.onClick(e,props.data)}><FontAwesomeIcon icon={faSquareMinus} /></button>
-    return <button type={props.type} className="RemoveButton" onClick={props.onClick}><FontAwesomeIcon icon={faSquareMinus} /></button>
+        return <button type={props.type} className="RemoveButton" onClick={(e) => props.onClick(e, props.data)} title={props.title ?? "Remove"}><FontAwesomeIcon icon={faSquareMinus} /></button>
+    return <button type={props.type} className="RemoveButton" onClick={props.onClick} title={props.title ?? "Remove"}><FontAwesomeIcon icon={faSquareMinus} /></button>
 }
 
 export default RemoveButton
