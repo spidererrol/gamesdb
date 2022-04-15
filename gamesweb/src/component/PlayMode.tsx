@@ -36,7 +36,7 @@ function PlayMode(props: PMProps) {
         // props.dbupdate("games") // This does work but is a little slow and jumps things around the screen.
         // Maybe bg get the new games list and see where it has moved to and do a nice fadeOut/fadeIn?
         // Probably actually need to cascade up to parent to do that.
-    }, [props])
+    }, [])
     return <div className="PlayMode">
         <PlayModeProgress progress={progress} afterUpdate={progressUpdated} {...props} />
         <div className="name">{props.playmode.name}</div>

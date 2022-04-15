@@ -7,8 +7,6 @@ import { GeneralProps } from "./props/GeneralProps"
 import OwnedIcon from "./bits/OwnedIcon"
 import PlayMode from "./PlayMode"
 import VoteIcon from "./bits/VoteIcon"
-import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { ButtonAction } from "./bits/ClearButton"
 import RemoveButton from "./bits/RemoveButton"
 import { safeState } from "../libs/utils"
@@ -27,7 +25,7 @@ function GroupGame(props: GGProps) {
     const [game, setGame] = useState<GameType>({ name: "Loading..." } as GameType)
     const [gamegroup, setGameGroup] = useState<GameGroupType>({ voteState: { vote: "Loading..." }, ownedState: { state: "Loading..." } } as GameGroupType)
     const [playmodes, setPlayModes] = useState<any[]>([<div key="loading" className="loading">Loading...</div>])
-    const [getProgress, setProgress] = useState<PlayModeProgressValues|undefined>()
+    const [getProgress, setProgress] = useState<PlayModeProgressValues | undefined>()
     useEffect(() => {
         let isMounted = true
         props.api.game.playmodes(props.gameid).then(p => safeState(isMounted, setdbPlaymodes, p))
