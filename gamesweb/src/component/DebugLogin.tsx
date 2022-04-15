@@ -28,7 +28,7 @@ function DebugLogin(props: Props) {
 
         let auth
         try {
-            console.log("start login")
+            console.warn("start DEBUG login")
             auth = await api_auth.debuglogin(name)
             console.log("login okish")
         } catch (err: any) {
