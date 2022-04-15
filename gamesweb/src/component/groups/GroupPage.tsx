@@ -42,13 +42,11 @@ function GroupPage(props: GeneralProps) {
     }, [group.members])
 
     const removeGame = useCallback((e, gameid: string) => {
-        console.log("🚀 ~ file: GroupPage.tsx ~ line 39 ~ removeGame ~ gameid", gameid)
         e.preventDefault()
         props.api.group.remove(group._id, gameid).then(() => setSearch(getSearch)).then(() => props.dbupdate("games"))
     }, [getSearch, group._id, props])
 
     const addGame = useCallback((e, gameid: string) => {
-        console.log("🚀 ~ file: GroupPage.tsx ~ line 45 ~ addGame ~ gameid", gameid)
         e.preventDefault()
         props.api.group.add(group._id, gameid).then(() => setSearch(getSearch)).then(() => props.dbupdate("games"))
     }, [getSearch, group._id, props])
@@ -56,7 +54,7 @@ function GroupPage(props: GeneralProps) {
     useEffect(() => {
         let out: any[] = []
         if (group.games !== undefined) {
-            for (const game of group.games.sort((a, b) => a.name.localeCompare(b.name))) {
+            for (const game of group.games) { //.sort((a, b) => a.name.localeCompare(b.name))
                 out.push(<GroupGame key={idString(game)} gameid={idString(game) as string} groupid={idString(group) as string} clickRemove={removeGame} {...props} />)
             }
         }
@@ -73,7 +71,6 @@ function GroupPage(props: GeneralProps) {
     }, [addGame, data, group])
 
     useEffect(() => {
-        console.log("🚀 ~ file: GroupPage.tsx ~ line 74 ~ useEffect ~ getSearch", getSearch)
         if (getSearch.trim() === "") {
             setData(undefined)
         } else {

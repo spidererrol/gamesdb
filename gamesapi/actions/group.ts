@@ -1,9 +1,8 @@
 import { Request, Response } from 'express'
-import { GameGroup, Group, UserGroup } from '../models/games'
-import { handleError, log_debug, isKnown, errorResponse, setGameGroupMode, isKnown_type, getList_Mapped } from '../libs/utils'
+import { Group, PlayMode, PlayModeProgress, UserGroup } from '../models/games'
+import { handleError, log_debug, isKnown, errorResponse, setGameGroupMode, isKnown_type, getList_Mapped, idString } from '../libs/utils'
 import '../libs/type-extensions'
 import { GroupType } from '../schemas/Group'
-import config from '../libs/config'
 import { UserGroupType } from '../schemas/UserGroup'
 import { HTTPSTATUS } from '../types/httpstatus'
 import { UserType } from '../schemas/User'
@@ -11,15 +10,16 @@ import { GameType } from '../schemas/Game'
 import { GameGroupMode } from '../types/GameGroupMode'
 import { GameGroupType } from '../schemas/GameGroup'
 import { recalcGroup } from './gamegroup'
-import { TODO } from './test'
 import { getList_Paged } from '../libs/utils'
+import { VoteType } from '../schemas/Vote'
+import { Vote } from '../types/Vote'
+import { PlayModeType } from '../schemas/PlayMode'
+import { PlayModeProgressType } from '../schemas/PlayModeProgress'
+import { PlayModeProgressValues } from '../types/PlayModeProgressValues'
 let debug = require("debug")("actions/group")
 
 // Helper functions:
 
-function err404(res: Response) {
-    res.status(404).json({ status: "error", message: "Game not found" })
-}
 
 // Actions:
 
@@ -133,10 +133,128 @@ export async function recalc(req: Request, res: Response) {
     }
 }
 
+interface SortData {
+    game: GameType,
+    name: string,
+    progressOrder?: number,
+    gamevoteOrder?: number,
+    playmodevoteOrder?: number,
+}
+interface SortDataComplete {
+    game: GameType,
+    name: string,
+    progressOrder: number,
+    gamevoteOrder: number,
+    playmodevoteOrder: number,
+}
+
+function voteOrder(vote: VoteType) {
+    switch (vote.vote_id) {
+        case Vote.Desire:
+            return 10
+        case Vote.Accept:
+            return 20
+        case Vote.Dislike:
+            return 40
+        case Vote.Veto:
+            return 50
+        default:
+            return 30
+    }
+}
+
+function progressOrder(progress: PlayModeProgressValues): number {
+    switch (progress) {
+        case PlayModeProgressValues.Playing: return 10
+        case PlayModeProgressValues.Paused: return 20
+        case PlayModeProgressValues.Unplayed: return 40
+        case PlayModeProgressValues.Finished: return 50
+        case PlayModeProgressValues.Abandoned: return 60
+        case PlayModeProgressValues.Uninterested: return 70
+        default: return 30
+    }
+}
+
+function votesOrder(votes: VoteType[], user: UserType): number {
+    let best = 99
+    for (const vote of votes) {
+        if (idString(vote.user) === idString(user)) {
+            let n = voteOrder(vote)
+            if (n < best)
+                best = n
+        }
+    }
+    return best
+}
+
+function getGameVoteOrder(data: SortData, user: UserType): Promise<void> {
+    let order = votesOrder(data.game.votes, user)
+    data.gamevoteOrder = order
+    return new Promise<void>((result) => result())
+}
+
+async function getPlayModeOrder(data: SortData, user: UserType, group: GroupType): Promise<void> {
+    const playmodes: PlayModeType[] = await PlayMode.find({ game: data.game })
+
+
+    let bestVote = 99
+    let bestProgress = 99
+    for (const playmode of playmodes) {
+        let voten = votesOrder(playmode.votes, user)
+        if (voten < bestVote)
+            bestVote = voten
+        let progress = await PlayModeProgress.findOne({ playmode: playmode, group })
+        if (isKnown_type<PlayModeProgressType>(progress)) {
+            let progn = progressOrder(progress.progress)
+            if (progn < bestProgress)
+                bestProgress = progn
+        }
+    }
+    data.progressOrder = bestProgress
+    data.playmodevoteOrder = bestVote
+    return
+}
+
+async function game2sortdata(games: GameType[], user: UserType, group: GroupType): Promise<SortData[]> {
+    const sortdata: SortData[] = []
+    const promises: Promise<void>[] = []
+    for (const game of games) {
+        const data = { game: game, name: game.name } as SortData
+        sortdata.push(data)
+        promises.push(getGameVoteOrder(data, user))
+        promises.push(getPlayModeOrder(data, user, group))
+    }
+    return Promise.all(promises).then(() => sortdata as SortData[])
+}
+
+function compSortData(a: SortDataComplete, b: SortDataComplete): number {
+    return a.progressOrder - b.progressOrder
+        || a.gamevoteOrder - b.gamevoteOrder
+        || a.playmodevoteOrder - b.playmodevoteOrder
+        || a.name.localeCompare(b.name)
+}
+
+function check(sd: SortData): SortDataComplete {
+    if (sd.gamevoteOrder === undefined)
+        throw new Error(sd.name + ":GVO")
+    if (sd.playmodevoteOrder === undefined)
+        throw new Error(sd.name + ":PMVO")
+    if (sd.progressOrder === undefined)
+        throw new Error(sd.name = ":PO")
+    // console.warn(sd.name, sd.progressOrder, sd.gamevoteOrder, sd.playmodevoteOrder)
+    return sd as SortDataComplete
+}
+
+async function sortGames(games: GameType[], group: GroupType, user: UserType): Promise<GameType[]> {
+    return (await game2sortdata(games, user, group)).map(check).sort(compSortData).map(d => d.game)
+}
+
 export async function get(req: Request, res: Response) {
     log_debug(`Retrieve group (${req.params.group})`)
     try {
-        res.json({ group: req.reqGroup })
+        const group: GroupType = { ...req.reqGroup.toObject() }
+        group.games = await sortGames(group.games, group, req.myUser)
+        res.json({ group })
     } catch (error) {
         handleError(error, res)
     }
@@ -211,7 +329,6 @@ export async function del(req: Request, res: Response) {
     log_debug("Delete group")
     try {
         let result = await Group.findByIdAndDelete(req.reqGroup._id)
-        console.log("🚀 ~ file: group.ts ~ line 201 ~ del ~ result", result)
         res.json({ status: "success", result: result })
     } catch (error) {
         handleError(error, res)
@@ -293,5 +410,3 @@ export async function excludeGame(req: Request, res: Response) {
         handleError(error, res)
     }
 }
-
-export { TODO }

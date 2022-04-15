@@ -37,7 +37,8 @@
   --bdr-group-vote-desire: gold;
   --fg-updated-mark: hsl(120 100% 50%);
   --fg-updating-mark: hsl(0 100% 50%);
-  --fg-progress-icon: hsl(300, 100%, 50%);
+  --fg-progress-playing: hsl(300, 100%, 50%);
+  --fg-progress-paused: hsl(300, 100%, 20%);
   --fg-voting: hsl(120 80% 30%);
 }
 
@@ -55,7 +56,7 @@ a.active {
 }
 
 .progress_icon {
-  color: var(--fg-progress-icon);
+  color: var(--fg-progress-playing);
   margin-inline: 2px;
 }
 
@@ -638,7 +639,11 @@ pre {
 }
 
 .GroupGame.Playing {
-  outline: 1px solid var(--fg-progress-icon);
+  outline: 1px solid var(--fg-progress-playing);
+}
+
+.GroupGame.Paused {
+  outline: 1px solid var(--fg-progress-paused);
 }
 
 .playmodes .PlayMode {

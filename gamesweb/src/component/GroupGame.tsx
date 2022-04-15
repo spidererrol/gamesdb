@@ -14,6 +14,7 @@ import RemoveButton from "./bits/RemoveButton"
 import { safeState } from "../libs/utils"
 import GameLinks from "./games/GameLinks"
 import GameVoteButton from "./bits/GameVoteButton"
+import { PlayModeProgressValues } from "../libs/types/PlayModeProgressValues"
 
 interface GGProps extends GeneralProps {
     groupid: string
@@ -26,7 +27,7 @@ function GroupGame(props: GGProps) {
     const [game, setGame] = useState<GameType>({ name: "Loading..." } as GameType)
     const [gamegroup, setGameGroup] = useState<GameGroupType>({ voteState: { vote: "Loading..." }, ownedState: { state: "Loading..." } } as GameGroupType)
     const [playmodes, setPlayModes] = useState<any[]>([<div key="loading" className="loading">Loading...</div>])
-    const [getPlaying, setPlaying] = useState<boolean>(false)
+    const [getProgress, setProgress] = useState<PlayModeProgressValues|undefined>()
     useEffect(() => {
         let isMounted = true
         props.api.game.playmodes(props.gameid).then(p => safeState(isMounted, setdbPlaymodes, p))
@@ -42,16 +43,17 @@ function GroupGame(props: GGProps) {
         setPlayModes(out)
     }, [dbplaymodes, props])
     useEffect(() => {
-        setPlaying(false)
+        setProgress(undefined)
         dbplaymodes.forEach(pm => {
             props.api.group.getProgress(props.groupid, pm._id).then(pr => {
-                if (pr.progress === "Playing")
-                    setPlaying(true)
+                setProgress(pr.progress)
+                // if (pr.progress === "Playing")
+                //     setProgress(true)
             })
         })
     }, [dbplaymodes, props.api.group, props.groupid])
     return (
-        <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getPlaying ? "Playing" : ""].join(" ")}>
+        <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getProgress].join(" ")}>
             <div className="editvote">
                 {/* Note these items are in reverse order! */}
                 <RemoveButton data={props.gameid} onClick={props.clickRemove} />
