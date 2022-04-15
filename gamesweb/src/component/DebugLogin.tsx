@@ -13,7 +13,7 @@ interface Props {
 
 function DebugLogin(props: Props) {
     const [getUsers, setUsers] = useState<UserType[]>([])
-    const [getButtons, setButtons] = useState<anyElementList>([<Loading caller="DebugLogin" />])
+    const [getButtons, setButtons] = useState<anyElementList>([<Loading key="LOADING" caller="DebugLogin" />])
 
     const doLogin = useCallback(async (e: React.MouseEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -50,11 +50,12 @@ function DebugLogin(props: Props) {
     }, [props.authTok, props.user])
 
     useEffect(() => {
-        api_auth.getUsers().then(setUsers)
+        api_auth.getUsers().then(u => setUsers(u))
     }, [])
 
     useEffect(() => {
-        setButtons(getUsers.map(u => <input key={u._id} type="button" onClick={doLogin} value={u.loginName} />))
+        if (getUsers.length > 0)
+            setButtons(getUsers.map(u => <input key={u._id} type="button" onClick={doLogin} value={u.loginName} />))
     }, [doLogin, getUsers])
 
     return <fieldset className="debug_login">
