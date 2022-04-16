@@ -109,6 +109,11 @@ div.editvotex {
   width: 1fr;
 } */
 
+.Card {
+  border: 1px solid var(--border-main);
+  margin: 1px;
+}
+
 .CardHeader {
   background: var(--bg-card-header);
   color: var(--fg-card-header);
@@ -478,8 +483,10 @@ nav li a {
   padding-inline: 0.1rem;
 }
 
-.memberslist > .member,
-.gameslist > .GroupGame {
+.memberslist > .member
+/* ,
+.gameslist > .GroupGame */
+ {
   border: 1px solid var(--border-main);
   margin: 1px;
 }
@@ -531,7 +538,7 @@ nav li.gap {
   justify-content: left;
 }
 
-.ListGames .game_list,
+/* .ListGames .game_list, */
 .ListGroups .group_list {
   display: flex;
   justify-content: left;

@@ -12,6 +12,8 @@ import { anyElementList } from "../../libs/types/helpers"
 import AddButton from "../bits/AddButton"
 import { idString } from "../../libs/utils"
 import Cards from "../cards/Cards"
+import MissingOk from "../bits/MissingOk"
+import Card from "../cards/Card"
 
 function hasGame(group: GroupType, game: GameType | string): boolean {
     return group.games.map(g => idString(g)).includes(idString(game))
@@ -66,10 +68,10 @@ function GroupPage(props: GeneralProps) {
         if (data === undefined)
             setSearchGameElems([<div key="NULL">(search above)</div>])
         else if (data.length > 0)
-            setSearchGameElems(data.map(g => <div className={"search_result" + (hasGame(group, g) ? " disabled" : "")} key={g._id}>{g.name}<AddButton disabled={hasGame(group, g)} onClick={addGame} data={g._id} /></div>))
+            setSearchGameElems(data.map(g => <Card {...props} className={"search_result" + (hasGame(group, g) ? " disabled" : "")} key={g._id}>{g.name}<AddButton disabled={hasGame(group, g)} onClick={addGame} data={g._id} /></Card>))
         else
             setSearchGameElems([<div key="NULL">(no matches)</div>])
-    }, [addGame, data, group])
+    }, [addGame, data, group, props])
 
     useEffect(() => {
         if (getSearch.trim() === "") {
@@ -106,9 +108,9 @@ function GroupPage(props: GeneralProps) {
             <div className="game_search">
                 <LabelInput ref={refSearch} type="text" label="Search" onChange={search} onClear={clear} />
             </div>
-            <div className="results">
-                {getSearchGameElems}
-            </div>
+            <Cards className="results">
+                <>{getSearchGameElems}</>
+            </Cards>
         </fieldset>
     </div>)
 }

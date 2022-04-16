@@ -3,6 +3,7 @@ import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import LabelInput from "../bits/LabelInput"
 import Loading from "../bits/Loading"
+import Cards from "../cards/Cards"
 import { GeneralProps } from "../props/GeneralProps"
 import DisplayGame from "./DisplayGame"
 
@@ -42,7 +43,7 @@ function ListGames(props: GeneralProps) {
 
     return <div className="ListGames">
         <LabelInput ref={refSearch} type="text" label="Search" placeholder="(all)" onChange={search} onClear={clear} />
-        <div className="game_list">{games}</div>
+        <Cards className="game_list">{games}</Cards>
     </div>
 }
 

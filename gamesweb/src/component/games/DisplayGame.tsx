@@ -15,6 +15,7 @@ import UnDelButton from "../bits/UnDelButton"
 import CancelButton from "../bits/CancelButton"
 import GameVoteButton from "../bits/GameVoteButton"
 import EditGameButton from "../bits/EditGameButton"
+import Card from "../cards/Card"
 
 interface DGProps extends GeneralProps {
     game: GameType
@@ -74,6 +75,33 @@ function DisplayGame(props: DGProps): JSX.Element {
     // const noop = useCallback((e) => {
     //     e.preventDefault()
     // }, [])
+
+    return <Card
+        className={classNames}
+        titleButtons={[<EditGameButton {...props} />, <GameVoteButton {...props} />, <DelButton onClick={delete1} data="" />]}
+        header={props.game.name}
+        {...props}
+    >
+        <>
+            {aliases}
+            <div className="prop playercount minPlayers">Min Players: {props.game.minPlayers ?? "unknown"}</div>
+            <div className="prop playercount maxPlayers">Max Players: {props.game.maxPlayers ?? "unknown"}</div>
+            <div className="prop vote">Vote: <VoteIcon vote={vote} /></div>
+            <div className="prop owner">Status: {owned === "Unowned" ? <></> : <OwnedIcon owned={owned} maxPrice={price} />}{owned === "Unowned" ? ` ≤ £${price.toFixed(2)}` : owned}</div>
+            <GameLinks {...props} />
+            <GenericCloud getItems={tags} {...props} />
+            {playmodes}
+            <div className="cover">
+                <span className="with_bg">
+                    {/* <LabelInput label="Really Delete?" type="checkbox" onChange={delete2} defaultChecked={false} /> */}
+                    Confirm or Cancel
+                    <br />
+                    <DelButton onClick={delete2} data="" title="Really Delete" /><CancelButton onClick={undelete} data="" title="Cancel" />
+                </span>
+                <UnDelButton onClick={undelete} data="" />
+            </div>
+        </>
+    </Card>
 
     return <fieldset className={classNames}>
         <legend>{props.game.name}<EditGameButton {...props} />

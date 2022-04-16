@@ -7,9 +7,10 @@ import { children } from "../props/children"
 import CardHeader from "./CardHeader"
 import CardBody from "./CardBody"
 import CardAction from "./CardAction"
+import MissingOk from "../bits/MissingOk"
 
 export interface CardProps extends GeneralProps, className, children {
-    header: anyElements
+    header?: anyElements
     titleButtons?: anyElements
     actionButtons?: anyElements
 }
@@ -21,7 +22,7 @@ function Card(props: CardProps) {
             setAction(<CardAction>{props.actionButtons}</CardAction>)
     }, [props.actionButtons])
     return <div className={buildClasses(props.className, "Card")}>
-        <CardHeader titleButtons={props.titleButtons}>{props.header}</CardHeader>
+        <MissingOk flagcontent={props.header}><CardHeader titleButtons={props.titleButtons}>{props.header as anyElements}</CardHeader></MissingOk>
         <CardBody>{props.children}</CardBody>
         {getAction}
     </div>
