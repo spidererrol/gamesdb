@@ -1,5 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
-import { faBan, faCheck, faPause, faPersonRunning, faStop, faThumbsDown } from "@fortawesome/free-solid-svg-icons"
+import { faBan, faCheck, faPause, faPersonRunning, faSpinner, faStop, faThumbsDown } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useCallback, useEffect, useState } from "react"
 import { anyElement } from "../../libs/types/helpers"
@@ -20,7 +20,7 @@ const baseClass = "progress_icon"
 
 function PlayModeProgress(props: PMPProps) {
     const [getClassNames, setClassNames] = useState<string>(baseClass)
-    const [getIcon, setIcon] = useState<IconProp>(faStop)
+    const [getIcon, setIcon] = useState<IconProp>(faSpinner)
     const [getEdit, setEdit] = useState<anyElement>(<></>)
     const [getEditToggle, setEditToggle] = useState<boolean>(false)
 

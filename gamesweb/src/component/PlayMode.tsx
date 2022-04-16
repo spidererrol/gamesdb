@@ -23,7 +23,7 @@ function PlayMode(props: PMProps) {
         voteState: {
             vote: "Loading...",
         },
-        progress: PlayModeProgressValues.Unplayed,
+        progress: "Loading" as PlayModeProgressValues,
     } as PlayModeProgressType)
     useEffect(() => {
         let isMounted = true

@@ -11,6 +11,7 @@ import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import AddButton from "../bits/AddButton"
 import { idString } from "../../libs/utils"
+import Cards from "../cards/Cards"
 
 function hasGame(group: GroupType, game: GameType | string): boolean {
     return group.games.map(g => idString(g)).includes(idString(game))
@@ -98,7 +99,7 @@ function GroupPage(props: GeneralProps) {
         <div className="memberslist"><div className="label">Members:</div>{members}</div>
         <fieldset>
             <legend>Games:</legend>
-            <div className="gameslist">{games}</div>
+            <Cards className="gameslist">{games}</Cards>
         </fieldset>
         <fieldset className="add_game">
             <legend>Add Game:</legend>

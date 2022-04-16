@@ -4,7 +4,6 @@ import { api_user } from "../libs/api/user"
 import AuthTok from "../libs/AuthTok"
 import { anyElementList } from "../libs/types/helpers"
 import { UserType } from "../libs/types/User"
-import Loading from "./bits/Loading"
 
 interface Props {
     authTok: AuthTok
@@ -13,7 +12,14 @@ interface Props {
 
 function DebugLogin(props: Props) {
     const [getUsers, setUsers] = useState<UserType[]>([])
-    const [getButtons, setButtons] = useState<anyElementList>([<Loading key="LOADING" caller="DebugLogin" />])
+
+    const updateLogins = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        (e.target as HTMLButtonElement).disabled = true
+        api_auth.getUsers().then(u => setUsers(u))
+    }, [])
+
+    const [getButtons, setButtons] = useState<anyElementList>([<button key="updateLogins" onClick={updateLogins}>Refresh</button>])
 
     const doLogin = useCallback(async (e: React.MouseEvent<HTMLInputElement>) => {
         e.preventDefault()

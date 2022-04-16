@@ -268,3 +268,71 @@ export type InputChangeUpdateCallback<Dt> = ChangeUpdateCallback<HTMLInputElemen
 
 export type ClickUpdateCallback<El extends Element, Dt> = DataUpdateCallback<React.MouseEvent<El>, Dt>
 export type ButtonClickUpdateCallback<Dt> = ClickUpdateCallback<HTMLButtonElement, Dt>
+
+export type cssClassType = string | Set<string>
+
+export function joinSet<T>(inset: Set<T>, ...toadd: T[]): Set<T> {
+    const outset = new Set(inset)
+    for (const item of toadd) {
+        outset.add(item)
+    }
+    return outset
+}
+
+export function isString(input?: any): input is string {
+    if (input === undefined || input === null)
+        return false
+    if ((input as string).match)
+        return true
+    return false
+}
+
+export function isSet<T = any>(input?: any): input is Set<T> {
+    if (input === undefined || input === null)
+        return false
+    if ((input as Set<T>).has && (input as Set<T>).forEach)
+        return true
+    return false
+}
+
+export function iterator2Array<T>(input: IterableIterator<T>): T[] {
+    return Array.from(input)
+}
+
+export function iteratorJoin<T>(input: IterableIterator<T>, sep?: string): string {
+    return iterator2Array(input).join(sep)
+}
+
+export function joinClasses(left: cssClassType, ...right: cssClassType[]) {
+    if (right.length <= 0)
+        return left
+    let out: Set<string>
+    if (isSet(left))
+        out = new Set<string>(left)
+    else {
+        out = new Set<string>()
+        out.add(left)
+    }
+    for (const item of right) {
+        if (item === undefined) {
+            // Skip
+        } else if (isSet(item)) {
+            item.forEach(i => out.add(i))
+        } else {
+            out.add(item)
+        }
+    }
+    return out
+}
+
+export function buildClasses(input?: cssClassType, ...more: cssClassType[]): string | undefined {
+    if (input === undefined && more.length <= 0)
+        return undefined
+    if (input === undefined)
+        return buildClasses(...more)
+    if (more.length > 0)
+        return buildClasses(joinClasses(input, ...more))
+    if (isSet(input))
+        return iteratorJoin(input.values(), " ")
+    return input as string
+}

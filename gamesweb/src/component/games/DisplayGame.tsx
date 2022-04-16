@@ -1,7 +1,4 @@
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useCallback, useEffect, useState } from "react"
-import { NavLink } from "react-router-dom"
 import { GameType } from "../../libs/types/Game"
 import { anyElementList } from "../../libs/types/helpers"
 import { PlayModeType } from "../../libs/types/PlayMode"
@@ -16,8 +13,8 @@ import PlayMode from "./PlayMode"
 import DelButton from "../bits/DelButton"
 import UnDelButton from "../bits/UnDelButton"
 import CancelButton from "../bits/CancelButton"
-import { faCheckToSlot, faWallet } from "@fortawesome/free-solid-svg-icons"
 import GameVoteButton from "../bits/GameVoteButton"
+import EditGameButton from "../bits/EditGameButton"
 
 interface DGProps extends GeneralProps {
     game: GameType
@@ -79,7 +76,7 @@ function DisplayGame(props: DGProps): JSX.Element {
     // }, [])
 
     return <fieldset className={classNames}>
-        <legend>{props.game.name}<NavLink className="edit_button" to={props.game._id + "/edit"} title="Edit Game"><FontAwesomeIcon className="icon editicon" icon={faPenToSquare} /></NavLink>
+        <legend>{props.game.name}<EditGameButton {...props} />
             <div className="editvote">
                 {/* Note these items are in reverse order! */}
                 <DelButton onClick={delete1} data="" />

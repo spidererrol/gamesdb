@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { NavLink } from "react-router-dom"
 import { GameType } from "../libs/types/Game"
 import { GameGroupType } from "../libs/types/GameGroup"
 import { PlayModeType } from "../libs/types/PlayMode"
@@ -9,10 +8,12 @@ import PlayMode from "./PlayMode"
 import VoteIcon from "./bits/VoteIcon"
 import { ButtonAction } from "./bits/ClearButton"
 import RemoveButton from "./bits/RemoveButton"
-import { safeState } from "../libs/utils"
+import { joinClasses, safeState } from "../libs/utils"
 import GameLinks from "./games/GameLinks"
 import GameVoteButton from "./bits/GameVoteButton"
 import { PlayModeProgressValues } from "../libs/types/PlayModeProgressValues"
+import Card from "./cards/Card"
+import EditGameButton from "./bits/EditGameButton"
 
 interface GGProps extends GeneralProps {
     groupid: string
@@ -50,28 +51,49 @@ function GroupGame(props: GGProps) {
             })
         })
     }, [dbplaymodes, props.api.group, props.groupid])
-    return (
-        <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getProgress].join(" ")}>
-            <div className="editvote">
-                {/* Note these items are in reverse order! */}
-                <RemoveButton data={props.gameid} onClick={props.clickRemove} />
-                <GameVoteButton game={game} {...props} />
+
+    return <Card
+        className={joinClasses("GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getProgress as string)}
+        titleButtons={[<EditGameButton game={game} />, <GameVoteButton game={game} {...props} />, <RemoveButton data={props.gameid} onClick={props.clickRemove} />]}
+        header={<>
+            <span className="name">{game.name}</span>
+            <div className="icons effective">
+                <VoteIcon vote={gamegroup.voteState.vote} />
+                <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
             </div>
-            <div className="header">
-                <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/edit"} className="name">{game.name}</NavLink>
-                <div className="icons effective">
-                    <VoteIcon vote={gamegroup.voteState.vote} />
-                    <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
-                </div>
-                <div className="icons user">
-                    <VoteIcon vote={game.myVote?.vote ?? "Unknown"} />
-                    <OwnedIcon isOwned={game.myOwner?.isOwned ?? null} isInstalled={game.myOwner?.isInstalled ?? null} maxPrice={game.myOwner?.maxPrice ?? null} />
-                </div>
+            <div className="icons user">
+                <VoteIcon vote={game.myVote?.vote ?? "Unknown"} />
+                <OwnedIcon isOwned={game.myOwner?.isOwned ?? null} isInstalled={game.myOwner?.isInstalled ?? null} maxPrice={game.myOwner?.maxPrice ?? null} />
             </div>
-            <GameLinks game={game} {...props} />
-            <div className="playmodes">{playmodes}</div>
-        </div>
-    )
+        </>}
+        {...props}
+    >
+        <GameLinks game={game} {...props} />
+        <div className="playmodes">{playmodes}</div>
+    </Card>
+
+    // return (
+    //     <div className={["GroupGame", "vote_" + gamegroup.voteState.vote, "owned_" + gamegroup.ownedState.state, getProgress].join(" ")}>
+    //         <div className="editvote">
+    //             {/* Note these items are in reverse order! */}
+    //             <RemoveButton data={props.gameid} onClick={props.clickRemove} />
+    //             <GameVoteButton game={game} {...props} />
+    //         </div>
+    //         <div className="header">
+    //             <NavLink to={game._id === undefined ? "" : "/games/" + game._id.toString() + "/edit"} className="name">{game.name}</NavLink>
+    //             <div className="icons effective">
+    //                 <VoteIcon vote={gamegroup.voteState.vote} />
+    //                 <OwnedIcon owned={gamegroup.ownedState.state} maxPrice={gamegroup.ownedState.maxPrice} />
+    //             </div>
+    //             <div className="icons user">
+    //                 <VoteIcon vote={game.myVote?.vote ?? "Unknown"} />
+    //                 <OwnedIcon isOwned={game.myOwner?.isOwned ?? null} isInstalled={game.myOwner?.isInstalled ?? null} maxPrice={game.myOwner?.maxPrice ?? null} />
+    //             </div>
+    //         </div>
+    //         <GameLinks game={game} {...props} />
+    //         <div className="playmodes">{playmodes}</div>
+    //     </div>
+    // )
 }
 
 export default GroupGame
