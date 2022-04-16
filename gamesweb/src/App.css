@@ -112,6 +112,9 @@ div.editvotex {
 .Card {
   border: 1px solid var(--border-main);
   margin: 1px;
+  border-radius: 10px;
+  padding-top: 4px;
+  padding-inline: 1px;
 }
 
 .CardHeader {
