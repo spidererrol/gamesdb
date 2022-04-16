@@ -16,9 +16,18 @@ import { Vote } from '../types/Vote'
 import { PlayModeType } from '../schemas/PlayMode'
 import { PlayModeProgressType } from '../schemas/PlayModeProgress'
 import { PlayModeProgressValues } from '../types/PlayModeProgressValues'
-let debug = require("debug")("actions/group")
 
 // Helper functions:
+
+function expandIsMember(req: Request, groups: GroupType[]): GroupType[] {
+    let out: GroupType[] = []
+    for (const group of groups) {
+        let outgroup: any = { ...group.toObject() }
+        outgroup.isMember = group.members.map((u: UserType) => u._id.toString()).includes(req.myUser._id.toString())
+        out.push(outgroup)
+    }
+    return out
+}
 
 
 // Actions:
@@ -49,7 +58,7 @@ export async function getAllPrivate(req: Request, res: Response) {
 }
 
 export async function getGroupsForMe(req: Request, res: Response) {
-    debug("getGroupsForMe")
+    log_debug("getGroupsForMe")
     try {
         let groups = Group.find({
             $or: [
@@ -57,17 +66,7 @@ export async function getGroupsForMe(req: Request, res: Response) {
                 { "members._id": req.myUser._id.toString() }
             ]
         }).sort("name")
-        await getList_Mapped("groups", groups, res,
-            groups => {
-                let out = []
-                for (const group of groups) {
-                    let outgroup: any = { ...group.toObject() }
-                    outgroup.isMember = group.members.map((u: UserType) => u._id.toString()).includes(req.myUser._id.toString())
-                    out.push(outgroup)
-                }
-                return out
-            }
-            , req)
+        await getList_Mapped("groups", groups, res, expandIsMember.bind(null, req), req)
     } catch (err) {
         handleError(err, res)
     }
@@ -264,7 +263,8 @@ export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
     let q = Group.find().nameish(req.params.query, req.myUser)
-    getList_Paged("groups", q, res)
+    // getList_Paged("groups", q, res)
+    await getList_Mapped("groups", q, res, expandIsMember.bind(null, req), req)
 }
 
 export async function join(req: Request, res: Response) {
