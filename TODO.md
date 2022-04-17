@@ -1,6 +1,5 @@
-- [X] Auto add/remove groups when changing tags on a Game
-- [X] Auto add/remove games when changing tags on a Group
-- [X] Manual add/remove of games from groups
-- [X] Add progress to groups.
-- [ ] SSL
-- [X] Add mongo-express to docker-compose.yml?
+- [ ] View Game - basically the same view as Games/List but for one game. Include everything that edit has but in view form.
+- [ ] List games by tags.
+- [X] List games for which I need to vote
+- [ ] List games for which I need to set owned or price.
+- [ ] Release Date Support
