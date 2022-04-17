@@ -15,4 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag gamesdb:$(date +%s)
+      run: docker build . --file Dockerfile --tag ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
+    - name: Push the Docker images
+      run: docker push ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
