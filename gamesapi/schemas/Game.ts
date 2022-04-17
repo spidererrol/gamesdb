@@ -7,6 +7,7 @@ import { DBBase } from '../types/DBBase'
 import { WhenWhoType } from './WhenWho'
 import { VoteType } from './Vote'
 import { OwnerType } from "./Owner"
+import { UserType } from './User'
 
 export interface GameType extends DBBase {
     name: string
@@ -18,6 +19,7 @@ export interface GameType extends DBBase {
     votes: VoteType[]
     owners: OwnerType[]
     added: WhenWhoType
+    voted: UserType[]
 }
 
 export const GameSchema = new Schema({
@@ -33,6 +35,7 @@ export const GameSchema = new Schema({
     votes: [{ type: VoteSchema, autopopulate: true }],
     owners: [{ type: OwnerSchema, autopopulate: true }],
     added: { type: WhenWhoSchema, autopopulate: true },
+    voted: [{ type: 'ObjectId', ref: 'User', autopopulate: true }],
 }, {
     toObject: {
         virtuals: true,

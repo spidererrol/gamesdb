@@ -79,10 +79,10 @@ export async function quickSearch(req: Request, res: Response) {
 
 export async function needVote(req: Request, res: Response) {
     log_debug("Find games which need voting on")
-    let q = Games.find({
-        "votes": { "$not": { "$elemMatch": { "user": req.myUser } } }
-    })
-    //FIXME: I kinda want this to also include where the is a playmode that hasn't been voted on.
+    let q = Games.find().or([
+        { "votes": { "$not": { "$elemMatch": { "user": req.myUser } } } },
+        { "voted": { "$not": { "$elemMatch": { "$eq": req.myUser } } } },
+    ])
     q.sort({ "name": 1 }) // This is effectively the fallback order for when there are the same number of votes
     legacy_getList(q, res, req,
         (list: GameType[]) => list.sort(

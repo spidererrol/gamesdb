@@ -4,3 +4,5 @@
 - [ ] List games for which I need to set owned or price.
 - [ ] Release Date Support
 - [ ] May need to reconsider votes on games to just reflect the best playmode vote? Doesn't have to be strictly calculated - could update game whenever playmode is edited and then just block changes to game
+- [ ] Also store an indication of no user votes on playmodes for the "need vote" page.
+- [ ] Add a "default" playmode when adding the game?

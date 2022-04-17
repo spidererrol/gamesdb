@@ -7,6 +7,9 @@ import { fillGamePlayMode } from '../libs/fillGamePlayMode'
 import { OwnerType } from '../schemas/Owner'
 import { GameGroupType } from '../schemas/GameGroup'
 import { PlayModeProgressType } from '../schemas/PlayModeProgress'
+import { GameType } from '../schemas/Game'
+import { UserType } from '../schemas/User'
+import { PlayModeType } from '../schemas/PlayMode'
 
 // Helper functions:
 
@@ -24,6 +27,8 @@ export async function add(req: Request, res: Response) {
             game: req.reqGame,
             ...req.body
         })
+        req.reqGame.voted = [] // Delete all voted because noone could have voted yet!
+        await req.reqGame.save()
         res.json({
             status: "success",
             playmode: playmode
@@ -125,6 +130,30 @@ export async function get(req: Request, res: Response) {
 
 }
 
+async function update_voted(game: GameType, user: UserType): Promise<void> {
+    const userid = idString(user)
+    const playmodes: PlayModeType[] = await PlayMode.find({ game })
+    let unvoted = false
+    for (const pm of playmodes) {
+        if (pm.votes.filter(v => idString(v.user) == userid).length == 0) {
+            unvoted = true
+            break
+        }
+    }
+    let isunvoted = game.voted.filter(u => idString(u) == userid).length == 0
+    if (unvoted == isunvoted)
+        return
+    if (unvoted) {
+        // Need to remove voted
+        game.voted = game.voted.filter(v => idString(v) != userid)
+    } else {
+        // Need to add voted
+        game.voted.push(user)
+    }
+    await game.save()
+    return
+}
+
 async function process_vote(req: Request, res: Response) {
     const playmode = req.reqPlayMode
     // if (!isKnown(playmode)) { // This should never happen as params handler should have dealt with it.
@@ -147,6 +176,7 @@ async function process_vote(req: Request, res: Response) {
             // Delete old vote
             playmode.votes = playmode.votes.filter(v => idString(v) !== idString(myvote))
             let result = await playmode.save()
+            await update_voted(req.reqGame ?? playmode.game, req.myUser)
             return [result, playmode]
         }
         return [{ nochange: true }, playmode]
@@ -166,6 +196,7 @@ async function process_vote(req: Request, res: Response) {
         // vote.save();
     }
     let result = await playmode.save()
+    await update_voted(req.reqGame ?? playmode.game, req.myUser)
     return [result, playmode]
 }
 
