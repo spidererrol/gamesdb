@@ -6,6 +6,7 @@ function Admin(props: GeneralProps) {
         <nav>
             <ul>
                 <li><NavLink to="regtokens">Registration Tokens</NavLink></li>
+                <li><NavLink to="users">List Users</NavLink></li>
             </ul>
         </nav>
         <Outlet />
