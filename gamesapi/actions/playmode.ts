@@ -130,7 +130,7 @@ export async function get(req: Request, res: Response) {
 
 }
 
-async function update_voted(game: GameType, user: UserType): Promise<void> {
+export async function update_voted(game: GameType, user: UserType): Promise<void> {
     const userid = idString(user)
     const playmodes: PlayModeType[] = await PlayMode.find({ game })
     let unvoted = false

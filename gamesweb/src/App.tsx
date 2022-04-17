@@ -25,6 +25,7 @@ import LoginLayout from './component/LoginLayout'
 import GameVotes from './component/games/GameVotes'
 import ListUsers from './component/admin/ListUsers'
 import ListNeedVote from './component/games/ListNeedVote'
+import General from './component/admin/General'
 
 function dbState(): StateObj<number> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -115,7 +116,7 @@ function App() {
               </Route>
             </Route>
             <Route path="admin" element={<Admin {...props} />}>
-              <Route index element={<RegTokens {...props} />} />
+              <Route index element={<General {...props} />} />
               <Route path="regtokens" element={<RegTokens {...props} />} />
               <Route path="users" element={<ListUsers {...props} />} />
             </Route>

@@ -117,6 +117,13 @@ div.editvotex {
   padding-inline: 1px;
 }
 
+.Card.bordered > .CardBody > button {
+  margin-top: 0.1rem;
+  margin-bottom: 0.25rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
 .CardHeader {
   background: var(--bg-card-header);
   color: var(--fg-card-header);

@@ -1,3 +1,4 @@
+import { api_admin } from "./api/admin"
 import { apibase } from "./api/apibase"
 import { api_auth } from "./api/auth"
 import { api_game } from "./api/game"
@@ -47,5 +48,9 @@ export class gamesapi extends propcache {
 
     get game(): api_game {
         return this.get_prop("game", () => new api_game(this.authtok))
+    }
+
+    get admin(): api_admin {
+        return this.get_prop("admin", () => new api_admin(this.authtok))
     }
 }
