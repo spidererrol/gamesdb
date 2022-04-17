@@ -3,3 +3,4 @@
 - [X] List games for which I need to vote
 - [ ] List games for which I need to set owned or price.
 - [ ] Release Date Support
+- [ ] May need to reconsider votes on games to just reflect the best playmode vote? Doesn't have to be strictly calculated - could update game whenever playmode is edited and then just block changes to game
