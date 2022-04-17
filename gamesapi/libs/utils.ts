@@ -216,6 +216,18 @@ interface getList_Args {
     limit?: number
 }
 
+/**
+ * Takes a query and sends a json result to res
+ * @param listkey key name to use in json to store the results
+ * @param query mongoose query to provide the results
+ * @param res Response object
+ * @param req (optional) Request object - recommended
+ * @param pageno (optional) Page number to send (use req instead)
+ * @param limit (optional) Page size (use req instead)
+ * @param mapeach (optional) Convert each item
+ * @param mapper (optional) Convert entire results list
+ * @returns 
+ */
 export async function getList({ listkey, query, res, mapper, mapeach, req, pageno = -1, limit = -1 }: getList_Args): Promise<void> {
     if (pageno < 0) {
         if (isKnown_type<express.Request>(req)) {

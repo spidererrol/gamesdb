@@ -23,6 +23,8 @@ import AddGame from './component/games/AddGame'
 import EditGame from './component/games/EditGame'
 import LoginLayout from './component/LoginLayout'
 import GameVotes from './component/games/GameVotes'
+import ListUsers from './component/admin/ListUsers'
+import ListNeedVote from './component/games/ListNeedVote'
 
 function dbState(): StateObj<number> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -108,10 +110,14 @@ function App() {
               <Route path=":gameid/edit" element={<EditGame {...props} />} />
               <Route path=":gameid/vote" element={<GameVotes {...props} />} />
               <Route path="add" element={<AddGame {...props} />} />
+              <Route path="need">
+                <Route path="vote" element={<ListNeedVote {...props} />} />
+              </Route>
             </Route>
             <Route path="admin" element={<Admin {...props} />}>
               <Route index element={<RegTokens {...props} />} />
               <Route path="regtokens" element={<RegTokens {...props} />} />
+              <Route path="users" element={<ListUsers {...props} />} />
             </Route>
             <Route path="*" element={<NoPage {...props} />} />
           </Route>

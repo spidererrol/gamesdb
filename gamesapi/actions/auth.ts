@@ -117,8 +117,8 @@ export async function register(req: Request, res: Response) {
             return
         }
         const newuser = new Users({
-            loginName: req.body.username.toLowerCase(),
-            displayName: req.body.displayname,
+            loginName: req.body.username.toLowerCase().trim(),
+            displayName: req.body.displayname.trim(),
             isAdmin: userCount == 0,
         })
         const dbUser = await newuser.save()

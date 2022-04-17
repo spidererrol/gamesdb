@@ -16,6 +16,7 @@ bindPath("get", "/", actions.getAllGames)
 
 bindPath("post", "/search", actions.searchGame)
 bindPath("get", "/search/:query", actions.quickSearch)
+bindPath("get", "/need/vote",actions.needVote)
 
 bindPath("post", '/add', actions.addGame)
 bindPath("post", "/", actions.addGame)

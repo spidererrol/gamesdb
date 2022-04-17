@@ -17,7 +17,7 @@ function ListGames(props: GeneralProps) {
     }, [props])
 
     useEffect(() => {
-        props.api.game.getAll().then(games => setData(games))
+        props.api.game.needVote().then(games => setData(games))
     }, [props.api.game, props.dbupdates.games])
 
     useEffect(() => {
@@ -28,7 +28,7 @@ function ListGames(props: GeneralProps) {
     const search = useCallback((e: React.ChangeEvent<HTMLInputElement> | { target: HTMLInputElement, preventDefault: Function }) => {
         e.preventDefault()
         if (e.target.value.trim() === "") {
-            props.api.game.getAll().then(games => setData(games))
+            props.api.game.needVote().then(games => setData(games))
         } else {
             props.api.game.search(e.target.value).then(games => setData(games))
         }
@@ -42,7 +42,6 @@ function ListGames(props: GeneralProps) {
     }, [refSearch, search])
 
     return <div className="ListGames">
-        <LabelInput ref={refSearch} type="text" label="Search" placeholder="(all)" onChange={search} onClear={clear} />
         <Cards className="game_list">{games}</Cards>
     </div>
 }

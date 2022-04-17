@@ -47,6 +47,12 @@ export class api_game extends apibase {
         return ret.games
     }
 
+    async needVote(): Promise<GameType[]> {
+        debug("get need vote")
+        let ret = await this.req("GET",'/need/vote')
+        return ret.games
+    }
+
     async vote(gameid: string, vote: VoteNames) {
         debug("vote")
         let ret = await this.req("POST", `/${gameid}/vote`, {

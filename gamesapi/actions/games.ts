@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { GameGroup, Games } from '../models/games'
 import { Vote } from "../types/Vote"
-import { handleError, log_debug, isKnown, errorResponse, bg, getList, setDateLike, idString } from '../libs/utils'
+import { handleError, log_debug, isKnown, errorResponse, bg, getList, setDateLike, idString, getList_Mapper } from '../libs/utils'
 import { GameType } from "../schemas/Game"
 import { OwnerType } from "../schemas/Owner"
 import config from '../libs/config'
@@ -13,10 +13,11 @@ import { fillGamePlayMode } from '../libs/fillGamePlayMode'
 import { VoteType } from '../schemas/Vote'
 import { recalcGame } from './gamegroup'
 
-async function legacy_getList(query: any, res: Response, req: Request): Promise<any> {
+async function legacy_getList(query: any, res: Response, req: Request, mapper?: getList_Mapper): Promise<any> {
     return getList({
         listkey: "games",
         mapeach: g => fillGamePlayMode(g, req),
+        mapper,
         query,
         res,
         req,
@@ -38,7 +39,7 @@ export async function getAllGames(req: Request, res: Response) {
     // let myuser = req.myUser;
     log_debug("Request all games")
     try {
-        legacy_getList(Games.find(), res, req)
+        legacy_getList(Games.find().sort({ "name": 1 }), res, req)
     } catch (err) {
         handleError(err, res)
     }
@@ -63,7 +64,7 @@ export async function searchGame(req: Request, res: Response) {
     log_debug(`Request game by search`)
     log_debug(search)
     try {
-        legacy_getList(Games.find(search), res, req)
+        legacy_getList(Games.find(search).sort({ "name": 1 }), res, req)
     } catch (err) {
         handleError(err, res)
     }
@@ -72,8 +73,21 @@ export async function searchGame(req: Request, res: Response) {
 export async function quickSearch(req: Request, res: Response) {
     let query: string = req.params.query
     log_debug(`Quick search for ${query}`)
-    let q = Games.find().nameish(req.params.query)
+    let q = Games.find().nameish(req.params.query).sort({ "name": 1 })
     legacy_getList(q, res, req)
+}
+
+export async function needVote(req: Request, res: Response) {
+    log_debug("Find games which need voting on")
+    let q = Games.find({
+        "votes": { "$not": { "$elemMatch": { "user": req.myUser } } }
+    })
+    q.sort({ "name": 1 }) // This is effectively the fallback order for when there are the same number of votes
+    legacy_getList(q, res, req,
+        (list: GameType[]) => list.sort(
+            (a, b) => b.votes.length - a.votes.length // Sort more votes first.
+        )
+    )
 }
 
 export async function addGame(req: Request, res: Response) {
