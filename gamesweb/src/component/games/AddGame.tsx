@@ -236,14 +236,14 @@ function AddGame(props: AGProps): JSX.Element {
             props.api.game.playmodes(game._id).then(pms => setPlaymodesMap(array2map(pms, i => [i._id, i])))
     }, [props.api.game, game._id, game._isnew])
 
-    const addPlaymode = useCallback((e) => {
+    const addPlaymode = useCallback((e, defname: string = "NEW") => {
         console.log("Add PM")
         let olddb = cloneMap(playmodesMap)
         let uid = v4()
         olddb.set(uid, {
             _id: uid,
             _isnew: true,
-            name: "NEW",
+            name: defname,
             description: "",
             included: false,
             myVote: {
@@ -256,6 +256,11 @@ function AddGame(props: AGProps): JSX.Element {
         } as PlayModeType)
         setPlaymodesMap(olddb)
     }, [playmodesMap])
+
+    useEffect(() => {
+        if (playmodesMap.size === 0)
+            addPlaymode(null, "default")
+    }, [addPlaymode, playmodesMap.size])
 
     const delPlaymode = useCallback((e, pmid) => {
         console.log("Del PM:" + pmid)

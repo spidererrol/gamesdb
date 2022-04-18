@@ -123,6 +123,7 @@ export async function addGame(req: Request, res: Response) {
             ...gameData,
             added: { who: req.myUser },
         })
+        //TODO: Add a default playmode here? I do it in the frontend currently and would have to deal with one being created here (ie would have to update if the user defined one)
         await recalcGame(newgame)
         res.json({ status: "success", game: newgame })
     } catch (err) {
