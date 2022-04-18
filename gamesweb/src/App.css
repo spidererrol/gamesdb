@@ -279,6 +279,7 @@ a.GameVoteButton {
 }
 
 .deleted > .CardBody > .cover,
+.PlayMode.deleted > .cover,
 .deleted > .cover {
   display: flex;
   position: absolute;
