@@ -67,6 +67,7 @@ export async function do_save(
     refMaxPlayers: InputRef,
     vote: string,
     owned: OwnershipInfo): Promise<string> {
+
     let usegame: GameType = { ...game }
 
     tidyGame(usegame)
