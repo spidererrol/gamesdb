@@ -23,6 +23,7 @@ import { OwnerType } from "../../libs/types/Owner"
 import { v4 } from 'uuid'
 import { do_save } from "../../libs/AddEditGameHelpers"
 import { WhenWhoType } from "../../libs/types/WhenWho"
+import LabelInput from "../bits/LabelInput"
 
 interface AGProps extends GeneralProps {
 }
@@ -468,7 +469,7 @@ function AddGame(props: AGProps): JSX.Element {
 
     return <fieldset className="game">
         <legend>
-            <input type="text" ref={refName} defaultValue={game.name} />
+            <LabelInput label="Name" type="text" ref={refName} value={game.name} />
         </legend>
         {aliasElements}
         <div className="alias"><button disabled={add_disabled} className="addAlias" onClick={addAlias}><FontAwesomeIcon icon={faSquarePlus} /></button></div>
