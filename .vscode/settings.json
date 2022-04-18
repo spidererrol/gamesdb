@@ -5,5 +5,23 @@
         "/workspaces/gamesdb": {
             "preferredRemoteName": "origin"
         }
-    }
+    },
+    "githubIssues.queries": [
+        {
+            "label": "My Issues",
+            "query": "default"
+        },
+        {
+            "label": "Unowned",
+            "query": "repo:spidererrol/gamesdb is:issue is:open no:assignee"
+        },
+        {
+            "label": "Created Issues",
+            "query": "author:${user} state:open repo:spidererrol/gamesdb sort:created-desc"
+        },
+        {
+            "label": "Recent Issues",
+            "query": "state:open repo:spidererrol/gamesdb sort:updated-desc"
+        }
+    ]
 }
