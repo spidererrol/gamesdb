@@ -26,17 +26,6 @@ app.set('view options', {
 })
 app.use(express.static("gamesweb/build"))
 
-// Start dev only:
-import fs from 'fs'
-if (fs.existsSync("TODO.html"))
-    app.get('/TODO.html', (req, res) => {
-        res.status(200)
-        res.contentType("text/html")
-        res.header("Refresh", "10")
-        res.sendFile(process.cwd() + "/TODO.html")
-    })
-// End dev only
-
 app.use('/api', apiroute)
 
 app.use('/', (req, res) => {

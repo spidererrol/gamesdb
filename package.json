@@ -5,7 +5,6 @@
     "scripts": {
         "dev-mongodb": "docker container start mongo || true",
         "dev-gamesapi": "nodemon gamesapi/server.ts",
-        "dev-todo": "nodemon --exec 'md2html TODO.md > TODO.html' TODO.md",
         "devStart": "concurrently npm:dev-*"
     },
     "author": "Timothy Hinchcliffe",
@@ -25,7 +24,6 @@
         "nodemon": "^2.0.15"
     },
     "devDependencies": {
-        "concurrently": "^7.0.0",
-        "markdown": "^0.5.0"
+        "concurrently": "^7.0.0"
     }
 }
