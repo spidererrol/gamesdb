@@ -26,7 +26,8 @@
 		"esbenp.prettier-vscode",
 		"ms-azuretools.vscode-docker",
 		"GitHub.vscode-pull-request-github",
-		"GitLab.gitlab-workflow"
+		"GitLab.gitlab-workflow",
+		"eamodio.gitlens"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
