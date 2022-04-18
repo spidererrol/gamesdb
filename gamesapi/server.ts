@@ -11,7 +11,8 @@ import cors from 'cors'
 
 const app = express()
 
-app.use(cors()) //FIXME: Should be properly configured for production.
+if (process.env.NODE_ENV === "development")
+    app.use(cors()) // At this time, live only needs same-origin so cors is not needed. Dev can accept from anywhere to make life easier.
 
 app.use(express.json())
 app.use(session({
