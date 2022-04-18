@@ -23,5 +23,6 @@
             "label": "Recent Issues",
             "query": "state:open repo:spidererrol/gamesdb sort:updated-desc"
         }
-    ]
+    ],
+    "gitlab.pipelineGitRemoteName": "gitlab"
 }
