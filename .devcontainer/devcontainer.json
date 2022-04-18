@@ -24,7 +24,9 @@
 		"burkeholland.simple-react-snippets",
 		"ChakrounAnas.turbo-console-log",
 		"esbenp.prettier-vscode",
-		"ms-azuretools.vscode-docker"
+		"ms-azuretools.vscode-docker",
+		"GitHub.vscode-pull-request-github",
+		"GitLab.gitlab-workflow"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

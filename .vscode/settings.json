@@ -1,4 +1,9 @@
 {
     "javascript.format.semicolons": "remove",
-    "typescript.format.semicolons": "remove"
+    "typescript.format.semicolons": "remove",
+    "gitlab.repositories": {
+        "/workspaces/gamesdb": {
+            "preferredRemoteName": "origin"
+        }
+    }
 }
