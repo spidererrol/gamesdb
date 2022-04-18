@@ -12,20 +12,7 @@ function ListGames(props: GeneralProps) {
     const [games, setGames] = useState<anyElementList>([<Loading key="loading" caller="ListGames/games" />])
     const refSearch = createRef<HTMLInputElement>()
 
-    const gameDeleted = useCallback(() => {
-        props.dbupdate("games")
-    }, [props])
-
-    useEffect(() => {
-        props.api.game.getAll().then(games => setData(games))
-    }, [props.api.game, props.dbupdates.games])
-
-    useEffect(() => {
-        console.log("Update games")
-        setGames(data.map(g => <DisplayGame key={g._id} game={g} refresh={gameDeleted} {...props} />))
-    }, [data, gameDeleted, props])
-
-    const search = useCallback((e: React.ChangeEvent<HTMLInputElement> | { target: HTMLInputElement, preventDefault: Function }) => {
+    const search = useCallback((e: React.ChangeEvent<HTMLInputElement> | { target: HTMLInputElement | { value: string }, preventDefault: Function }) => {
         e.preventDefault()
         if (e.target.value.trim() === "") {
             props.api.game.getAll().then(games => setData(games))
@@ -34,12 +21,27 @@ function ListGames(props: GeneralProps) {
         }
     }, [props.api.game])
 
-    const clear = useCallback((e) => {
+    const gameDeleted = useCallback(() => {
+        // Can't clear the search field hear as I end up with a recursive loop :(
+        props.dbupdate("games")
+    }, [props])
+
+    useEffect(() => {
+        console.log("Update games")
+        setGames(data.map(g => <DisplayGame key={g._id} game={g} refresh={gameDeleted} {...props} />))
+    }, [data, gameDeleted, props])
+
+    const clear = useCallback((e?: any) => {
         if (refSearch.current !== null) {
             refSearch.current.value = "" // Doesn't trigger onChange!
             search({ target: refSearch.current, preventDefault: () => null })
         }
     }, [refSearch, search])
+
+    useEffect(() => {
+        // props.api.game.getAll().then(games => setData(games))
+        search({ target: { value: "" }, preventDefault: () => null })
+    }, [props.api.game, props.dbupdates.games, search])
 
     return <div className="ListGames">
         <LabelInput ref={refSearch} type="text" label="Search" placeholder="(all)" onChange={search} onClear={clear} />
