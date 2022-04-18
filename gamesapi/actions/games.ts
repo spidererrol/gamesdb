@@ -97,6 +97,8 @@ export async function addGame(req: Request, res: Response) {
     try {
         const setName = gameData.name
         const maxPlayers = gameData.maxPlayers
+
+        // NOTE!: Cannot use "nameish" here because it searches tags too!
         const existing = await Games.findOne({ name: setName })
         if (isKnown(existing)) {
             res.status(400).json({
@@ -118,8 +120,7 @@ export async function addGame(req: Request, res: Response) {
             return
         }
         const newgame = await Games.create({
-            name: setName,
-            maxPlayers: maxPlayers,
+            ...gameData,
             added: { who: req.myUser },
         })
         await recalcGame(newgame)
