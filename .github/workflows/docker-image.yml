@@ -2,19 +2,45 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
-    # - name: Push the Docker images
-    #   run: docker push ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # - name: Build the Docker image
+      #   run: docker build . --file Dockerfile --tag ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
+
+      # - name: Push the Docker images
+      #   run: docker push ghcr.io/spidererrol/gamesdb:$GITHUB_RUN_ID.$GITHUB_RUN_NUMBER
