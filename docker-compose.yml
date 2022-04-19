@@ -10,7 +10,7 @@ services:
     volumes:
       - gamesdb:/data/db/:rw
   gamesdb:
-    image: etna.spidererrol.co.uk:5050/tim-personal/coop-games
+    image: ghcr.io/spidererrol/gamesdb:main
     networks:
       gamesdb:
     ports:
