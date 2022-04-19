@@ -1,3 +1,5 @@
+import { faBug } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React from "react"
 import { NavLink, Outlet } from "react-router-dom"
 import { GeneralProps } from "./props/GeneralProps"
@@ -25,6 +27,7 @@ function Layout(props: LayoutProps) {
             <li>
               <button className="logout" onClick={props.logoutfunc}>Logout</button>
             </li>
+            <li><a target="_blank" rel="noreferrer" href="https://github.com/spidererrol/gamesdb/issues"><FontAwesomeIcon icon={faBug} /></a></li>
           </ul>
         </nav>
       </header>
