@@ -18,7 +18,7 @@ const LabelTextarea = forwardRef(function (props: LTProps, ref: ForwardedRef<HTM
             ref={ref}
             name={props.name}
             placeholder={(props.label_as_placeholder ?? false) ? props.label : props.placeholder}
-            value={props.value}
+            defaultValue={props.value}
         />
     </div>
 })
