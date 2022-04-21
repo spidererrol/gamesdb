@@ -20,6 +20,7 @@ export interface GameType extends DBBase {
     owners: OwnerType[]
     added: WhenWhoType
     voted: UserType[]
+    release?: Date
 }
 
 export const GameSchema = new Schema({
@@ -36,6 +37,7 @@ export const GameSchema = new Schema({
     owners: [{ type: OwnerSchema, autopopulate: true }],
     added: { type: WhenWhoSchema, autopopulate: true },
     voted: [{ type: 'ObjectId', ref: 'User', autopopulate: true }],
+    release: { type: Date },
 }, {
     toObject: {
         virtuals: true,
