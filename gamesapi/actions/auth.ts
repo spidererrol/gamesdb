@@ -12,8 +12,8 @@ export async function login(req: Request, res: Response) {
     log_debug("Got Login Request")
     // log_debug(req.body)
     try {
-        const shadow: ShadowType = await Shadow.findOne({ loginName: req.body.username.toLowerCase() }).exec()
-        if (isKnown(shadow) && pw.check(shadow.loginName, req.body.secret, shadow.crypt)) {
+        const shadow: ShadowType = await Shadow.findOne({ loginName: req.body.username.toLowerCase().trim() }).exec()
+        if (isKnown(shadow) && pw.check(shadow.loginName.toLowerCase().trim(), req.body.secret, shadow.crypt)) {
             log_debug("Auth Success")
             auth.setUser(req, res, shadow.user, { status: "success", user: shadow.user })
         } else {
@@ -122,9 +122,9 @@ export async function register(req: Request, res: Response) {
             isAdmin: userCount == 0,
         })
         const dbUser = await newuser.save()
-        const crypt = pw.crypt(req.body.username, req.body.secret)
+        const crypt = pw.crypt(req.body.username.toLowerCase().trim(), req.body.secret)
         const newshadow = Shadow.create({
-            loginName: req.body.username,
+            loginName: req.body.username.toLowerCase().trim(),
             crypt: crypt,
             user: dbUser
         })
