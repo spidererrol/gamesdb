@@ -15,6 +15,13 @@ export interface CardProps extends GeneralProps, className, children {
     actionButtons?: anyElements
 }
 
+/**
+ * 
+ * @param header optional anyElements
+ * @param titleButtons optional buttons (array) in the title
+ * @param actionButtons optional buttons (array) at the bottom of the card
+ * @returns 
+ */
 function Card(props: CardProps) {
     const [getAction, setAction] = useState<anyElement>(<></>)
     useEffect(() => {
